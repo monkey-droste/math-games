@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ultimate Tic-Tac-Toe | Math Games</title>
+    <meta
+      name="description"
+      content="Play Ultimate Tic-Tac-Toe in Math Games, an unofficial fan-made site inspired by Ben Orlin's Math Games with Bad Drawings."
+    >
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <style>
+:root {
+  color-scheme: light;
+  --paper: #f8f2e3;
+  --paper-deep: #eadfc8;
+  --ink: #202026;
+  --muted: #655f55;
+  --grid: #2c2a2a;
+  --x: #d64045;
+  --o: #1f7a8c;
+  --active: #f0c849;
+  --free: #c7e6c9;
+  --last: #28a745;
+  --shadow: rgba(31, 28, 22, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  font-family: ui-rounded, "Comic Sans MS", system-ui, sans-serif;
+  background:
+    linear-gradient(90deg, rgba(88, 76, 55, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(88, 76, 55, 0.06) 1px, transparent 1px),
+    var(--paper);
+  background-size: 24px 24px;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(1180px, calc(100% - 28px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 22px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 18px;
+  align-items: start;
+}
+
+.play-surface,
+.rules-panel {
+  background: rgba(255, 252, 244, 0.78);
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--shadow);
+}
+
+.play-surface {
+  padding: clamp(14px, 2.4vw, 24px);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+}
+
+.kicker {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.game-home-link {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.game-home-link::before {
+  content: "< ";
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+.score-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(56px, 1fr));
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  transform: rotate(1deg);
+}
+
+.score-strip div {
+  min-width: 0;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.score-strip div + div {
+  border-left: 2px solid var(--ink);
+}
+
+.score-strip span {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.score-strip small {
+  color: var(--muted);
+}
+
+.controls {
+  margin: 18px 0 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.segmented {
+  display: inline-grid;
+  grid-auto-flow: column;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+}
+
+.segment,
+.icon-button,
+.text-button {
+  min-height: 42px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.segment {
+  min-width: 92px;
+  padding: 0 14px;
+}
+
+.segment + .segment {
+  border-left: 2px solid var(--ink);
+}
+
+.segment.active {
+  background: var(--active);
+  font-weight: 800;
+}
+
+.icon-button {
+  width: 46px;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.text-button {
+  padding: 0 14px;
+  border: 2px solid var(--ink);
+  background: #fffaf0;
+  font-weight: 900;
+}
+
+.segment:focus-visible,
+.icon-button:focus-visible,
+.text-button:focus-visible,
+.cell:focus-visible {
+  outline: 4px solid #7aa7ff;
+  outline-offset: 2px;
+}
+
+.status-panel {
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  background: #fff7d1;
+}
+
+.turn-token {
+  width: 54px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  font-size: 1.9rem;
+  font-weight: 900;
+}
+
+.turn-token.x {
+  color: var(--x);
+}
+
+.turn-token.o {
+  color: var(--o);
+}
+
+#statusLine {
+  margin-bottom: 4px;
+  font-weight: 800;
+}
+
+#hintLine {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.result-banner {
+  margin: 14px 0 0;
+  padding: clamp(16px, 2.8vw, 28px);
+  border: 4px solid var(--ink);
+  background: #fffaf0;
+  box-shadow: 6px 6px 0 var(--shadow);
+  text-align: center;
+  transform: rotate(-0.6deg);
+}
+
+.result-banner.hidden {
+  display: none;
+}
+
+.result-banner.x {
+  background: #ffe5e5;
+  color: var(--x);
+}
+
+.result-banner.o {
+  background: #dff6f9;
+  color: var(--o);
+}
+
+.result-banner.draw {
+  background: #e9eadf;
+  color: var(--ink);
+}
+
+.result-banner p {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.result-banner h2 {
+  margin: 0 0 14px;
+  font-size: clamp(2.8rem, 9vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.result-banner button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 2px solid var(--ink);
+  background: var(--active);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.ultimate-board {
+  width: min(100%, 720px);
+  margin: 18px auto 0;
+  aspect-ratio: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(7px, 1.4vw, 12px);
+  padding: clamp(7px, 1.4vw, 12px);
+  background: var(--grid);
+  border: 4px solid var(--ink);
+}
+
+.mini-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  padding: 5px;
+  background: var(--grid);
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.mini-board.playable {
+  background: var(--active);
+  transform: translateY(-2px);
+}
+
+.mini-board.free-choice {
+  background: var(--free);
+}
+
+.cell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  display: grid;
+  place-items: center;
+  background: #fffaf0;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: clamp(1.05rem, 4.5vw, 2.5rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.cell.last-move {
+  box-shadow: inset 0 0 0 5px var(--last);
+}
+
+.cell.last-move::after {
+  content: "●";
+  position: absolute;
+  right: 5px;
+  top: 4px;
+  color: var(--last);
+  font-size: clamp(0.55rem, 1.6vw, 1rem);
+  line-height: 1;
+  text-shadow: 0 1px 0 #fffaf0;
+}
+
+.cell:disabled {
+  cursor: not-allowed;
+}
+
+.cell.x {
+  color: var(--x);
+}
+
+.cell.o {
+  color: var(--o);
+}
+
+.mini-board.won::after,
+.mini-board.drawn::after {
+  position: absolute;
+  inset: 5px;
+  display: grid;
+  place-items: center;
+  border: 5px solid currentColor;
+  background: rgba(255, 250, 240, 0.82);
+  font-size: clamp(3rem, 12vw, 7rem);
+  font-weight: 1000;
+  pointer-events: none;
+}
+
+.mini-board.won.x::after {
+  content: "X";
+  color: var(--x);
+}
+
+.mini-board.won.o::after {
+  content: "O";
+  color: var(--o);
+}
+
+.mini-board.drawn::after {
+  content: "=";
+  color: var(--muted);
+}
+
+.rules-panel {
+  padding: 18px;
+  position: sticky;
+  top: 18px;
+  transform: rotate(-0.5deg);
+}
+
+.rules-panel h2 {
+  margin-bottom: 12px;
+  font-size: 1.5rem;
+}
+
+.rules-panel p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell {
+    width: min(100% - 14px, 560px);
+    padding: 8px 0;
+  }
+
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .score-strip {
+    transform: none;
+  }
+
+  .controls {
+    gap: 8px;
+  }
+
+  .segment {
+    min-width: 76px;
+    padding: 0 10px;
+  }
+
+  .status-panel {
+    grid-template-columns: 46px 1fr;
+  }
+
+  .turn-token {
+    width: 46px;
+    font-size: 1.55rem;
+  }
+}
+
+</style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="play-surface" aria-label="Ultimate tic-tac-toe game">
+        <header class="topbar">
+          <div>
+            <a class="game-home-link" href="index.html">Math Games</a>
+            <h1>Ultimate Tic-Tac-Toe</h1>
+          </div>
+          <div class="score-strip" aria-label="Score">
+            <div><span id="xWins">0</span><small>X Wins</small></div>
+            <div><span id="draws">0</span><small>Draws</small></div>
+            <div><span id="oWins">0</span><small>O Wins</small></div>
+          </div>
+        </header>
+
+        <section class="controls" aria-label="Game settings">
+          <div class="segmented" role="group" aria-label="Game mode">
+            <button type="button" class="segment active" data-mode="human">Two Players</button>
+            <button type="button" class="segment" data-mode="ai">Vs CPU</button>
+          </div>
+          <div id="sideChoice" class="segmented hidden" role="group" aria-label="Side choice">
+            <button type="button" class="segment active" data-human="X">Play X</button>
+            <button type="button" class="segment" data-human="O">Play O</button>
+          </div>
+          <button type="button" id="newGame" class="icon-button" aria-label="New game" title="New game">
+            <span aria-hidden="true">↻</span>
+          </button>
+          <button type="button" id="clearScore" class="text-button">Clear Score</button>
+        </section>
+
+        <section class="status-panel" aria-live="polite">
+          <div class="turn-token" id="turnToken">X</div>
+          <div>
+            <p id="statusLine">X starts. Choose any small board.</p>
+            <p id="hintLine">Your square sends the next player to the matching small board.</p>
+          </div>
+        </section>
+
+        <section id="resultBanner" class="result-banner hidden" aria-live="assertive">
+          <p id="resultKicker">Game over</p>
+          <h2 id="resultTitle">X Wins!</h2>
+          <button type="button" id="bannerNewGame">New Game</button>
+        </section>
+
+        <div id="board" class="ultimate-board" aria-label="Ultimate tic-tac-toe board"></div>
+      </section>
+
+      <aside class="rules-panel" aria-label="Rules">
+        <h2>Rules</h2>
+        <p>Each small board is a normal game of tic-tac-toe. The square you choose sends the next player to the matching small board.</p>
+        <p>If that target board is already won or full, the next player may move on any open board.</p>
+        <p>Win a small board to claim its square on the big board. Three big-board squares in a row wins the game.</p>
+        <h2>Source</h2>
+        <p>This unofficial fan-made page is inspired by Ben Orlin's <em>Math Games with Bad Drawings</em>, the book also described here as <em>欢乐数学之游戏大闯关</em>.</p>
+      </aside>
+    </main>
+
+    <script>
+const WIN_LINES = [
+  [0, 1, 2], [3, 4, 5], [6, 7, 8],
+  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+  [0, 4, 8], [2, 4, 6],
+];
+
+const state = {
+  boards: Array.from({ length: 9 }, () => Array(9).fill("")),
+  meta: Array(9).fill(""),
+  current: "X",
+  nextBoard: null,
+  lastMove: null,
+  gameOver: false,
+  mode: "human",
+  human: "X",
+  scores: { X: 0, O: 0, D: 0 },
+};
+
+const boardEl = document.querySelector("#board");
+const statusLine = document.querySelector("#statusLine");
+const hintLine = document.querySelector("#hintLine");
+const turnToken = document.querySelector("#turnToken");
+const modeButtons = document.querySelectorAll("[data-mode]");
+const humanButtons = document.querySelectorAll("[data-human]");
+const sideChoice = document.querySelector("#sideChoice");
+const newGameButton = document.querySelector("#newGame");
+const clearScoreButton = document.querySelector("#clearScore");
+const bannerNewGameButton = document.querySelector("#bannerNewGame");
+const resultBanner = document.querySelector("#resultBanner");
+const resultKicker = document.querySelector("#resultKicker");
+const resultTitle = document.querySelector("#resultTitle");
+
+function opponent(mark) {
+  return mark === "X" ? "O" : "X";
+}
+
+function winnerOf(cells) {
+  for (const [a, b, c] of WIN_LINES) {
+    if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+      return cells[a];
+    }
+  }
+  return cells.every(Boolean) ? "D" : "";
+}
+
+function isBoardOpen(index) {
+  return !state.meta[index] && state.boards[index].some((cell) => !cell);
+}
+
+function playableBoards() {
+  if (state.nextBoard !== null && isBoardOpen(state.nextBoard)) {
+    return [state.nextBoard];
+  }
+  return state.meta.map((_, index) => index).filter(isBoardOpen);
+}
+
+function legalMoves(snapshot = state) {
+  const forced = snapshot.nextBoard !== null && !snapshot.meta[snapshot.nextBoard] &&
+    snapshot.boards[snapshot.nextBoard].some((cell) => !cell);
+  const boards = forced
+    ? [snapshot.nextBoard]
+    : snapshot.meta.map((_, index) => index).filter((index) => {
+      return !snapshot.meta[index] && snapshot.boards[index].some((cell) => !cell);
+    });
+
+  return boards.flatMap((boardIndex) => {
+    return snapshot.boards[boardIndex]
+      .map((cell, cellIndex) => cell ? null : { boardIndex, cellIndex })
+      .filter(Boolean);
+  });
+}
+
+function cloneForMove(snapshot, move, mark) {
+  const next = {
+    boards: snapshot.boards.map((board) => [...board]),
+    meta: [...snapshot.meta],
+    current: opponent(mark),
+    nextBoard: null,
+    gameOver: false,
+  };
+  next.boards[move.boardIndex][move.cellIndex] = mark;
+  next.meta[move.boardIndex] = winnerOf(next.boards[move.boardIndex]);
+  next.nextBoard = next.meta[move.cellIndex] ? null : move.cellIndex;
+  const metaResult = winnerOf(next.meta.map((value) => value === "D" ? "" : value));
+  next.gameOver = Boolean(metaResult) || legalMoves(next).length === 0;
+  return next;
+}
+
+function renderBoard() {
+  boardEl.innerHTML = "";
+  const playable = playableBoards();
+  const freeChoice = state.nextBoard === null || !isBoardOpen(state.nextBoard);
+
+  state.boards.forEach((smallBoard, boardIndex) => {
+    const mini = document.createElement("div");
+    mini.className = "mini-board";
+    mini.dataset.board = String(boardIndex);
+    if (playable.includes(boardIndex)) mini.classList.add("playable");
+    if (freeChoice && playable.includes(boardIndex)) mini.classList.add("free-choice");
+    if (state.meta[boardIndex] === "D") mini.classList.add("drawn");
+    if (state.meta[boardIndex] === "X" || state.meta[boardIndex] === "O") {
+      mini.classList.add("won", state.meta[boardIndex].toLowerCase());
+    }
+
+    smallBoard.forEach((mark, cellIndex) => {
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "cell";
+      cell.dataset.board = String(boardIndex);
+      cell.dataset.cell = String(cellIndex);
+      cell.setAttribute("aria-label", `Small board ${boardIndex + 1}, square ${cellIndex + 1}`);
+      cell.textContent = mark;
+      if (mark) cell.classList.add(mark.toLowerCase());
+      if (state.lastMove?.boardIndex === boardIndex && state.lastMove?.cellIndex === cellIndex) {
+        cell.classList.add("last-move");
+        cell.setAttribute("title", "Last move");
+      }
+      cell.disabled = !canPlay(boardIndex, cellIndex);
+      mini.append(cell);
+    });
+
+    boardEl.append(mini);
+  });
+}
+
+function canPlay(boardIndex, cellIndex) {
+  if (state.gameOver) return false;
+  if (state.mode === "ai" && state.current !== state.human) return false;
+  if (state.boards[boardIndex][cellIndex]) return false;
+  if (state.meta[boardIndex]) return false;
+  return playableBoards().includes(boardIndex);
+}
+
+function updateStatus() {
+  turnToken.textContent = state.current;
+  turnToken.className = `turn-token ${state.current.toLowerCase()}`;
+  const metaResult = winnerOf(state.meta.map((value) => value === "D" ? "" : value));
+  updateResultBanner(metaResult);
+
+  if (metaResult === "X" || metaResult === "O") {
+    statusLine.textContent = `${metaResult} wins the big board.`;
+    hintLine.textContent = "Start a new game and see whether a different opening changes the story.";
+    return;
+  }
+
+  if (state.gameOver) {
+    statusLine.textContent = "The game is a draw.";
+    hintLine.textContent = "The board is full.";
+    return;
+  }
+
+  const actor = state.mode === "ai" && state.current !== state.human ? "CPU" : state.current;
+  statusLine.textContent = `${actor}'s turn.`;
+  if (state.nextBoard !== null && isBoardOpen(state.nextBoard)) {
+    hintLine.textContent = `You must play on small board ${state.nextBoard + 1}.`;
+  } else {
+    hintLine.textContent = "The target board is unavailable, so you may choose any highlighted board.";
+  }
+}
+
+function updateResultBanner(metaResult) {
+  resultBanner.className = "result-banner hidden";
+
+  if (metaResult === "X" || metaResult === "O") {
+    resultBanner.className = `result-banner ${metaResult.toLowerCase()}`;
+    resultKicker.textContent = "Game over";
+    resultTitle.textContent = `${metaResult} Wins!`;
+    return;
+  }
+
+  if (state.gameOver) {
+    resultBanner.className = "result-banner draw";
+    resultKicker.textContent = "Game over";
+    resultTitle.textContent = "Draw!";
+  }
+}
+
+function placeMark(boardIndex, cellIndex) {
+  if (state.boards[boardIndex][cellIndex] || state.meta[boardIndex] || state.gameOver) return false;
+  state.boards[boardIndex][cellIndex] = state.current;
+  state.lastMove = { boardIndex, cellIndex };
+  state.meta[boardIndex] = winnerOf(state.boards[boardIndex]);
+
+  const bigWinner = winnerOf(state.meta.map((value) => value === "D" ? "" : value));
+  state.nextBoard = state.meta[cellIndex] ? null : cellIndex;
+  if (bigWinner === "X" || bigWinner === "O") {
+    state.gameOver = true;
+    state.scores[bigWinner] += 1;
+  } else if (legalMoves().length === 0) {
+    state.gameOver = true;
+    state.scores.D += 1;
+  }
+
+  state.current = opponent(state.current);
+  refresh();
+  maybeComputerMove();
+  return true;
+}
+
+function refresh() {
+  document.querySelector("#xWins").textContent = state.scores.X;
+  document.querySelector("#oWins").textContent = state.scores.O;
+  document.querySelector("#draws").textContent = state.scores.D;
+  sideChoice.classList.toggle("hidden", state.mode !== "ai");
+  renderBoard();
+  updateStatus();
+}
+
+function scoreLine(values, aiMark) {
+  const humanMark = opponent(aiMark);
+  const aiCount = values.filter((value) => value === aiMark).length;
+  const humanCount = values.filter((value) => value === humanMark).length;
+  if (aiCount && humanCount) return 0;
+  if (aiCount === 3) return 800;
+  if (humanCount === 3) return -800;
+  if (aiCount === 2) return 42;
+  if (humanCount === 2) return -50;
+  if (aiCount === 1) return 8;
+  if (humanCount === 1) return -8;
+  return 0;
+}
+
+function evaluateSnapshot(snapshot, aiMark) {
+  const big = winnerOf(snapshot.meta.map((value) => value === "D" ? "" : value));
+  if (big === aiMark) return 100000;
+  if (big === opponent(aiMark)) return -100000;
+
+  let score = 0;
+  const metaForLines = snapshot.meta.map((value) => value === "D" ? "" : value);
+  for (const line of WIN_LINES) {
+    score += scoreLine(line.map((index) => metaForLines[index]), aiMark) * 9;
+  }
+
+  snapshot.boards.forEach((smallBoard, boardIndex) => {
+    if (snapshot.meta[boardIndex] === aiMark) score += 550;
+    if (snapshot.meta[boardIndex] === opponent(aiMark)) score -= 550;
+    if (snapshot.meta[boardIndex]) return;
+    for (const line of WIN_LINES) {
+      score += scoreLine(line.map((index) => smallBoard[index]), aiMark);
+    }
+    if (!smallBoard[4]) score += boardIndex === 4 ? 10 : 3;
+  });
+
+  if (snapshot.nextBoard !== null && !snapshot.meta[snapshot.nextBoard]) {
+    const openCells = snapshot.boards[snapshot.nextBoard].filter((cell) => !cell).length;
+    score += openCells > 0 ? 2 : 0;
+  }
+
+  return score;
+}
+
+function minimax(snapshot, depth, alpha, beta, maximizing, aiMark) {
+  const moves = legalMoves(snapshot);
+  const big = winnerOf(snapshot.meta.map((value) => value === "D" ? "" : value));
+  if (depth === 0 || snapshot.gameOver || big) {
+    return evaluateSnapshot(snapshot, aiMark);
+  }
+
+  if (maximizing) {
+    let best = -Infinity;
+    for (const move of moves) {
+      const child = cloneForMove(snapshot, move, aiMark);
+      best = Math.max(best, minimax(child, depth - 1, alpha, beta, false, aiMark));
+      alpha = Math.max(alpha, best);
+      if (beta <= alpha) break;
+    }
+    return best;
+  }
+
+  let best = Infinity;
+  const humanMark = opponent(aiMark);
+  for (const move of moves) {
+    const child = cloneForMove(snapshot, move, humanMark);
+    best = Math.min(best, minimax(child, depth - 1, alpha, beta, true, aiMark));
+    beta = Math.min(beta, best);
+    if (beta <= alpha) break;
+  }
+  return best;
+}
+
+function chooseComputerMove() {
+  const aiMark = opponent(state.human);
+  const moves = legalMoves();
+  let bestScore = -Infinity;
+  let bestMoves = [];
+  const depth = moves.length > 48 ? 1 : 2;
+
+  for (const move of moves) {
+    const child = cloneForMove(state, move, aiMark);
+    let score = minimax(child, depth, -Infinity, Infinity, false, aiMark);
+    if (move.cellIndex === 4) score += 6;
+    if (move.boardIndex === 4) score += 4;
+    if (score > bestScore) {
+      bestScore = score;
+      bestMoves = [move];
+    } else if (score === bestScore) {
+      bestMoves.push(move);
+    }
+  }
+
+  return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+}
+
+function maybeComputerMove() {
+  if (state.gameOver || state.mode !== "ai" || state.current === state.human) return;
+  statusLine.textContent = "CPU is thinking.";
+  window.setTimeout(() => {
+    const move = chooseComputerMove();
+    if (move) placeMark(move.boardIndex, move.cellIndex);
+  }, 260);
+}
+
+function resetGame(keepScores = true) {
+  state.boards = Array.from({ length: 9 }, () => Array(9).fill(""));
+  state.meta = Array(9).fill("");
+  state.current = "X";
+  state.nextBoard = null;
+  state.lastMove = null;
+  state.gameOver = false;
+  if (!keepScores) state.scores = { X: 0, O: 0, D: 0 };
+  refresh();
+  maybeComputerMove();
+}
+
+boardEl.addEventListener("click", (event) => {
+  const cell = event.target.closest(".cell");
+  if (!cell || cell.disabled) return;
+  placeMark(Number(cell.dataset.board), Number(cell.dataset.cell));
+});
+
+modeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    modeButtons.forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    state.mode = button.dataset.mode;
+    resetGame();
+  });
+});
+
+humanButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    humanButtons.forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    state.human = button.dataset.human;
+    resetGame();
+  });
+});
+
+newGameButton.addEventListener("click", () => resetGame());
+clearScoreButton.addEventListener("click", () => {
+  state.scores = { X: 0, O: 0, D: 0 };
+  refresh();
+});
+bannerNewGameButton.addEventListener("click", () => resetGame());
+
+refresh();
+
+</script>
+  </body>
+</html>

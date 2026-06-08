@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game of the Amazons | Math Games</title>
+    <meta
+      name="description"
+      content="Play Game of the Amazons in Math Games, an unofficial fan-made site inspired by Ben Orlin's Math Games with Bad Drawings."
+    >
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="game-panel" aria-label="Game of the Amazons">
+        <header class="topbar">
+          <div>
+            <a class="game-home-link" href="index.html">Math Games</a>
+            <h1>Game of the Amazons</h1>
+          </div>
+          <div class="score-card" aria-label="Score">
+            <div><span id="whiteScore">0</span><small>White</small></div>
+            <div><span id="blackScore">0</span><small>Black</small></div>
+          </div>
+        </header>
+
+        <section class="status-card" aria-live="polite">
+          <div id="turnBadge" class="turn-badge white">W</div>
+          <div>
+            <p id="statusLine">Black starts. Choose an amazon.</p>
+            <p id="hintLine">Move like a queen, then shoot an arrow like a queen.</p>
+          </div>
+        </section>
+
+        <div class="board-wrap">
+          <div id="board" class="board" aria-label="Amazons board"></div>
+        </div>
+      </section>
+
+      <aside class="settings-panel" aria-label="Settings and rules">
+        <section>
+          <h2>Settings</h2>
+          <label class="field">
+            <span>Board</span>
+            <select id="boardSize">
+              <option value="8" selected>8 x 8 - 3 amazons each</option>
+              <option value="10">10 x 10 - 4 amazons each</option>
+              <option value="16">16 x 16 - 6 amazons each</option>
+            </select>
+          </label>
+
+          <div class="field">
+            <span>Mode</span>
+            <div class="segmented" role="group" aria-label="Mode">
+              <button type="button" class="segment active" data-mode="human">Two Players</button>
+              <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
+            </div>
+          </div>
+
+          <div id="sideField" class="field hidden">
+            <span>Your Side</span>
+            <div class="segmented" role="group" aria-label="Human side">
+              <button type="button" class="segment active" data-side="W">White</button>
+              <button type="button" class="segment" data-side="B">Black</button>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button type="button" id="newGame" class="primary-button">New Game</button>
+            <button type="button" id="resetScore" class="plain-button">Reset Score</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Rules</h2>
+          <p>On your turn, move one amazon in any straight or diagonal line, like a chess queen.</p>
+          <p>From the amazon's new square, shoot one arrow in any straight or diagonal line. The arrow blocks that square forever.</p>
+          <p>If you begin your turn with no legal move, you lose.</p>
+        </section>
+
+        <section>
+          <h2>Source</h2>
+          <p>This unofficial fan-made page is inspired by Ben Orlin's <em>Math Games with Bad Drawings</em>, the book also described here as <em>欢乐数学之游戏大闯关</em>.</p>
+        </section>
+
+        <section>
+          <h2>Variants</h2>
+          <p>8 x 8 is a fast learning board. 10 x 10 is the classic setup. 16 x 16 opens the game into a larger territory battle.</p>
+        </section>
+      </aside>
+    </main>
+
+    <section id="resultModal" class="result-modal hidden" aria-live="assertive">
+      <div class="result-dialog">
+        <p>Game Over</p>
+        <h2 id="resultTitle">White Wins</h2>
+        <button type="button" id="modalNewGame">Play Again</button>
+      </div>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>

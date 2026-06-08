@@ -1,0 +1,8 @@
+[build]
+  publish = "publish"
+  command = "node scripts/sync-publish.mjs"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://your-math-games-site.example/sitemap.xml

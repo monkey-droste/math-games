@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Math Games">
+  <rect width="64" height="64" rx="10" fill="#ffd166"/>
+  <path d="M8 18h48M8 32h48M8 46h48M18 8v48M32 8v48M46 8v48" stroke="#20242d" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="18" cy="18" r="7" fill="#e15d56" stroke="#20242d" stroke-width="3"/>
+  <path d="M40 39l10 10M50 39L40 49" stroke="#4078c9" stroke-width="6" stroke-linecap="round"/>
+</svg>
