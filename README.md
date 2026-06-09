@@ -1,8 +1,7 @@
 # Math Games
 
 Math Games is an unofficial fan-made static website inspired by Ben Orlin's
-*Math Games with Bad Drawings*, the book described in this project as
-*欢乐数学之游戏大闯关*. It currently includes:
+*Math Games with Bad Drawings*. It currently includes:
 
 - Game of the Amazons
 - Ultimate Tic-Tac-Toe
