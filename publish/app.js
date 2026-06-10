@@ -61,9 +61,10 @@ const newGameButton = document.querySelector("#newGame");
 const resetScoreButton = document.querySelector("#resetScore");
 const whiteScore = document.querySelector("#whiteScore");
 const blackScore = document.querySelector("#blackScore");
-const resultModal = document.querySelector("#resultModal");
+const resultBanner = document.querySelector("#resultBanner");
+const resultKicker = document.querySelector("#resultKicker");
 const resultTitle = document.querySelector("#resultTitle");
-const modalNewGame = document.querySelector("#modalNewGame");
+const bannerNewGame = document.querySelector("#bannerNewGame");
 const boardWrap = document.querySelector(".board-wrap");
 const zoomOutButton = document.querySelector("#zoomOut");
 const zoomResetButton = document.querySelector("#zoomReset");
@@ -204,7 +205,7 @@ function resetGame(keepScore = true) {
   state.gameOver = false;
   state.turnId += 1;
   if (!keepScore) state.scores = { W: 0, B: 0 };
-  resultModal.classList.add("hidden");
+  resultBanner.className = "result-banner hidden";
   render();
   maybeCpuMove();
 }
@@ -315,8 +316,9 @@ function finishGame(winner, statusText, hintText) {
   state.lastCpuMove = null;
   state.scores[winner] += 1;
   render();
-  resultTitle.textContent = `${playerName(winner)} Wins`;
-  resultModal.classList.remove("hidden");
+  resultBanner.className = `result-banner ${playerClass(winner)}`;
+  resultKicker.textContent = "Game over";
+  resultTitle.textContent = `${playerName(winner)} Wins!`;
   statusLine.textContent = statusText;
   hintLine.textContent = hintText;
 }
@@ -487,7 +489,7 @@ resignButtons.forEach((button) => {
 });
 
 newGameButton.addEventListener("click", () => resetGame());
-modalNewGame.addEventListener("click", () => resetGame());
+bannerNewGame.addEventListener("click", () => resetGame());
 resetScoreButton.addEventListener("click", () => resetGame(false));
 zoomOutButton.addEventListener("click", () => setZoom(state.zoom - 0.1));
 zoomResetButton.addEventListener("click", () => setZoom(1));

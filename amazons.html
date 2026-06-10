@@ -71,6 +71,12 @@
           </div>
         </section>
 
+        <section id="resultBanner" class="result-banner hidden" aria-live="assertive">
+          <p id="resultKicker">Game over</p>
+          <h2 id="resultTitle">Gold Wins!</h2>
+          <button type="button" id="bannerNewGame">New Game</button>
+        </section>
+
         <div class="board-wrap">
           <div id="board" class="board" aria-label="Amazons board"></div>
         </div>
@@ -91,14 +97,6 @@
         </section>
       </aside>
     </main>
-
-    <section id="resultModal" class="result-modal hidden" aria-live="assertive">
-      <div class="result-dialog">
-        <p>Game Over</p>
-        <h2 id="resultTitle">Gold Wins</h2>
-        <button type="button" id="modalNewGame">Play Again</button>
-      </div>
-    </section>
 
     <script src="app.js"></script>
   </body>

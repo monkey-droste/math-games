@@ -324,7 +324,7 @@ select {
 .game-panel,
 .settings-panel,
 .status-card,
-.result-dialog {
+.result-banner {
   border: 3px solid var(--line);
   background: rgba(255, 250, 240, 0.9);
   box-shadow: 7px 7px 0 var(--shadow);
@@ -722,55 +722,53 @@ select {
   background: var(--select);
 }
 
-.result-dialog button {
-  min-height: 44px;
-  border: 2px solid var(--line);
-  color: var(--ink);
-  cursor: pointer;
-  font-weight: 900;
-}
-
-.result-dialog button {
-  background: var(--select);
-}
-
 .hidden {
   display: none;
 }
 
-.result-modal {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(32, 32, 38, 0.32);
-  z-index: 1000;
+.result-banner {
+  margin: 14px 0 0;
+  padding: clamp(16px, 2.8vw, 28px);
+  text-align: center;
+  transform: rotate(-0.6deg);
 }
 
-.result-modal.hidden {
+.result-banner.hidden {
   display: none;
 }
 
-.result-dialog {
-  width: min(420px, 100%);
-  padding: 24px;
-  text-align: center;
-  position: relative;
-  z-index: 1001;
+.result-banner.gold {
+  background: #fff4cf;
+  color: var(--gold-piece);
 }
 
-.result-dialog p {
+.result-banner.teal {
+  background: #dff6f4;
+  color: var(--teal-piece);
+}
+
+.result-banner p {
   margin-bottom: 4px;
   color: var(--muted);
   font-weight: 900;
   text-transform: uppercase;
 }
 
-.result-dialog h2 {
-  margin-bottom: 18px;
-  font-size: clamp(2.5rem, 9vw, 5rem);
+.result-banner h2 {
+  margin: 0 0 14px;
+  font-size: clamp(2.8rem, 9vw, 7rem);
   line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.result-banner button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 2px solid var(--line);
+  background: var(--select);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 900;
 }
 
 @media (max-width: 920px) {
