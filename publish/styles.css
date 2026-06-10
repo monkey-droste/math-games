@@ -70,24 +70,6 @@ select {
   text-decoration: none;
 }
 
-.site-nav {
-  display: flex;
-  gap: 8px;
-}
-
-.site-nav a {
-  min-height: 40px;
-  padding: 0 14px;
-  display: inline-grid;
-  place-items: center;
-  border: 2px solid var(--line);
-  background: var(--panel);
-  color: var(--ink);
-  box-shadow: 3px 3px 0 var(--shadow);
-  text-decoration: none;
-  font-weight: 900;
-}
-
 .home-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 390px);
@@ -798,10 +780,6 @@ select {
 @media (max-width: 620px) {
   .site-header {
     align-items: flex-start;
-  }
-
-  .site-nav a {
-    padding: 0 10px;
   }
 
   .game-card {
