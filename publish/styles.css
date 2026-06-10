@@ -355,16 +355,24 @@ p {
 }
 
 .game-home-link {
-  display: inline-block;
-  margin-bottom: 6px;
-  color: var(--muted);
-  font-size: 0.9rem;
+  min-height: 42px;
+  margin-bottom: 10px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow);
+  font-size: 1rem;
   font-weight: 900;
   text-decoration: none;
 }
 
 .game-home-link::before {
-  content: "< ";
+  content: "<";
+  margin-right: 7px;
 }
 
 h1 {

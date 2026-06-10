@@ -91,16 +91,24 @@ select {
 }
 
 .game-home-link {
-  display: inline-block;
-  margin-bottom: 6px;
-  color: var(--muted);
-  font-size: 0.9rem;
+  min-height: 42px;
+  margin-bottom: 10px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow);
+  font-size: 1rem;
   font-weight: 900;
   text-decoration: none;
 }
 
 .game-home-link::before {
-  content: "< ";
+  content: "<";
+  margin-right: 7px;
 }
 
 h1,
@@ -516,7 +524,7 @@ h1 {
       <section class="play-surface" aria-label="Ultimate tic-tac-toe game">
         <header class="topbar">
           <div>
-            <a class="game-home-link" href="index.html">Math Games</a>
+            <a class="game-home-link" href="index.html">Return</a>
             <h1>Ultimate Tic-Tac-Toe</h1>
           </div>
           <div class="score-strip" aria-label="Score">
@@ -527,15 +535,6 @@ h1 {
         </header>
 
         <section class="controls" aria-label="Game settings">
-          <div class="control-row variant-row">
-            <label class="compact-field">
-              <span>Variant</span>
-              <select id="variantSelect" aria-label="Variant">
-                <option selected>Classic ultimate board</option>
-              </select>
-            </label>
-          </div>
-
           <div class="control-row action-row">
             <div class="segmented" role="group" aria-label="Game mode">
               <button type="button" class="segment active" data-mode="human">Two Players</button>
@@ -582,8 +581,6 @@ h1 {
         <p>Each small board is a normal game of tic-tac-toe. The square you choose sends the next player to the matching small board.</p>
         <p>If that target board is already won or full, the next player may move on any open board.</p>
         <p>Win a small board to claim its square on the big board. Three big-board squares in a row wins the game.</p>
-        <h2>Variants</h2>
-        <p>Classic ultimate board uses nine small tic-tac-toe boards inside one big board.</p>
       </aside>
     </main>
 
