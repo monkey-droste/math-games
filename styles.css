@@ -567,7 +567,7 @@ h2 {
 }
 
 .square.selected {
-  box-shadow: inset 0 0 0 max(3px, 0.28vw) var(--select);
+  box-shadow: inset 0 0 0 max(3px, 0.28vw) var(--line);
 }
 
 .square.move-target::before {
