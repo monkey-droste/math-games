@@ -508,12 +508,38 @@ h2 {
   background: var(--dark-square);
 }
 
-.square.legal {
-  background: var(--move);
+.square.selected {
+  box-shadow: inset 0 0 0 max(3px, 0.28vw) var(--select);
 }
 
-.square.selected {
-  background: var(--select);
+.square.move-target::before,
+.square.arrow-target::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(8px, 30%, 20px);
+  aspect-ratio: 1;
+  border: max(2px, 0.18vw) solid rgba(32, 36, 45, 0.78);
+  border-radius: 50%;
+  background: rgba(255, 253, 247, 0.92);
+  box-shadow: 0 2px 0 rgba(31, 36, 45, 0.18);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.square.arrow-target::before {
+  width: clamp(14px, 42%, 28px);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  content: "->";
+  color: #386b7c;
+  font-size: clamp(0.7rem, 2.4vw, 1.2rem);
+  font-weight: 1000;
+  line-height: 1;
 }
 
 .square.last-cpu::after {
@@ -563,68 +589,49 @@ h2 {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 68%;
-  height: 68%;
+  width: 72%;
+  height: 72%;
   display: block;
-  color: var(--danger);
-  transform: translate(-50%, -50%) rotate(-28deg);
+  transform: translate(-50%, -50%) rotate(-10deg);
   z-index: 2;
+}
+
+.arrow-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.arrow-mark path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.arrow-bow {
+  stroke: #386b7c;
+  stroke-width: 6;
+}
+
+.arrow-string {
+  stroke: rgba(255, 253, 247, 0.95);
+  stroke-width: 2.5;
 }
 
 .arrow-shaft,
 .arrow-head,
 .arrow-feather {
-  position: absolute;
-  display: block;
-}
-
-.arrow-shaft {
-  left: 16%;
-  top: 47%;
-  width: 62%;
-  height: 10%;
-  background: var(--danger);
-  border-radius: 999px;
-  box-shadow: 0 0 0 2px rgba(255, 250, 240, 0.74);
+  stroke: #26313f;
+  stroke-width: 5;
 }
 
 .arrow-head {
-  right: 8%;
-  top: 34%;
-  width: 0;
-  height: 0;
-  border-top: 0.42em solid transparent;
-  border-bottom: 0.42em solid transparent;
-  border-left: 0.72em solid var(--danger);
-  filter: drop-shadow(0 0 1px rgba(255, 250, 240, 0.9));
+  stroke-width: 5.5;
 }
 
 .arrow-feather {
-  left: 8%;
-  width: 23%;
-  height: 10%;
-  background: #f08a9b;
-  border-radius: 999px 0 999px 0;
-  transform-origin: right center;
-  box-shadow: 0 0 0 1px rgba(143, 29, 44, 0.38);
-}
-
-.arrow-feather.one {
-  top: 39%;
-  transform: rotate(36deg);
-}
-
-.arrow-feather.two {
-  top: 55%;
-  transform: rotate(-36deg);
-}
-
-.arrow-feather::after {
-  content: "";
-  position: absolute;
-  inset: 35% 12%;
-  background: rgba(255, 250, 240, 0.55);
-  border-radius: 999px;
+  stroke: #e49a65;
+  stroke-width: 4;
 }
 
 .coord {
@@ -736,6 +743,7 @@ select {
   place-items: center;
   padding: 20px;
   background: rgba(32, 32, 38, 0.32);
+  z-index: 1000;
 }
 
 .result-modal.hidden {
@@ -746,6 +754,8 @@ select {
   width: min(420px, 100%);
   padding: 24px;
   text-align: center;
+  position: relative;
+  z-index: 1001;
 }
 
 .result-dialog p {

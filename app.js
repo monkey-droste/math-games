@@ -8,28 +8,33 @@ const DIRECTIONS = [
   [1, -1],  [1, 0],  [1, 1],
 ];
 
+function squareFromName(name, size) {
+  const match = /^([A-Z])(\d+)$/.exec(name);
+  return [size - Number(match[2]), match[1].charCodeAt(0) - 65];
+}
+
 const SETUPS = {
   8: {
-    amazons: 3,
-    white: [[7, 2], [7, 5], [4, 0]],
-    black: [[0, 2], [0, 5], [3, 7]],
+    amazons: 4,
+    white: ["A3", "C1", "F1", "H3"].map((name) => squareFromName(name, 8)),
+    black: ["A6", "C8", "F8", "H6"].map((name) => squareFromName(name, 8)),
   },
   10: {
     amazons: 4,
-    white: [[9, 3], [9, 6], [6, 0], [6, 9]],
-    black: [[0, 3], [0, 6], [3, 0], [3, 9]],
+    white: ["A4", "D1", "G1", "J4"].map((name) => squareFromName(name, 10)),
+    black: ["A7", "D10", "G10", "J7"].map((name) => squareFromName(name, 10)),
   },
-  16: {
-    amazons: 6,
-    white: [[15, 4], [15, 11], [12, 0], [12, 15], [9, 3], [9, 12]],
-    black: [[0, 4], [0, 11], [3, 0], [3, 15], [6, 3], [6, 12]],
+  6: {
+    amazons: 2,
+    white: ["B1", "E1"].map((name) => squareFromName(name, 6)),
+    black: ["B6", "E6"].map((name) => squareFromName(name, 6)),
   },
 };
 
 const state = {
   size: 8,
   board: [],
-  current: BLACK,
+  current: WHITE,
   mode: "human",
   humanSide: WHITE,
   phase: "select",
@@ -181,7 +186,7 @@ function isCpuTurn() {
 function resetGame(keepScore = true) {
   state.size = Number(boardSizeEl.value);
   state.board = setupBoard(state.size);
-  state.current = BLACK;
+  state.current = WHITE;
   state.phase = "select";
   state.selected = null;
   state.moveTarget = null;
@@ -204,7 +209,7 @@ function render() {
   blackScore.textContent = state.scores.B;
   sideField.classList.toggle("hidden", state.mode !== "cpu");
 
-  const smallBoard = state.size >= 16;
+  const smallBoard = state.size >= 10;
 
   for (let row = 0; row < state.size; row += 1) {
     for (let col = 0; col < state.size; col += 1) {
@@ -219,6 +224,7 @@ function render() {
 
       if (squareInList(currentSquare, state.legalTargets)) {
         square.classList.add("legal");
+        square.classList.add(state.phase === "arrow" ? "arrow-target" : "move-target");
       }
       if (sameSquare(currentSquare, state.selected) || sameSquare(currentSquare, state.moveTarget)) {
         square.classList.add("selected");
@@ -235,7 +241,15 @@ function render() {
       } else if (value === ARROW) {
         const arrow = document.createElement("span");
         arrow.className = "arrow-mark";
-        arrow.innerHTML = "<span class=\"arrow-shaft\"></span><span class=\"arrow-head\"></span><span class=\"arrow-feather one\"></span><span class=\"arrow-feather two\"></span>";
+        arrow.innerHTML = `
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <path class="arrow-bow" d="M23 9 C9 20 9 44 23 55" />
+            <path class="arrow-string" d="M23 9 L23 55" />
+            <path class="arrow-shaft" d="M18 32 H48" />
+            <path class="arrow-head" d="M41 23 L54 32 L41 41" />
+            <path class="arrow-feather" d="M18 32 L10 25 M18 32 L10 39" />
+          </svg>
+        `;
         square.append(arrow);
       }
 
@@ -282,10 +296,10 @@ function updateStatus() {
     hintLine.textContent = `Board: ${state.size} x ${state.size}, ${SETUPS[state.size].amazons} amazons each.`;
   } else if (state.phase === "move") {
     statusLine.textContent = `Move from ${coordName(state.selected.row, state.selected.col)}.`;
-    hintLine.textContent = "Choose a highlighted square. Amazons move like chess queens.";
+    hintLine.textContent = "Choose a square with a dot. Amazons move like chess queens.";
   } else {
     statusLine.textContent = `Shoot an arrow from ${coordName(state.moveTarget.row, state.moveTarget.col)}.`;
-    hintLine.textContent = "Choose a highlighted square. That square will be blocked.";
+    hintLine.textContent = "Choose a square with a small arrow mark. That square will be blocked.";
   }
 }
 
@@ -360,7 +374,7 @@ function chooseCpuMove() {
   if (!allMoves.length) return null;
 
   const shuffled = [...allMoves].sort(() => Math.random() - 0.5);
-  const sampleLimit = state.size === 16 ? 520 : state.size === 10 ? 420 : 280;
+  const sampleLimit = state.size === 10 ? 420 : state.size === 8 ? 280 : 160;
   const candidates = shuffled.slice(0, sampleLimit);
   let bestScore = -Infinity;
   let bestMoves = [];
