@@ -26,35 +26,38 @@
         </header>
 
         <section class="game-controls" aria-label="Game settings">
-          <label class="compact-field">
-            <span>Board</span>
-            <select id="boardSize">
-              <option value="8" selected>8 x 8 - 4 amazons each</option>
-              <option value="10">10 x 10 - 4 amazons each</option>
-              <option value="6">6 x 6 - 2 amazons each</option>
-            </select>
-          </label>
-
-          <div class="segmented" role="group" aria-label="Mode">
-            <button type="button" class="segment active" data-mode="human">Two Players</button>
-            <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
+          <div class="control-row variant-row">
+            <label class="compact-field">
+              <span>Variant</span>
+              <select id="boardSize">
+                <option value="8" selected>8 x 8 - 3 amazons each</option>
+                <option value="10">10 x 10 - 4 amazons each</option>
+                <option value="6">6 x 6 - 2 amazons each</option>
+              </select>
+            </label>
           </div>
 
-          <div id="sideField" class="segmented hidden" role="group" aria-label="Human side">
-            <button type="button" class="segment active" data-side="W">Play White</button>
-            <button type="button" class="segment" data-side="B">Play Black</button>
+          <div class="control-row action-row">
+            <div class="segmented" role="group" aria-label="Mode">
+              <button type="button" class="segment active" data-mode="human">Two Players</button>
+              <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
+            </div>
+
+            <div id="sideField" class="segmented hidden" role="group" aria-label="Human side">
+              <button type="button" class="segment active" data-side="W">Play White</button>
+              <button type="button" class="segment" data-side="B">Play Black</button>
+            </div>
+
+            <button type="button" id="newGame" class="text-button">New Game</button>
+            <button type="button" id="resetScore" class="text-button">Clear Score</button>
           </div>
 
-          <button type="button" id="newGame" class="icon-button" aria-label="New game" title="New game">
-            <span aria-hidden="true">↻</span>
-          </button>
-          <button type="button" id="resetScore" class="text-button">Clear Score</button>
-
-          <div class="zoom-controls" role="group" aria-label="Board zoom">
-            <button type="button" id="zoomOut" class="icon-button" aria-label="Zoom out" title="Zoom out">−</button>
-            <span id="zoomLevel" class="zoom-readout">100%</span>
-            <button type="button" id="zoomIn" class="icon-button" aria-label="Zoom in" title="Zoom in">+</button>
-            <button type="button" id="zoomReset" class="text-button">100%</button>
+          <div class="control-row zoom-row">
+            <div class="zoom-controls" role="group" aria-label="Board zoom">
+              <button type="button" id="zoomOut" class="icon-button" aria-label="Zoom out" title="Zoom out">−</button>
+              <span id="zoomLevel" class="zoom-readout">100%</span>
+              <button type="button" id="zoomReset" class="text-button">100%</button>
+            </div>
           </div>
         </section>
 
@@ -80,13 +83,8 @@
         </section>
 
         <section>
-          <h2>Source</h2>
-          <p>This unofficial fan-made page is inspired by Ben Orlin's <em>Math Games with Bad Drawings</em>.</p>
-        </section>
-
-        <section>
           <h2>Variants</h2>
-          <p>6 x 6 is a tiny two-amazon duel. 8 x 8 is a fast learning board. 10 x 10 is the classic setup.</p>
+          <p>6 x 6 is a tiny two-amazon duel. 8 x 8 is a fast three-amazon board. 10 x 10 is the classic setup.</p>
         </section>
       </aside>
     </main>

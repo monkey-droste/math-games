@@ -15,9 +15,9 @@ function squareFromName(name, size) {
 
 const SETUPS = {
   8: {
-    amazons: 4,
-    white: ["A3", "C1", "F1", "H3"].map((name) => squareFromName(name, 8)),
-    black: ["A6", "C8", "F8", "H6"].map((name) => squareFromName(name, 8)),
+    amazons: 3,
+    white: ["A2", "E1", "H3"].map((name) => squareFromName(name, 8)),
+    black: ["A6", "D8", "H7"].map((name) => squareFromName(name, 8)),
   },
   10: {
     amazons: 4,
@@ -26,8 +26,8 @@ const SETUPS = {
   },
   6: {
     amazons: 2,
-    white: ["B1", "E1"].map((name) => squareFromName(name, 6)),
-    black: ["B6", "E6"].map((name) => squareFromName(name, 6)),
+    white: ["D1", "C6"].map((name) => squareFromName(name, 6)),
+    black: ["A4", "F3"].map((name) => squareFromName(name, 6)),
   },
 };
 
@@ -65,7 +65,6 @@ const resultTitle = document.querySelector("#resultTitle");
 const modalNewGame = document.querySelector("#modalNewGame");
 const boardWrap = document.querySelector(".board-wrap");
 const zoomOutButton = document.querySelector("#zoomOut");
-const zoomInButton = document.querySelector("#zoomIn");
 const zoomResetButton = document.querySelector("#zoomReset");
 const zoomLevel = document.querySelector("#zoomLevel");
 
@@ -286,7 +285,7 @@ function fitBoardSize() {
 }
 
 function setZoom(nextZoom) {
-  state.zoom = Math.min(1.4, Math.max(0.7, Number(nextZoom.toFixed(2))));
+  state.zoom = Math.min(1, Math.max(0.6, Number(nextZoom.toFixed(2))));
   fitBoardSize();
 }
 
@@ -465,7 +464,6 @@ newGameButton.addEventListener("click", () => resetGame());
 modalNewGame.addEventListener("click", () => resetGame());
 resetScoreButton.addEventListener("click", () => resetGame(false));
 zoomOutButton.addEventListener("click", () => setZoom(state.zoom - 0.1));
-zoomInButton.addEventListener("click", () => setZoom(state.zoom + 0.1));
 zoomResetButton.addEventListener("click", () => setZoom(1));
 window.addEventListener("resize", () => {
   fitBoardSize();
