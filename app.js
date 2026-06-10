@@ -45,6 +45,7 @@ const state = {
   gameOver: false,
   scores: { W: 0, B: 0 },
   turnId: 0,
+  zoom: 1,
 };
 
 const boardEl = document.querySelector("#board");
@@ -63,6 +64,10 @@ const resultModal = document.querySelector("#resultModal");
 const resultTitle = document.querySelector("#resultTitle");
 const modalNewGame = document.querySelector("#modalNewGame");
 const boardWrap = document.querySelector(".board-wrap");
+const zoomOutButton = document.querySelector("#zoomOut");
+const zoomInButton = document.querySelector("#zoomIn");
+const zoomResetButton = document.querySelector("#zoomReset");
+const zoomLevel = document.querySelector("#zoomLevel");
 
 function opponent(player) {
   return player === WHITE ? BLACK : WHITE;
@@ -274,9 +279,15 @@ function render() {
 function fitBoardSize() {
   const border = 10;
   const available = Math.min(boardWrap.clientWidth || 820, 820);
-  const cellSize = Math.max(18, Math.floor((available - border) / state.size));
+  const cellSize = Math.max(18, Math.floor(((available - border) / state.size) * state.zoom));
   const boardSize = (cellSize * state.size) + border;
   boardEl.style.width = `${boardSize}px`;
+  zoomLevel.textContent = `${Math.round(state.zoom * 100)}%`;
+}
+
+function setZoom(nextZoom) {
+  state.zoom = Math.min(1.4, Math.max(0.7, Number(nextZoom.toFixed(2))));
+  fitBoardSize();
 }
 
 function updateStatus() {
@@ -453,6 +464,9 @@ sideButtons.forEach((button) => {
 newGameButton.addEventListener("click", () => resetGame());
 modalNewGame.addEventListener("click", () => resetGame());
 resetScoreButton.addEventListener("click", () => resetGame(false));
+zoomOutButton.addEventListener("click", () => setZoom(state.zoom - 0.1));
+zoomInButton.addEventListener("click", () => setZoom(state.zoom + 0.1));
+zoomResetButton.addEventListener("click", () => setZoom(1));
 window.addEventListener("resize", () => {
   fitBoardSize();
 });

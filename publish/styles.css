@@ -408,6 +408,64 @@ h2 {
   font-weight: 800;
 }
 
+.game-controls {
+  margin: 18px 0 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.compact-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compact-field > span {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.icon-button,
+.text-button {
+  min-height: 42px;
+  border: 2px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.icon-button {
+  width: 46px;
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.text-button {
+  padding: 0 14px;
+}
+
+.zoom-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoom-readout {
+  min-width: 54px;
+  min-height: 42px;
+  display: inline-grid;
+  place-items: center;
+  border: 2px solid var(--line);
+  background: var(--panel);
+  color: var(--muted);
+  font-weight: 900;
+}
+
 .status-card {
   min-height: 76px;
   margin: 16px 0;
@@ -454,6 +512,8 @@ h2 {
 .board-wrap {
   width: min(100%, 820px);
   margin: 0 auto;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .board {
@@ -666,14 +726,16 @@ select {
 }
 
 .segmented {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: inline-grid;
+  grid-auto-flow: column;
   border: 2px solid var(--line);
   background: var(--panel);
 }
 
 .segment {
+  min-width: 92px;
   min-height: 42px;
+  padding: 0 14px;
   border: 0;
   background: transparent;
   color: var(--ink);
@@ -689,14 +751,6 @@ select {
   background: var(--select);
 }
 
-.button-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.primary-button,
-.plain-button,
 .result-dialog button {
   min-height: 44px;
   border: 2px solid var(--line);
@@ -705,13 +759,8 @@ select {
   font-weight: 900;
 }
 
-.primary-button,
 .result-dialog button {
   background: var(--select);
-}
-
-.plain-button {
-  background: var(--panel);
 }
 
 .hidden {
