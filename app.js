@@ -55,6 +55,7 @@ const hintLine = document.querySelector("#hintLine");
 const turnBadge = document.querySelector("#turnBadge");
 const modeButtons = document.querySelectorAll("[data-mode]");
 const sideButtons = document.querySelectorAll("[data-side]");
+const resignButtons = document.querySelectorAll("[data-resign]");
 const sideField = document.querySelector("#sideField");
 const newGameButton = document.querySelector("#newGame");
 const resetScoreButton = document.querySelector("#resetScore");
@@ -305,6 +306,21 @@ function updateStatus() {
   }
 }
 
+function finishGame(winner, statusText, hintText) {
+  state.gameOver = true;
+  state.phase = "select";
+  state.selected = null;
+  state.moveTarget = null;
+  state.legalTargets = [];
+  state.lastCpuMove = null;
+  state.scores[winner] += 1;
+  render();
+  resultTitle.textContent = `${playerName(winner)} Wins`;
+  resultModal.classList.remove("hidden");
+  statusLine.textContent = statusText;
+  hintLine.textContent = hintText;
+}
+
 function endTurn() {
   state.phase = "select";
   state.selected = null;
@@ -315,13 +331,11 @@ function endTurn() {
 
   if (!hasLegalMove(state.current)) {
     const winner = opponent(state.current);
-    state.gameOver = true;
-    state.scores[winner] += 1;
-    render();
-    resultTitle.textContent = `${playerName(winner)} Wins`;
-    resultModal.classList.remove("hidden");
-    statusLine.textContent = `${playerName(state.current)} has no legal moves.`;
-    hintLine.textContent = `${playerName(winner)} wins the game.`;
+    finishGame(
+      winner,
+      `${playerName(state.current)} has no legal moves.`,
+      `${playerName(winner)} wins the game.`,
+    );
     return;
   }
 
@@ -375,6 +389,16 @@ function handleSquareClick(row, col) {
     state.board[row][col] = ARROW;
     endTurn();
   }
+}
+
+function resign(player) {
+  if (state.gameOver) return;
+  const winner = opponent(player);
+  finishGame(
+    winner,
+    `${playerName(player)} resigns.`,
+    `${playerName(winner)} wins the game.`,
+  );
 }
 
 function chooseCpuMove() {
@@ -456,6 +480,10 @@ sideButtons.forEach((button) => {
     state.humanSide = button.dataset.side;
     resetGame();
   });
+});
+
+resignButtons.forEach((button) => {
+  button.addEventListener("click", () => resign(button.dataset.resign));
 });
 
 newGameButton.addEventListener("click", () => resetGame());
