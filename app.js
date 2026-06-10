@@ -213,8 +213,6 @@ function render() {
   blackScore.textContent = state.scores.B;
   sideField.classList.toggle("hidden", state.mode !== "cpu");
 
-  const smallBoard = state.size >= 10;
-
   for (let row = 0; row < state.size; row += 1) {
     for (let col = 0; col < state.size; col += 1) {
       const square = document.createElement("button");
@@ -226,9 +224,12 @@ function render() {
       square.dataset.col = String(col);
       square.setAttribute("aria-label", coordName(row, col));
 
+      if (value === ARROW) {
+        square.classList.add("blocked");
+      }
       if (squareInList(currentSquare, state.legalTargets)) {
         square.classList.add("legal");
-        square.classList.add(state.phase === "arrow" ? "arrow-target" : "move-target");
+        square.classList.add(state.phase === "arrow" ? "arrow-target" : "move-target", state.current === WHITE ? "white-turn" : "black-turn");
       }
       if (sameSquare(currentSquare, state.selected) || sameSquare(currentSquare, state.moveTarget)) {
         square.classList.add("selected");
@@ -240,21 +241,7 @@ function render() {
       if (value === WHITE || value === BLACK) {
         const piece = document.createElement("span");
         piece.className = `piece ${value === WHITE ? "white" : "black"}`;
-        piece.textContent = smallBoard ? value : value === WHITE ? "W" : "B";
         square.append(piece);
-      } else if (value === ARROW) {
-        const arrow = document.createElement("span");
-        arrow.className = "arrow-mark";
-        arrow.innerHTML = `
-          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-            <path class="arrow-bow" d="M23 9 C9 20 9 44 23 55" />
-            <path class="arrow-string" d="M23 9 L23 55" />
-            <path class="arrow-shaft" d="M18 32 H48" />
-            <path class="arrow-head" d="M41 23 L54 32 L41 41" />
-            <path class="arrow-feather" d="M18 32 L10 25 M18 32 L10 39" />
-          </svg>
-        `;
-        square.append(arrow);
       }
 
       if (row === state.size - 1 || col === 0) {
@@ -309,7 +296,7 @@ function updateStatus() {
     hintLine.textContent = "Choose a square with a dot. Amazons move like chess queens.";
   } else {
     statusLine.textContent = `Shoot an arrow from ${coordName(state.moveTarget.row, state.moveTarget.col)}.`;
-    hintLine.textContent = "Choose a square with a small arrow mark. That square will be blocked.";
+    hintLine.textContent = "Choose a square with a red dot. That square will be blocked.";
   }
 }
 
@@ -357,6 +344,12 @@ function handleSquareClick(row, col) {
   }
 
   if (state.phase === "move") {
+    if (value === state.current) {
+      state.selected = square;
+      state.legalTargets = raySquares(state.board, square);
+      render();
+      return;
+    }
     if (!squareInList(square, state.legalTargets)) {
       statusLine.textContent = "That square is blocked or not in a queen line.";
       return;

@@ -563,12 +563,17 @@ h2 {
   background: var(--dark-square);
 }
 
+.square.blocked {
+  background: #fffdf7;
+  box-shadow: inset 0 0 0 2px rgba(32, 36, 45, 0.18);
+  cursor: not-allowed;
+}
+
 .square.selected {
   box-shadow: inset 0 0 0 max(3px, 0.28vw) var(--select);
 }
 
-.square.move-target::before,
-.square.arrow-target::before {
+.square.move-target::before {
   content: "";
   position: absolute;
   left: 50%;
@@ -584,17 +589,26 @@ h2 {
   z-index: 3;
 }
 
+.square.move-target.black-turn::before {
+  border-color: var(--white-piece);
+  background: var(--black-piece);
+  box-shadow: 0 0 0 2px rgba(32, 36, 45, 0.32), 0 2px 0 rgba(31, 36, 45, 0.18);
+}
+
 .square.arrow-target::before {
-  width: clamp(14px, 42%, 28px);
-  border: 0;
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
-  content: "->";
-  color: #386b7c;
-  font-size: clamp(0.7rem, 2.4vw, 1.2rem);
-  font-weight: 1000;
-  line-height: 1;
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(8px, 28%, 18px);
+  aspect-ratio: 1;
+  border: max(2px, 0.16vw) solid rgba(255, 253, 247, 0.95);
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 2px 0 rgba(31, 36, 45, 0.2);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
 }
 
 .square.last-cpu::after {
@@ -625,7 +639,6 @@ h2 {
   border-radius: 50%;
   border: max(2px, 0.18vw) solid var(--line);
   box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.14), 0 2px 0 rgba(0, 0, 0, 0.22);
-  font-size: clamp(0.9rem, 3vw, 2rem);
   transform: translate(-50%, -50%);
   z-index: 2;
 }
@@ -638,55 +651,6 @@ h2 {
 .piece.black {
   background: var(--black-piece);
   color: var(--white-piece);
-}
-
-.arrow-mark {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 72%;
-  height: 72%;
-  display: block;
-  transform: translate(-50%, -50%) rotate(-10deg);
-  z-index: 2;
-}
-
-.arrow-mark svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.arrow-mark path {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.arrow-bow {
-  stroke: #386b7c;
-  stroke-width: 6;
-}
-
-.arrow-string {
-  stroke: rgba(255, 253, 247, 0.95);
-  stroke-width: 2.5;
-}
-
-.arrow-shaft,
-.arrow-head,
-.arrow-feather {
-  stroke: #26313f;
-  stroke-width: 5;
-}
-
-.arrow-head {
-  stroke-width: 5.5;
-}
-
-.arrow-feather {
-  stroke: #e49a65;
-  stroke-width: 4;
 }
 
 .coord {
