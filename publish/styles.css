@@ -7,8 +7,8 @@
   --line: #20242d;
   --light-square: #f4dc9a;
   --dark-square: #4f9c9a;
-  --white-piece: #fffdf4;
-  --black-piece: #1f2328;
+  --gold-piece: #e9bd63;
+  --teal-piece: #317f7e;
   --move: #94d66f;
   --select: #ffd166;
   --arrow: #3d405b;
@@ -180,8 +180,8 @@ select {
   aspect-ratio: 1;
   border: 3px solid var(--line);
   border-radius: 50%;
-  background: var(--black-piece);
-  box-shadow: 0 0 0 9px var(--white-piece);
+  background: var(--teal-piece);
+  box-shadow: 0 0 0 9px var(--gold-piece);
 }
 
 .game-directory {
@@ -259,8 +259,8 @@ select {
   aspect-ratio: 1;
   border: 3px solid var(--line);
   border-radius: 50%;
-  background: var(--black-piece);
-  box-shadow: 0 0 0 8px var(--white-piece);
+  background: var(--teal-piece);
+  box-shadow: 0 0 0 8px var(--gold-piece);
 }
 
 .ttt-icon {
@@ -501,14 +501,12 @@ h2 {
   font-weight: 1000;
 }
 
-.turn-badge.white {
-  background: var(--white-piece);
-  color: var(--black-piece);
+.turn-badge.gold {
+  background: var(--gold-piece);
 }
 
-.turn-badge.black {
-  background: var(--black-piece);
-  color: var(--white-piece);
+.turn-badge.teal {
+  background: var(--teal-piece);
 }
 
 #statusLine {
@@ -564,8 +562,7 @@ h2 {
 }
 
 .square.blocked {
-  background: #fffdf7;
-  box-shadow: inset 0 0 0 2px rgba(32, 36, 45, 0.18);
+  background: var(--panel);
   cursor: not-allowed;
 }
 
@@ -580,19 +577,17 @@ h2 {
   top: 50%;
   width: clamp(8px, 30%, 20px);
   aspect-ratio: 1;
-  border: max(2px, 0.18vw) solid rgba(32, 36, 45, 0.78);
+  border: 0;
   border-radius: 50%;
-  background: rgba(255, 253, 247, 0.92);
-  box-shadow: 0 2px 0 rgba(31, 36, 45, 0.18);
+  background: var(--gold-piece);
+  box-shadow: none;
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 3;
 }
 
-.square.move-target.black-turn::before {
-  border-color: var(--white-piece);
-  background: var(--black-piece);
-  box-shadow: 0 0 0 2px rgba(32, 36, 45, 0.32), 0 2px 0 rgba(31, 36, 45, 0.18);
+.square.move-target.teal-turn::before {
+  background: var(--teal-piece);
 }
 
 .square.arrow-target::before {
@@ -602,10 +597,10 @@ h2 {
   top: 50%;
   width: clamp(8px, 28%, 18px);
   aspect-ratio: 1;
-  border: max(2px, 0.16vw) solid rgba(255, 253, 247, 0.95);
+  border: 0;
   border-radius: 50%;
   background: var(--danger);
-  box-shadow: 0 2px 0 rgba(31, 36, 45, 0.2);
+  box-shadow: none;
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 3;
@@ -637,20 +632,18 @@ h2 {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: max(2px, 0.18vw) solid var(--line);
+  border: max(3px, 0.22vw) solid var(--line);
   box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.14), 0 2px 0 rgba(0, 0, 0, 0.22);
   transform: translate(-50%, -50%);
   z-index: 2;
 }
 
-.piece.white {
-  background: var(--white-piece);
-  color: var(--black-piece);
+.piece.gold {
+  background: var(--gold-piece);
 }
 
-.piece.black {
-  background: var(--black-piece);
-  color: var(--white-piece);
+.piece.teal {
+  background: var(--teal-piece);
 }
 
 .coord {
@@ -826,7 +819,7 @@ select {
 
   .amazons-icon span {
     width: 34px;
-    box-shadow: 0 0 0 6px var(--white-piece);
+    box-shadow: 0 0 0 6px var(--gold-piece);
   }
 
   .game-card strong {

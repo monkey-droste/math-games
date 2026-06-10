@@ -73,7 +73,11 @@ function opponent(player) {
 }
 
 function playerName(player) {
-  return player === WHITE ? "White" : "Black";
+  return player === WHITE ? "Gold" : "Teal";
+}
+
+function playerClass(player) {
+  return player === WHITE ? "gold" : "teal";
 }
 
 function coordName(row, col) {
@@ -176,7 +180,7 @@ function applyMove(move, player) {
 
 function lastCpuMarked(square) {
   if (!state.lastCpuMove) return false;
-  return sameSquare(square, state.lastCpuMove.end) || sameSquare(square, state.lastCpuMove.arrow);
+  return sameSquare(square, state.lastCpuMove.end);
 }
 
 function squareInList(square, list) {
@@ -229,7 +233,7 @@ function render() {
       }
       if (squareInList(currentSquare, state.legalTargets)) {
         square.classList.add("legal");
-        square.classList.add(state.phase === "arrow" ? "arrow-target" : "move-target", state.current === WHITE ? "white-turn" : "black-turn");
+        square.classList.add(state.phase === "arrow" ? "arrow-target" : "move-target", `${playerClass(state.current)}-turn`);
       }
       if (sameSquare(currentSquare, state.selected) || sameSquare(currentSquare, state.moveTarget)) {
         square.classList.add("selected");
@@ -240,7 +244,7 @@ function render() {
 
       if (value === WHITE || value === BLACK) {
         const piece = document.createElement("span");
-        piece.className = `piece ${value === WHITE ? "white" : "black"}`;
+        piece.className = `piece ${playerClass(value)}`;
         square.append(piece);
       }
 
@@ -277,8 +281,9 @@ function setZoom(nextZoom) {
 }
 
 function updateStatus() {
-  turnBadge.textContent = state.current;
-  turnBadge.className = `turn-badge ${state.current === WHITE ? "white" : "black"}`;
+  turnBadge.textContent = "";
+  turnBadge.className = `turn-badge ${playerClass(state.current)}`;
+  turnBadge.setAttribute("aria-label", `${playerName(state.current)} turn`);
 
   if (state.gameOver) return;
 
@@ -293,10 +298,10 @@ function updateStatus() {
     hintLine.textContent = `Board: ${state.size} x ${state.size}, ${SETUPS[state.size].amazons} amazons each.`;
   } else if (state.phase === "move") {
     statusLine.textContent = `Move from ${coordName(state.selected.row, state.selected.col)}.`;
-    hintLine.textContent = "Choose a square with a dot. Amazons move like chess queens.";
+    hintLine.textContent = `Choose a square with a ${playerName(state.current).toLowerCase()} dot. Amazons move like chess queens.`;
   } else {
     statusLine.textContent = `Shoot an arrow from ${coordName(state.moveTarget.row, state.moveTarget.col)}.`;
-    hintLine.textContent = "Choose a square with a red dot. That square will be blocked.";
+    hintLine.textContent = "Choose a square with a red dot. That square will disappear.";
   }
 }
 
@@ -351,7 +356,7 @@ function handleSquareClick(row, col) {
       return;
     }
     if (!squareInList(square, state.legalTargets)) {
-      statusLine.textContent = "That square is blocked or not in a queen line.";
+      statusLine.textContent = "That square is unavailable or not in a queen line.";
       return;
     }
     state.board = movePieceOn(state.board, state.selected, square);

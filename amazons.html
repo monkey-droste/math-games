@@ -20,8 +20,8 @@
             <h1>Game of the Amazons</h1>
           </div>
           <div class="score-card" aria-label="Score">
-            <div><span id="whiteScore">0</span><small>White</small></div>
-            <div><span id="blackScore">0</span><small>Black</small></div>
+            <div><span id="whiteScore">0</span><small>Gold</small></div>
+            <div><span id="blackScore">0</span><small>Teal</small></div>
           </div>
         </header>
 
@@ -44,8 +44,8 @@
             </div>
 
             <div id="sideField" class="segmented hidden" role="group" aria-label="Human side">
-              <button type="button" class="segment active" data-side="W">Play White</button>
-              <button type="button" class="segment" data-side="B">Play Black</button>
+              <button type="button" class="segment active" data-side="W">Play Gold</button>
+              <button type="button" class="segment" data-side="B">Play Teal</button>
             </div>
 
             <button type="button" id="newGame" class="text-button">New Game</button>
@@ -62,9 +62,9 @@
         </section>
 
         <section class="status-card" aria-live="polite">
-          <div id="turnBadge" class="turn-badge white">W</div>
+          <div id="turnBadge" class="turn-badge gold" aria-label="Gold turn"></div>
           <div>
-            <p id="statusLine">White starts. Choose an amazon.</p>
+            <p id="statusLine">Gold starts. Choose an amazon.</p>
             <p id="hintLine">Move like a queen, then shoot an arrow like a queen.</p>
           </div>
         </section>
@@ -77,8 +77,9 @@
       <aside class="settings-panel" aria-label="Rules">
         <section>
           <h2>Rules</h2>
+          <p>Gold moves first, then Teal. Each side controls the amazons in its own board color.</p>
           <p>On your turn, move one amazon in any straight or diagonal line, like a chess queen.</p>
-          <p>From the amazon's new square, shoot one arrow in any straight or diagonal line. The arrow blocks that square forever.</p>
+          <p>From the amazon's new square, shoot one arrow in any straight or diagonal line. That square disappears from the board.</p>
           <p>If you begin your turn with no legal move, you lose.</p>
         </section>
 
@@ -92,7 +93,7 @@
     <section id="resultModal" class="result-modal hidden" aria-live="assertive">
       <div class="result-dialog">
         <p>Game Over</p>
-        <h2 id="resultTitle">White Wins</h2>
+        <h2 id="resultTitle">Gold Wins</h2>
         <button type="button" id="modalNewGame">Play Again</button>
       </div>
     </section>
