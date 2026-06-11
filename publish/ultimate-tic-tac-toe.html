@@ -422,11 +422,13 @@ h1 {
   box-shadow: inset 0 0 0 var(--last-frame-size, 5px) var(--last);
 }
 
-.cell.forced-target {
+.cell.forced-target,
+.cell.drop-target {
   box-shadow: inset 0 0 0 var(--target-frame-size, 5px) var(--active);
 }
 
-.cell.forced-target::before {
+.cell.forced-target::before,
+.cell.drop-target::before {
   content: none;
 }
 
@@ -440,6 +442,47 @@ h1 {
 
 .cell.o {
   color: var(--o);
+}
+
+.cell.drop-landing {
+  color: transparent;
+}
+
+.drop-piece {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  font-size: var(--cell-mark-size, 2.5rem);
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateY(var(--drop-start, -120%));
+  animation: drop-piece 360ms cubic-bezier(0.24, 0.88, 0.32, 1.16) forwards;
+}
+
+.drop-piece.x {
+  color: var(--x);
+}
+
+.drop-piece.o {
+  color: var(--o);
+}
+
+@keyframes drop-piece {
+  0% {
+    opacity: 0.35;
+    transform: translateY(var(--drop-start, -120%)) scale(0.94);
+  }
+  72% {
+    opacity: 1;
+    transform: translateY(8%) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .mini-board.won::after,
@@ -472,6 +515,44 @@ h1 {
   box-sizing: border-box;
   line-height: 1;
   padding-bottom: 0.12em;
+}
+
+.mini-board.shared-drawn::after {
+  content: "";
+  border-color: var(--ink);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(214, 64, 69, 0.3) 0%,
+      rgba(214, 64, 69, 0.3) 50%,
+      rgba(31, 122, 140, 0.3) 50%,
+      rgba(31, 122, 140, 0.3) 100%
+    );
+}
+
+.mini-board.shared-drawn::before {
+  content: "=";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(
+      180deg,
+      var(--x) 0%,
+      var(--x) 50%,
+      var(--o) 50%,
+      var(--o) 100%
+    );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-size: var(--meta-mark-size, 7.4rem);
+  font-weight: 1000;
+  line-height: 1;
+  padding-bottom: 0.12em;
+  pointer-events: none;
 }
 
 .rules-panel {
@@ -672,6 +753,7 @@ const state = {
   mode: "human",
   human: "X",
   scores: { X: 0, O: 0, D: 0 },
+  dropAnimation: null,
   zoom: 1,
 };
 
@@ -895,7 +977,10 @@ function renderBoard() {
     mini.dataset.board = String(boardIndex);
     if (playable.includes(boardIndex)) mini.classList.add("playable");
     if (freeChoice && playable.includes(boardIndex)) mini.classList.add("free-choice");
-    if (state.meta[boardIndex] === "D") mini.classList.add("drawn");
+    if (state.meta[boardIndex] === "D") {
+      mini.classList.add("drawn");
+      if (state.variant === "shared") mini.classList.add("shared-drawn");
+    }
     if (state.meta[boardIndex] === "X" || state.meta[boardIndex] === "O") {
       mini.classList.add("won", state.meta[boardIndex].toLowerCase());
     }
@@ -913,9 +998,22 @@ function renderBoard() {
         cell.classList.add("last-move");
         cell.setAttribute("title", "Last move");
       }
-      if (state.variant === "dual" && state.forcedCell === cellIndex && canPlaceMark(boardIndex, cellIndex)) {
+      if (!state.dropAnimation && state.variant === "dual" && state.forcedCell === cellIndex && canPlaceMark(boardIndex, cellIndex)) {
         cell.classList.add("forced-target");
         cell.setAttribute("title", `Dual target: square ${cellIndex + 1}`);
+      }
+      if (!state.dropAnimation && state.variant === "drop3" && canPlaceMark(boardIndex, cellIndex)) {
+        cell.classList.add("drop-target");
+        cell.setAttribute("title", `Drop target: square ${cellIndex + 1}`);
+      }
+      if (state.dropAnimation?.boardIndex === boardIndex && state.dropAnimation?.cellIndex === cellIndex) {
+        const row = Math.floor(cellIndex / 3);
+        const falling = document.createElement("span");
+        falling.className = `drop-piece ${state.dropAnimation.mark.toLowerCase()}`;
+        falling.textContent = state.dropAnimation.mark;
+        falling.style.setProperty("--drop-start", `${-(row + 1) * 100}%`);
+        cell.classList.add("drop-landing");
+        cell.append(falling);
       }
       cell.disabled = !canPlay(boardIndex, cellIndex);
       mini.append(cell);
@@ -926,6 +1024,7 @@ function renderBoard() {
 }
 
 function canPlay(boardIndex, cellIndex) {
+  if (state.dropAnimation) return false;
   if (state.mode === "ai" && state.current !== state.human) return false;
   return canPlaceMark(boardIndex, cellIndex);
 }
@@ -940,8 +1039,7 @@ function canPlaceMark(boardIndex, cellIndex) {
   }
 
   if (state.variant === "drop3") {
-    return !state.boards[boardIndex][cellIndex] &&
-      dropCellIndex(state.boards[boardIndex], cellIndex % 3) !== null;
+    return cellIndex === dropCellIndex(state.boards[boardIndex], cellIndex % 3);
   }
 
   if (state.boards[boardIndex][cellIndex]) return false;
@@ -1010,6 +1108,10 @@ function placeMark(boardIndex, cellIndex) {
   const placed = applyMarkToSnapshot(state, { boardIndex, cellIndex }, player);
   if (!placed) return false;
   state.lastMove = placed;
+  const dropAnimation = state.variant === "drop3"
+    ? { boardIndex: placed.boardIndex, cellIndex: placed.cellIndex, mark: player, id: Date.now() }
+    : null;
+  state.dropAnimation = dropAnimation;
 
   if (state.variant === "dual") {
     state.forcedCell = placed.boardIndex;
@@ -1035,7 +1137,17 @@ function placeMark(boardIndex, cellIndex) {
   }
 
   refresh();
-  maybeComputerMove();
+  if (dropAnimation) {
+    window.setTimeout(() => {
+      if (state.dropAnimation?.id === dropAnimation.id) {
+        state.dropAnimation = null;
+        refresh();
+      }
+      maybeComputerMove();
+    }, 380);
+  } else {
+    maybeComputerMove();
+  }
   return true;
 }
 
@@ -1203,6 +1315,7 @@ function resetGame(keepScores = true) {
   state.nextBoard = null;
   state.forcedCell = null;
   state.lastMove = null;
+  state.dropAnimation = null;
   state.gameOver = false;
   state.winner = "";
   if (!keepScores) state.scores = { X: 0, O: 0, D: 0 };
