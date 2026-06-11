@@ -12,6 +12,13 @@ const files = [
   "app.js",
   "ultimate-tic-tac-toe.html",
   "dots-and-boxes.html",
+  "game-page.css",
+  "order-and-chaos.html",
+  "order-and-chaos.js",
+  "quantum-tic-tac-toe.html",
+  "quantum-tic-tac-toe.js",
+  "three-d-tic-tac-toe.html",
+  "three-d-tic-tac-toe.js",
 ];
 
 const publicUrl = (process.env.PUBLIC_URL || "https://monkey-droste.github.io/math-games")
@@ -33,7 +40,15 @@ await writeFile(
   `User-agent: *\nAllow: /\nSitemap: ${publicUrl}/sitemap.xml\n`,
 );
 
-const pages = ["", "amazons.html", "ultimate-tic-tac-toe.html", "dots-and-boxes.html"];
+const pages = [
+  "",
+  "amazons.html",
+  "ultimate-tic-tac-toe.html",
+  "dots-and-boxes.html",
+  "order-and-chaos.html",
+  "quantum-tic-tac-toe.html",
+  "three-d-tic-tac-toe.html",
+];
 const today = new Date().toISOString().slice(0, 10);
 const urls = pages
   .map((page) => {

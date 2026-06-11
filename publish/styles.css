@@ -348,6 +348,134 @@ select {
   z-index: 2;
 }
 
+.order-icon {
+  background:
+    linear-gradient(var(--line), var(--line)) 50% 20% / 76% 3px no-repeat,
+    linear-gradient(var(--line), var(--line)) 50% 40% / 76% 3px no-repeat,
+    linear-gradient(var(--line), var(--line)) 50% 60% / 76% 3px no-repeat,
+    linear-gradient(var(--line), var(--line)) 50% 80% / 76% 3px no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 20% 50% / 3px 76% no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 40% 50% / 3px 76% no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 60% 50% / 3px 76% no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 80% 50% / 3px 76% no-repeat,
+    var(--panel);
+}
+
+.order-icon::before {
+  content: "X";
+  position: absolute;
+  left: 12px;
+  top: 8px;
+  color: var(--danger);
+  font-size: 2.2rem;
+  font-weight: 1000;
+  transform: rotate(-8deg);
+}
+
+.order-icon::after {
+  content: "O";
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  color: var(--blue);
+  font-size: 2.2rem;
+  font-weight: 1000;
+  transform: rotate(7deg);
+}
+
+.order-icon span {
+  position: absolute;
+  inset: 38px 8px auto;
+  height: 7px;
+  background: var(--green);
+  transform: rotate(-35deg);
+}
+
+.quantum-icon {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 25% 26%, var(--danger) 0 9px, transparent 10px),
+    radial-gradient(circle at 72% 28%, var(--blue) 0 9px, transparent 10px),
+    radial-gradient(circle at 50% 72%, var(--danger) 0 9px, transparent 10px),
+    var(--panel);
+}
+
+.quantum-icon::before,
+.quantum-icon::after,
+.quantum-icon span {
+  content: "";
+  position: absolute;
+  height: 4px;
+  background: var(--line);
+  transform-origin: left center;
+}
+
+.quantum-icon::before {
+  left: 25%;
+  top: 27%;
+  width: 48%;
+  transform: rotate(4deg);
+}
+
+.quantum-icon::after {
+  left: 30%;
+  top: 34%;
+  width: 50%;
+  transform: rotate(58deg);
+}
+
+.quantum-icon span {
+  left: 50%;
+  top: 70%;
+  width: 32%;
+  transform: rotate(-62deg);
+}
+
+.three-d-icon {
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.three-d-icon::before,
+.three-d-icon::after,
+.three-d-icon span {
+  content: "";
+  position: absolute;
+  width: 42px;
+  aspect-ratio: 1;
+  border: 3px solid var(--line);
+  background:
+    linear-gradient(var(--line), var(--line)) 50% 33% / 100% 2px no-repeat,
+    linear-gradient(var(--line), var(--line)) 50% 66% / 100% 2px no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 33% 50% / 2px 100% no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 66% 50% / 2px 100% no-repeat,
+    rgba(255, 250, 240, 0.88);
+}
+
+.three-d-icon::before {
+  left: 13px;
+  top: 12px;
+  box-shadow: 7px 7px 0 rgba(36, 120, 166, 0.28);
+}
+
+.three-d-icon::after {
+  right: 11px;
+  bottom: 11px;
+  box-shadow: -7px -7px 0 rgba(217, 79, 69, 0.26);
+}
+
+.three-d-icon span {
+  left: 22px;
+  top: 22px;
+  background:
+    linear-gradient(var(--line), var(--line)) 50% 33% / 100% 2px no-repeat,
+    linear-gradient(var(--line), var(--line)) 50% 66% / 100% 2px no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 33% 50% / 2px 100% no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 66% 50% / 2px 100% no-repeat,
+    rgba(239, 200, 74, 0.72);
+  z-index: 2;
+}
+
 .home-band {
   margin-top: 20px;
   display: grid;

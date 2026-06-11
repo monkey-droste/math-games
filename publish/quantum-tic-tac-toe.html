@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quantum Tic-Tac-Toe | Math Games</title>
+    <meta
+      name="description"
+      content="Play Quantum Tic-Tac-Toe in Math Games, an unofficial fan-made site inspired by Ben Orlin's Math Games with Bad Drawings."
+    >
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="game-page.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="play-surface" aria-label="Quantum tic-tac-toe game">
+        <header class="topbar">
+          <div>
+            <a class="game-home-link" href="./">Return</a>
+            <h1>Quantum Tic-Tac-Toe</h1>
+          </div>
+          <div class="score-strip" aria-label="Score">
+            <div><span id="xScore">0</span><small>X</small></div>
+            <div><span id="drawScore">0</span><small>Draw</small></div>
+            <div><span id="oScore">0</span><small>O</small></div>
+          </div>
+        </header>
+
+        <section class="controls" aria-label="Game settings">
+          <div class="control-row">
+            <div class="segmented" role="group" aria-label="Game mode">
+              <button type="button" class="segment active" data-mode="human">Two Players</button>
+              <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
+            </div>
+            <div id="sideChoice" class="segmented hidden" role="group" aria-label="Side choice">
+              <button type="button" class="segment active" data-human="X">Play X</button>
+              <button type="button" class="segment" data-human="O">Play O</button>
+            </div>
+          </div>
+          <div class="control-row">
+            <button type="button" id="newGame" class="text-button">New Game</button>
+            <button type="button" class="text-button" data-resign="X">X Resigns</button>
+            <button type="button" class="text-button" data-resign="O">O Resigns</button>
+            <button type="button" id="clearScore" class="text-button">Clear Score</button>
+          </div>
+        </section>
+
+        <section class="status-panel" aria-live="polite">
+          <div class="turn-token x" id="turnToken">X</div>
+          <div>
+            <p id="statusLine">X starts. Choose two different squares for a quantum move.</p>
+            <p id="hintLine">A linked pair is a spooky mark. A loop forces the board to collapse.</p>
+          </div>
+        </section>
+
+        <section id="cyclePanel" class="cycle-panel hidden" aria-live="assertive">
+          <p id="cycleText">A loop appeared. Choose which square becomes real.</p>
+          <div id="cycleActions" class="cycle-actions"></div>
+        </section>
+
+        <section id="resultBanner" class="result-banner hidden" aria-live="assertive">
+          <p id="resultKicker">Game over</p>
+          <h2 id="resultTitle">X Wins!</h2>
+          <button type="button" id="bannerNewGame">New Game</button>
+        </section>
+
+        <div class="board-viewport">
+          <div class="quantum-wrap">
+            <svg id="lineLayer" class="quantum-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <div id="board" class="game-board grid-board quantum-board" aria-label="Quantum tic-tac-toe board"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="rules-panel" aria-label="Rules">
+        <h2>Rules</h2>
+        <ol>
+          <li>Each turn places two linked copies of the current mark in two different open squares.</li>
+          <li>The little number on a mark tells which turn created that quantum pair.</li>
+          <li>If the links form a loop, the newest pair collapses: choose one end, and the forced chain makes real Xs and Os.</li>
+          <li>After collapse, ordinary tic-tac-toe lines decide the winner. If both players finish lines, the earlier completed line wins.</li>
+        </ol>
+      </aside>
+    </main>
+
+    <script src="quantum-tic-tac-toe.js"></script>
+  </body>
+</html>
