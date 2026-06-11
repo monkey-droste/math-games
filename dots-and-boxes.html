@@ -220,6 +220,23 @@ h1 {
   font-weight: 900;
 }
 
+.zoom-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoom-readout {
+  min-width: 54px;
+  min-height: 42px;
+  display: inline-grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--muted);
+  font-weight: 900;
+}
+
 .hidden {
   display: none;
 }
@@ -522,6 +539,14 @@ h1 {
             <button type="button" class="text-button" data-resign="B">Blue Resigns</button>
             <button type="button" id="clearScore" class="text-button">Clear Score</button>
           </div>
+
+          <div class="control-row zoom-row">
+            <div class="zoom-controls" role="group" aria-label="Board zoom">
+              <button type="button" id="zoomOut" class="icon-button" aria-label="Zoom out" title="Zoom out">−</button>
+              <span id="zoomLevel" class="zoom-readout">100%</span>
+              <button type="button" id="zoomReset" class="text-button">100%</button>
+            </div>
+          </div>
         </section>
 
         <section class="status-panel" aria-live="polite">
@@ -570,6 +595,7 @@ const state = {
   lastEdge: null,
   gameOver: false,
   turnId: 0,
+  zoom: 1,
 };
 
 const boardEl = document.querySelector("#board");
@@ -590,6 +616,9 @@ const bannerNewGameButton = document.querySelector("#bannerNewGame");
 const resultBanner = document.querySelector("#resultBanner");
 const resultKicker = document.querySelector("#resultKicker");
 const resultTitle = document.querySelector("#resultTitle");
+const zoomOutButton = document.querySelector("#zoomOut");
+const zoomResetButton = document.querySelector("#zoomReset");
+const zoomLevel = document.querySelector("#zoomLevel");
 
 function opponent(player) {
   return player === "R" ? "B" : "R";
@@ -714,9 +743,25 @@ function sameEdge(a, b) {
   return Boolean(a && b && a.type === b.type && a.row === b.row && a.col === b.col);
 }
 
+function updateBoardZoom() {
+  const boxSize = Math.round(76 * state.zoom);
+  const dotSize = Math.max(10, Math.round(16 * state.zoom));
+  const edgeSize = Math.max(9, Math.round(14 * state.zoom));
+  boardEl.style.setProperty("--box", `${boxSize}px`);
+  boardEl.style.setProperty("--dot", `${dotSize}px`);
+  boardEl.style.setProperty("--edge-thick", `${edgeSize}px`);
+  zoomLevel.textContent = `${Math.round(state.zoom * 100)}%`;
+}
+
+function setZoom(nextZoom) {
+  state.zoom = Math.min(1, Math.max(0.6, Number(nextZoom.toFixed(2))));
+  updateBoardZoom();
+}
+
 function renderBoard() {
   boardEl.innerHTML = "";
   boardEl.style.setProperty("--dots", state.size);
+  updateBoardZoom();
 
   for (let row = 0; row <= state.size * 2; row += 1) {
     for (let col = 0; col <= state.size * 2; col += 1) {
@@ -863,15 +908,20 @@ function resign(player) {
 
 function chooseCpuEdge() {
   const moves = legalEdges();
-  const scoring = moves.filter((edge) => edgeWouldScore(edge) > 0);
+  const scored = moves.map((edge) => ({
+    edge,
+    score: edgeWouldScore(edge),
+    safe: !edgeMakesThirdSide(edge),
+  }));
+  const scoring = scored.filter((item) => item.score > 0);
   if (scoring.length) {
-    scoring.sort((a, b) => edgeWouldScore(b) - edgeWouldScore(a));
-    return scoring[0];
+    scoring.sort((a, b) => b.score - a.score);
+    return scoring[0].edge;
   }
 
-  const safe = moves.filter((edge) => !edgeMakesThirdSide(edge));
-  const pool = safe.length ? safe : moves;
-  return pool[Math.floor(Math.random() * pool.length)];
+  const safe = scored.filter((item) => item.safe);
+  const pool = safe.length ? safe : scored;
+  return pool[Math.floor(Math.random() * pool.length)].edge;
 }
 
 function maybeCpuMove() {
@@ -882,7 +932,7 @@ function maybeCpuMove() {
     if (turn !== state.turnId || state.gameOver || !isCpuTurn()) return;
     const edge = chooseCpuEdge();
     if (edge) placeEdge(edge);
-  }, 260);
+  }, 120);
 }
 
 boardEl.addEventListener("click", (event) => {
@@ -922,6 +972,8 @@ resignButtons.forEach((button) => {
 newGameButton.addEventListener("click", () => resetGame());
 clearScoreButton.addEventListener("click", () => resetGame(false));
 bannerNewGameButton.addEventListener("click", () => resetGame());
+zoomOutButton.addEventListener("click", () => setZoom(state.zoom - 0.1));
+zoomResetButton.addEventListener("click", () => setZoom(1));
 
 resetGame();
 
