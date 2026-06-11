@@ -404,25 +404,37 @@ function resign(player) {
 }
 
 function chooseCpuMove() {
-  const moveLimit = state.size === 10 ? 900 : state.size === 8 ? 600 : 260;
-  const allMoves = legalMoves(state.board, state.current, moveLimit);
+  const allMoves = legalMoves(state.board, state.current);
   if (!allMoves.length) return null;
 
-  const shuffled = [...allMoves].sort(() => Math.random() - 0.5);
-  const sampleLimit = state.size === 10 ? 320 : state.size === 8 ? 220 : 140;
-  const candidates = shuffled.slice(0, sampleLimit);
+  const deadline = Date.now() + (state.size === 10 ? 650 : state.size === 8 ? 520 : 380);
+  const searchLimit = state.size === 10 ? 72 : state.size === 8 ? 56 : 36;
+  const replyLimit = state.size === 10 ? 180 : state.size === 8 ? 140 : 90;
+  const candidates = allMoves
+    .map((move) => ({ move, score: quickMoveScore(state.board, move, state.current) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, searchLimit);
   let bestScore = -Infinity;
   let bestMoves = [];
 
-  for (const move of candidates) {
-    const trial = movePieceOn(state.board, move.start, move.end);
-    trial[move.arrow.row][move.arrow.col] = ARROW;
+  for (const { move } of candidates) {
+    const trial = applyMoveToBoard(state.board, move, state.current);
+    let score = evaluateAmazonsBoard(trial, state.current) + centerScore(move.end, state.size);
+    const replies = legalMoves(trial, opponent(state.current), replyLimit);
 
-    const myMobility = mobility(trial, state.current);
-    const theirMobility = mobility(trial, opponent(state.current));
-    const edgePenalty = isEdge(move.end, state.size) ? -2 : 0;
-    const centerBonus = centerScore(move.end, state.size);
-    const score = myMobility - (theirMobility * 1.8) + centerBonus + edgePenalty + Math.random();
+    if (!replies.length) {
+      score += 100000;
+    } else {
+      let bestReply = -Infinity;
+      for (const reply of replies) {
+        const replyBoard = applyMoveToBoard(trial, reply, opponent(state.current));
+        bestReply = Math.max(bestReply, evaluateAmazonsBoard(replyBoard, opponent(state.current)));
+        if (Date.now() > deadline) break;
+      }
+      score -= bestReply * 0.75;
+    }
+
+    score += Math.random() * 0.01;
 
     if (score > bestScore) {
       bestScore = score;
@@ -430,9 +442,52 @@ function chooseCpuMove() {
     } else if (score === bestScore) {
       bestMoves.push(move);
     }
+
+    if (Date.now() > deadline && bestMoves.length) break;
   }
 
   return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+}
+
+function applyMoveToBoard(board, move, player) {
+  const copy = movePieceOn(board, move.start, move.end);
+  copy[move.arrow.row][move.arrow.col] = ARROW;
+  copy[move.end.row][move.end.col] = player;
+  return copy;
+}
+
+function quickMoveScore(board, move, player) {
+  const trial = applyMoveToBoard(board, move, player);
+  const rival = opponent(player);
+  if (!legalMoves(trial, rival, 1).length) return 100000;
+  const myMobility = mobility(trial, player);
+  const theirMobility = mobility(trial, rival);
+  return (myMobility * 2.6) - (theirMobility * 3.1) + (centerScore(move.end, board.length) * 2) - (isEdge(move.end, board.length) ? 2 : 0);
+}
+
+function reachableCount(board, player) {
+  const seen = new Set();
+  for (const piece of amazons(board, player)) {
+    for (const square of raySquares(board, piece)) {
+      seen.add(`${square.row},${square.col}`);
+    }
+  }
+  return seen.size;
+}
+
+function evaluateAmazonsBoard(board, player) {
+  const rival = opponent(player);
+  if (!legalMoves(board, rival, 1).length) return 100000;
+  if (!legalMoves(board, player, 1).length) return -100000;
+
+  const myMobility = mobility(board, player);
+  const theirMobility = mobility(board, rival);
+  const myReach = reachableCount(board, player);
+  const theirReach = reachableCount(board, rival);
+  const center = amazons(board, player).reduce((total, piece) => total + centerScore(piece, board.length), 0);
+  const rivalCenter = amazons(board, rival).reduce((total, piece) => total + centerScore(piece, board.length), 0);
+
+  return ((myMobility - theirMobility) * 3.2) + ((myReach - theirReach) * 1.4) + ((center - rivalCenter) * 1.1);
 }
 
 function centerScore(square, size) {

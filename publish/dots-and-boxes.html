@@ -718,25 +718,45 @@ function completedBoxesBy(edge, snapshot = state) {
   return adjacentBoxes(edge).filter((box) => !snapshot.boxes[box.row][box.col] && boxIsComplete(box, snapshot));
 }
 
-function edgeWouldScore(edge) {
-  const snapshot = cloneState();
-  setEdge(edge, state.current, snapshot);
-  return completedBoxesBy(edge, snapshot).length;
+function edgeWouldScore(edge, snapshot = state, player = snapshot.current || state.current) {
+  const next = cloneState(snapshot);
+  setEdge(edge, player, next);
+  return completedBoxesBy(edge, next).length;
 }
 
-function edgeMakesThirdSide(edge) {
-  const snapshot = cloneState();
-  setEdge(edge, state.current, snapshot);
-  return adjacentBoxes(edge).some((box) => !snapshot.boxes[box.row][box.col] && boxEdgeCount(box, snapshot) === 3);
+function edgeMakesThirdSide(edge, snapshot = state, player = snapshot.current || state.current) {
+  const next = cloneState(snapshot);
+  setEdge(edge, player, next);
+  return adjacentBoxes(edge).some((box) => !next.boxes[box.row][box.col] && boxEdgeCount(box, next) === 3);
 }
 
-function cloneState() {
+function cloneState(snapshot = state) {
   return {
-    size: state.size,
-    horizontal: state.horizontal.map((row) => [...row]),
-    vertical: state.vertical.map((row) => [...row]),
-    boxes: state.boxes.map((row) => [...row]),
+    size: snapshot.size,
+    horizontal: snapshot.horizontal.map((row) => [...row]),
+    vertical: snapshot.vertical.map((row) => [...row]),
+    boxes: snapshot.boxes.map((row) => [...row]),
+    current: snapshot.current || state.current,
+    scores: snapshot.scores ? { ...snapshot.scores } : { R: state.scores.R, B: state.scores.B },
   };
+}
+
+function claimedEdgesIn(snapshot) {
+  return snapshot.horizontal.flat().filter(Boolean).length + snapshot.vertical.flat().filter(Boolean).length;
+}
+
+function applyEdgeToSnapshot(snapshot, edge, player = snapshot.current) {
+  const next = cloneState(snapshot);
+  setEdge(edge, player, next);
+  const completed = completedBoxesBy(edge, next);
+
+  completed.forEach((box) => {
+    next.boxes[box.row][box.col] = player;
+    next.scores[player] += 1;
+  });
+
+  next.current = completed.length ? player : opponent(player);
+  return next;
 }
 
 function sameEdge(a, b) {
@@ -906,22 +926,111 @@ function resign(player) {
   hintLine.textContent = `${playerName(winner)} wins this round.`;
 }
 
-function chooseCpuEdge() {
-  const moves = legalEdges();
-  const scored = moves.map((edge) => ({
-    edge,
-    score: edgeWouldScore(edge),
-    safe: !edgeMakesThirdSide(edge),
-  }));
-  const scoring = scored.filter((item) => item.score > 0);
-  if (scoring.length) {
-    scoring.sort((a, b) => b.score - a.score);
-    return scoring[0].edge;
+function countBoxesWithEdges(snapshot, edgeCount) {
+  let count = 0;
+  for (let row = 0; row < snapshot.size; row += 1) {
+    for (let col = 0; col < snapshot.size; col += 1) {
+      if (!snapshot.boxes[row][col] && boxEdgeCount({ row, col }, snapshot) === edgeCount) count += 1;
+    }
+  }
+  return count;
+}
+
+function evaluateDotsSnapshot(snapshot, aiPlayer) {
+  const rival = opponent(aiPlayer);
+  const remaining = legalEdges(snapshot).length;
+  const scoreGap = (snapshot.scores[aiPlayer] - snapshot.scores[rival]) * 1000;
+
+  if (remaining === 0) {
+    if (snapshot.scores[aiPlayer] > snapshot.scores[rival]) return 100000 + scoreGap;
+    if (snapshot.scores[aiPlayer] < snapshot.scores[rival]) return -100000 + scoreGap;
+    return scoreGap;
   }
 
-  const safe = scored.filter((item) => item.safe);
-  const pool = safe.length ? safe : scored;
-  return pool[Math.floor(Math.random() * pool.length)].edge;
+  const thirdSides = countBoxesWithEdges(snapshot, 3);
+  const almostDangerous = countBoxesWithEdges(snapshot, 2);
+  const turnPressure = snapshot.current === aiPlayer ? thirdSides * 120 : -thirdSides * 120;
+  const tempo = snapshot.current === aiPlayer ? 16 : -16;
+  return scoreGap + turnPressure - (almostDangerous * 10) + tempo;
+}
+
+function rankedDotsMoves(snapshot, limit = Infinity) {
+  const player = snapshot.current || state.current;
+  return legalEdges(snapshot)
+    .map((edge) => {
+      const captures = edgeWouldScore(edge, snapshot, player);
+      const createsThird = edgeMakesThirdSide(edge, snapshot, player);
+      const next = applyEdgeToSnapshot(snapshot, edge, player);
+      const thirdSides = countBoxesWithEdges(next, 3);
+      return {
+        edge,
+        score: (captures * 3000) - (createsThird ? 650 : 0) - (thirdSides * 40) + (Math.random() * 0.01),
+      };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((item) => item.edge);
+}
+
+function searchDots(snapshot, aiPlayer, depth, alpha, beta, deadline) {
+  if (Date.now() > deadline || depth <= 0 || claimedEdgesIn(snapshot) === totalEdges()) {
+    return evaluateDotsSnapshot(snapshot, aiPlayer);
+  }
+
+  const maximizing = snapshot.current === aiPlayer;
+  const moves = rankedDotsMoves(snapshot, depth >= 4 ? 12 : 9);
+  if (!moves.length) return evaluateDotsSnapshot(snapshot, aiPlayer);
+
+  if (maximizing) {
+    let value = -Infinity;
+    for (const edge of moves) {
+      const captures = edgeWouldScore(edge, snapshot, snapshot.current);
+      const next = applyEdgeToSnapshot(snapshot, edge, snapshot.current);
+      const nextDepth = depth - (captures ? 0 : 1);
+      value = Math.max(value, searchDots(next, aiPlayer, nextDepth, alpha, beta, deadline));
+      alpha = Math.max(alpha, value);
+      if (beta <= alpha || Date.now() > deadline) break;
+    }
+    return value;
+  }
+
+  let value = Infinity;
+  for (const edge of moves) {
+    const captures = edgeWouldScore(edge, snapshot, snapshot.current);
+    const next = applyEdgeToSnapshot(snapshot, edge, snapshot.current);
+    const nextDepth = depth - (captures ? 0 : 1);
+    value = Math.min(value, searchDots(next, aiPlayer, nextDepth, alpha, beta, deadline));
+    beta = Math.min(beta, value);
+    if (beta <= alpha || Date.now() > deadline) break;
+  }
+  return value;
+}
+
+function chooseCpuEdge() {
+  const aiPlayer = state.current;
+  const snapshot = cloneState();
+  const deadline = Date.now() + (state.size === 6 ? 760 : state.size === 5 ? 680 : 580);
+  const depth = state.size === 6 ? 5 : state.size === 5 ? 6 : 7;
+  const rootMoves = rankedDotsMoves(snapshot, state.size === 6 ? 18 : 22);
+  let bestScore = -Infinity;
+  let bestEdges = [];
+
+  for (const edge of rootMoves) {
+    const captures = edgeWouldScore(edge, snapshot, aiPlayer);
+    const next = applyEdgeToSnapshot(snapshot, edge, aiPlayer);
+    const score = searchDots(next, aiPlayer, depth - (captures ? 0 : 1), -Infinity, Infinity, deadline);
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestEdges = [edge];
+    } else if (score === bestScore) {
+      bestEdges.push(edge);
+    }
+
+    if (Date.now() > deadline && bestEdges.length) break;
+  }
+
+  return bestEdges[Math.floor(Math.random() * bestEdges.length)] || rootMoves[0] || null;
 }
 
 function maybeCpuMove() {
@@ -932,7 +1041,7 @@ function maybeCpuMove() {
     if (turn !== state.turnId || state.gameOver || !isCpuTurn()) return;
     const edge = chooseCpuEdge();
     if (edge) placeEdge(edge);
-  }, 120);
+  }, 180);
 }
 
 boardEl.addEventListener("click", (event) => {
