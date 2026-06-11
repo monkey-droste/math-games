@@ -200,6 +200,31 @@ h1 {
   font-weight: 900;
 }
 
+.icon-button {
+  width: 46px;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.zoom-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoom-readout {
+  min-width: 54px;
+  min-height: 42px;
+  display: inline-grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--muted);
+  font-weight: 900;
+}
+
 .hidden {
   display: none;
 }

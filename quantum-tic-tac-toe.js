@@ -17,9 +17,11 @@ const state = {
   winLine: [],
   scores: { X: 0, O: 0, D: 0 },
   turnId: 0,
+  zoom: 1,
 };
 
 const boardEl = document.querySelector("#board");
+const quantumWrap = document.querySelector(".quantum-wrap");
 const lineLayer = document.querySelector("#lineLayer");
 const statusLine = document.querySelector("#statusLine");
 const hintLine = document.querySelector("#hintLine");
@@ -40,6 +42,9 @@ const bannerNewGameButton = document.querySelector("#bannerNewGame");
 const cyclePanel = document.querySelector("#cyclePanel");
 const cycleText = document.querySelector("#cycleText");
 const cycleActions = document.querySelector("#cycleActions");
+const zoomOutButton = document.querySelector("#zoomOut");
+const zoomResetButton = document.querySelector("#zoomReset");
+const zoomLevel = document.querySelector("#zoomLevel");
 
 function opponent(mark) {
   return mark === "X" ? "O" : "X";
@@ -130,6 +135,7 @@ function renderLines() {
 
 function renderBoard() {
   boardEl.innerHTML = "";
+  updateBoardZoom();
   for (let index = 0; index < 9; index += 1) {
     const cell = document.createElement("button");
     cell.type = "button";
@@ -160,6 +166,18 @@ function renderBoard() {
     boardEl.append(cell);
   }
   renderLines();
+}
+
+function updateBoardZoom() {
+  quantumWrap.style.width = `${Math.round(690 * state.zoom)}px`;
+  quantumWrap.style.maxWidth = state.zoom <= 1 ? "100%" : "none";
+  zoomLevel.textContent = `${Math.round(state.zoom * 100)}%`;
+  renderLines();
+}
+
+function setZoom(nextZoom) {
+  state.zoom = Math.min(1, Math.max(0.6, Number(nextZoom.toFixed(2))));
+  updateBoardZoom();
 }
 
 function updateStatus() {
@@ -447,6 +465,8 @@ resignButtons.forEach((button) => {
 newGameButton.addEventListener("click", () => resetGame());
 clearScoreButton.addEventListener("click", () => resetGame(false));
 bannerNewGameButton.addEventListener("click", () => resetGame());
-window.addEventListener("resize", renderLines);
+zoomOutButton.addEventListener("click", () => setZoom(state.zoom - 0.1));
+zoomResetButton.addEventListener("click", () => setZoom(1));
+window.addEventListener("resize", updateBoardZoom);
 
 resetGame();
