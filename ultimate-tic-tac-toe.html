@@ -1106,16 +1106,67 @@ function evaluateSnapshot(snapshot, aiMark) {
   return score;
 }
 
+function rankedUltimateMoves(snapshot, aiMark, limit = Infinity) {
+  const maximizing = snapshot.current === aiMark;
+  return legalMoves(snapshot)
+    .map((move) => {
+      const child = cloneForMove(snapshot, move, snapshot.current);
+      let score = evaluateSnapshot(child, aiMark);
+      if (child.winner === aiMark) score += 200000;
+      if (child.winner === opponent(aiMark)) score -= 200000;
+      if (move.cellIndex === 4) score += snapshot.current === aiMark ? 8 : -8;
+      if (move.boardIndex === 4) score += snapshot.current === aiMark ? 5 : -5;
+      return { move, score: maximizing ? score : -score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((item) => item.move);
+}
+
+function searchUltimate(snapshot, aiMark, depth, alpha, beta, deadline) {
+  const result = snapshot.winner || gameResult(snapshot);
+  if (Date.now() > deadline || depth <= 0 || result) {
+    return evaluateSnapshot(snapshot, aiMark);
+  }
+
+  const maximizing = snapshot.current === aiMark;
+  const moveLimit = depth >= 3 ? 14 : 10;
+  const moves = rankedUltimateMoves(snapshot, aiMark, moveLimit);
+  if (!moves.length) return evaluateSnapshot(snapshot, aiMark);
+
+  if (maximizing) {
+    let value = -Infinity;
+    for (const move of moves) {
+      const child = cloneForMove(snapshot, move, snapshot.current);
+      value = Math.max(value, searchUltimate(child, aiMark, depth - 1, alpha, beta, deadline));
+      alpha = Math.max(alpha, value);
+      if (beta <= alpha || Date.now() > deadline) break;
+    }
+    return value;
+  }
+
+  let value = Infinity;
+  for (const move of moves) {
+    const child = cloneForMove(snapshot, move, snapshot.current);
+    value = Math.min(value, searchUltimate(child, aiMark, depth - 1, alpha, beta, deadline));
+    beta = Math.min(beta, value);
+    if (beta <= alpha || Date.now() > deadline) break;
+  }
+  return value;
+}
+
 function chooseComputerMove() {
-  const aiMark = opponent(state.human);
-  const moves = legalMoves();
+  const aiMark = state.current;
+  const moves = rankedUltimateMoves(state, aiMark, legalMoves().length > 24 ? 24 : 18);
   let bestScore = -Infinity;
   let bestMoves = [];
+  const deadline = Date.now() + 720;
+  const depth = legalMoves().length > 24 ? 3 : 4;
 
   for (const move of moves) {
     const child = cloneForMove(state, move, aiMark);
-    let score = evaluateSnapshot(child, aiMark);
-    if (child.winner === aiMark) score += 100000;
+    let score = searchUltimate(child, aiMark, depth - 1, -Infinity, Infinity, deadline);
+    if (child.winner === aiMark) score += 200000;
     if (move.cellIndex === 4) score += 6;
     if (move.boardIndex === 4) score += 4;
     if (state.variant === "drop3" && move.cellIndex >= 6) score += 3;
@@ -1126,6 +1177,8 @@ function chooseComputerMove() {
     } else if (score === bestScore) {
       bestMoves.push(move);
     }
+
+    if (Date.now() > deadline && bestMoves.length) break;
   }
 
   return bestMoves[Math.floor(Math.random() * bestMoves.length)];
@@ -1137,7 +1190,7 @@ function maybeComputerMove() {
   window.setTimeout(() => {
     const move = chooseComputerMove();
     if (move) placeMark(move.boardIndex, move.cellIndex);
-  }, 90);
+  }, 160);
 }
 
 function resetGame(keepScores = true) {
