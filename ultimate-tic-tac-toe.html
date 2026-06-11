@@ -975,8 +975,8 @@ function renderBoard() {
     const mini = document.createElement("div");
     mini.className = "mini-board";
     mini.dataset.board = String(boardIndex);
-    if (playable.includes(boardIndex)) mini.classList.add("playable");
-    if (freeChoice && playable.includes(boardIndex)) mini.classList.add("free-choice");
+    if (state.variant !== "drop3" && playable.includes(boardIndex)) mini.classList.add("playable");
+    if (state.variant !== "drop3" && freeChoice && playable.includes(boardIndex)) mini.classList.add("free-choice");
     if (state.meta[boardIndex] === "D") {
       mini.classList.add("drawn");
       if (state.variant === "shared") mini.classList.add("shared-drawn");
