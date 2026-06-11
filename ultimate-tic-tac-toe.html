@@ -21,7 +21,7 @@
   --o: #1f7a8c;
   --active: #f0c849;
   --free: #c7e6c9;
-  --last: var(--ink);
+  --last: #1f9d55;
   --shadow: rgba(31, 28, 22, 0.18);
 }
 
@@ -431,13 +431,14 @@ h1 {
 .mini-board.won::after,
 .mini-board.drawn::after {
   position: absolute;
-  inset: 5px;
+  inset: 7px;
   display: grid;
   place-items: center;
-  border: 5px solid currentColor;
-  background: rgba(255, 250, 240, 0.82);
-  font-size: clamp(3rem, 12vw, 7rem);
+  border: 3px solid currentColor;
+  background: rgba(255, 250, 240, 0.9);
+  font-size: clamp(2.6rem, 10vw, 5.8rem);
   font-weight: 1000;
+  line-height: 0.9;
   pointer-events: none;
 }
 
