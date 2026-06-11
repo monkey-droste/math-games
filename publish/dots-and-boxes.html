@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dots and Boxes | Math Games</title>
+    <meta
+      name="description"
+      content="Play Dots and Boxes in Math Games, an unofficial fan-made site inspired by Ben Orlin's Math Games with Bad Drawings."
+    >
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <style>
+:root {
+  color-scheme: light;
+  --paper: #f7f1e4;
+  --panel: #fffaf0;
+  --ink: #20242d;
+  --muted: #645f59;
+  --red: #d94f45;
+  --blue: #2478a6;
+  --green: #5aa35f;
+  --yellow: #efc84a;
+  --edge: #2d2f39;
+  --shadow: rgba(31, 28, 22, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  font-family: ui-rounded, "Avenir Next", "Trebuchet MS", system-ui, sans-serif;
+  background:
+    linear-gradient(90deg, rgba(88, 76, 55, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(88, 76, 55, 0.06) 1px, transparent 1px),
+    var(--paper);
+  background-size: 24px 24px;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+select {
+  min-height: 42px;
+  max-width: 100%;
+  padding: 0 10px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app-shell {
+  width: min(1180px, calc(100% - 28px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 22px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 18px;
+  align-items: start;
+}
+
+.play-surface,
+.rules-panel,
+.result-banner {
+  background: rgba(255, 252, 244, 0.82);
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--shadow);
+}
+
+.play-surface {
+  padding: clamp(14px, 2.4vw, 24px);
+}
+
+.topbar {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+}
+
+.game-home-link {
+  min-height: 42px;
+  margin-bottom: 10px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow);
+  font-size: 1rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.game-home-link::before {
+  content: "<";
+  margin-right: 7px;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+.score-strip {
+  width: min(420px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(56px, 1fr));
+  border: 2px solid var(--ink);
+  background: var(--paper);
+}
+
+.score-strip div {
+  min-width: 0;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.score-strip div + div {
+  border-left: 2px solid var(--ink);
+}
+
+.score-strip span {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.score-strip small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.controls {
+  margin: 14px 0;
+  display: grid;
+  gap: 10px;
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.compact-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.compact-field > span {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.segmented {
+  display: inline-grid;
+  grid-auto-flow: column;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+}
+
+.segment,
+.icon-button,
+.text-button {
+  min-height: 42px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.segment {
+  min-width: 92px;
+  padding: 0 14px;
+}
+
+.segment + .segment {
+  border-left: 2px solid var(--ink);
+}
+
+.segment.active {
+  background: var(--yellow);
+  font-weight: 900;
+}
+
+.icon-button {
+  width: 46px;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.text-button {
+  padding: 0 14px;
+  border: 2px solid var(--ink);
+  background: #fffaf0;
+  font-weight: 900;
+}
+
+.hidden {
+  display: none;
+}
+
+.status-panel {
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  background: #fff6c9;
+}
+
+.turn-token {
+  width: 54px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  color: #fffaf0;
+  font-size: 1.9rem;
+  font-weight: 1000;
+}
+
+.turn-token.red {
+  background: var(--red);
+}
+
+.turn-token.blue {
+  background: var(--blue);
+}
+
+#statusLine {
+  margin-bottom: 4px;
+  font-weight: 900;
+}
+
+#hintLine {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.result-banner {
+  margin: 14px 0 0;
+  padding: clamp(16px, 2.8vw, 28px);
+  text-align: center;
+  transform: rotate(-0.6deg);
+}
+
+.result-banner.hidden {
+  display: none;
+}
+
+.result-banner.red {
+  background: #ffe5e2;
+  color: var(--red);
+}
+
+.result-banner.blue {
+  background: #dff1f8;
+  color: var(--blue);
+}
+
+.result-banner.draw {
+  background: #e9eadf;
+  color: var(--ink);
+}
+
+.result-banner p {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.result-banner h2 {
+  margin: 0 0 14px;
+  font-size: clamp(2.7rem, 9vw, 6.6rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.result-banner button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 2px solid var(--ink);
+  background: var(--yellow);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.board-viewport {
+  width: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.dots-board {
+  --dot: clamp(12px, 2vw, 18px);
+  --edge-thick: clamp(12px, 2vw, 18px);
+  --box: clamp(54px, 11vw, 92px);
+  width: max-content;
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: repeat(var(--dots), var(--dot) var(--box)) var(--dot);
+  grid-template-rows: repeat(var(--dots), var(--dot) var(--box)) var(--dot);
+  touch-action: manipulation;
+}
+
+.dot {
+  width: var(--dot);
+  aspect-ratio: 1;
+  align-self: center;
+  justify-self: center;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--ink);
+  z-index: 3;
+}
+
+.edge {
+  align-self: center;
+  justify-self: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+}
+
+.edge.horizontal {
+  width: 100%;
+  height: var(--edge-thick);
+}
+
+.edge.vertical {
+  width: var(--edge-thick);
+  height: 100%;
+}
+
+.edge:not(.claimed):hover,
+.edge.preview {
+  background: rgba(32, 36, 45, 0.18);
+}
+
+.edge.claimed {
+  cursor: default;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+}
+
+.edge.red {
+  background: var(--red);
+}
+
+.edge.blue {
+  background: var(--blue);
+}
+
+.edge.last {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px #fffaf0, 0 0 0 6px var(--green);
+  z-index: 2;
+}
+
+.box {
+  display: grid;
+  place-items: center;
+  background: rgba(255, 250, 240, 0.62);
+  color: #fffaf0;
+  font-size: clamp(1.2rem, 4vw, 2.3rem);
+  font-weight: 1000;
+}
+
+.box.red {
+  background: color-mix(in srgb, var(--red) 80%, white);
+}
+
+.box.blue {
+  background: color-mix(in srgb, var(--blue) 80%, white);
+}
+
+.box.red::before {
+  content: "R";
+}
+
+.box.blue::before {
+  content: "B";
+}
+
+.segment:focus-visible,
+.icon-button:focus-visible,
+.text-button:focus-visible,
+.edge:focus-visible {
+  outline: 4px solid #7aa7ff;
+  outline-offset: 2px;
+}
+
+.rules-panel {
+  padding: 18px;
+  position: sticky;
+  top: 18px;
+  transform: rotate(-0.5deg);
+}
+
+.rules-panel h2 {
+  margin-bottom: 12px;
+  font-size: 1.5rem;
+}
+
+.rules-panel p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell {
+    width: min(100% - 14px, 560px);
+    padding: 8px 0;
+  }
+
+  .score-strip {
+    width: 100%;
+  }
+
+  .segment {
+    min-width: 76px;
+    padding: 0 10px;
+  }
+
+  .status-panel {
+    grid-template-columns: 46px 1fr;
+  }
+
+  .turn-token {
+    width: 46px;
+    font-size: 1.55rem;
+  }
+
+  .dots-board {
+    --box: clamp(44px, 14vw, 72px);
+  }
+}
+
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="play-surface" aria-label="Dots and Boxes game">
+        <header class="topbar">
+          <div>
+            <a class="game-home-link" href="index.html">Return</a>
+            <h1>Dots and Boxes</h1>
+          </div>
+          <div class="score-strip" aria-label="Score">
+            <div><span id="redScore">0</span><small>Red</small></div>
+            <div><span id="edgeCount">0</span><small>Lines</small></div>
+            <div><span id="blueScore">0</span><small>Blue</small></div>
+          </div>
+        </header>
+
+        <section class="controls" aria-label="Game settings">
+          <div class="control-row">
+            <label class="compact-field">
+              <span>Board</span>
+              <select id="boardSize">
+                <option value="3">3 x 3 boxes</option>
+                <option value="4" selected>4 x 4 boxes</option>
+                <option value="5">5 x 5 boxes</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="control-row">
+            <div class="segmented" role="group" aria-label="Game mode">
+              <button type="button" class="segment active" data-mode="human">Two Players</button>
+              <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
+            </div>
+            <div id="sideChoice" class="segmented hidden" role="group" aria-label="Side choice">
+              <button type="button" class="segment active" data-human="R">Play Red</button>
+              <button type="button" class="segment" data-human="B">Play Blue</button>
+            </div>
+            <button type="button" id="newGame" class="text-button">New Game</button>
+            <button type="button" class="text-button" data-resign="R">Red Resigns</button>
+            <button type="button" class="text-button" data-resign="B">Blue Resigns</button>
+            <button type="button" id="clearScore" class="text-button">Clear Score</button>
+          </div>
+        </section>
+
+        <section class="status-panel" aria-live="polite">
+          <div class="turn-token red" id="turnToken">R</div>
+          <div>
+            <p id="statusLine">Red starts. Choose any open line.</p>
+            <p id="hintLine">Complete a box to score it and take another turn.</p>
+          </div>
+        </section>
+
+        <section id="resultBanner" class="result-banner hidden" aria-live="assertive">
+          <p id="resultKicker">Game over</p>
+          <h2 id="resultTitle">Red Wins!</h2>
+          <button type="button" id="bannerNewGame">New Game</button>
+        </section>
+
+        <div class="board-viewport">
+          <div id="board" class="dots-board" aria-label="Dots and Boxes board"></div>
+        </div>
+      </section>
+
+      <aside class="rules-panel" aria-label="Rules">
+        <h2>Rules</h2>
+        <p>Players take turns drawing one unclaimed line between neighboring dots.</p>
+        <p>If your line completes one or two boxes, you claim those boxes and move again.</p>
+        <p>When every line is drawn, the player with more boxes wins.</p>
+      </aside>
+    </main>
+
+    <script>
+const PLAYERS = {
+  R: { name: "Red", className: "red" },
+  B: { name: "Blue", className: "blue" },
+};
+
+const state = {
+  size: 4,
+  horizontal: [],
+  vertical: [],
+  boxes: [],
+  current: "R",
+  mode: "human",
+  human: "R",
+  scores: { R: 0, B: 0 },
+  matchScores: { R: 0, B: 0 },
+  lastEdge: null,
+  gameOver: false,
+  turnId: 0,
+};
+
+const boardEl = document.querySelector("#board");
+const boardSizeEl = document.querySelector("#boardSize");
+const statusLine = document.querySelector("#statusLine");
+const hintLine = document.querySelector("#hintLine");
+const turnToken = document.querySelector("#turnToken");
+const redScore = document.querySelector("#redScore");
+const blueScore = document.querySelector("#blueScore");
+const edgeCount = document.querySelector("#edgeCount");
+const modeButtons = document.querySelectorAll("[data-mode]");
+const humanButtons = document.querySelectorAll("[data-human]");
+const resignButtons = document.querySelectorAll("[data-resign]");
+const sideChoice = document.querySelector("#sideChoice");
+const newGameButton = document.querySelector("#newGame");
+const clearScoreButton = document.querySelector("#clearScore");
+const bannerNewGameButton = document.querySelector("#bannerNewGame");
+const resultBanner = document.querySelector("#resultBanner");
+const resultKicker = document.querySelector("#resultKicker");
+const resultTitle = document.querySelector("#resultTitle");
+
+function opponent(player) {
+  return player === "R" ? "B" : "R";
+}
+
+function playerName(player) {
+  return PLAYERS[player].name;
+}
+
+function playerClass(player) {
+  return PLAYERS[player].className;
+}
+
+function makeHorizontal(size) {
+  return Array.from({ length: size + 1 }, () => Array(size).fill(""));
+}
+
+function makeVertical(size) {
+  return Array.from({ length: size }, () => Array(size + 1).fill(""));
+}
+
+function makeBoxes(size) {
+  return Array.from({ length: size }, () => Array(size).fill(""));
+}
+
+function totalEdges() {
+  return (state.size + 1) * state.size * 2;
+}
+
+function claimedEdges() {
+  return state.horizontal.flat().filter(Boolean).length + state.vertical.flat().filter(Boolean).length;
+}
+
+function isCpuTurn() {
+  return state.mode === "cpu" && state.current !== state.human;
+}
+
+function edgeOwner(edge, snapshot = state) {
+  return edge.type === "h"
+    ? snapshot.horizontal[edge.row][edge.col]
+    : snapshot.vertical[edge.row][edge.col];
+}
+
+function setEdge(edge, player, snapshot = state) {
+  if (edge.type === "h") {
+    snapshot.horizontal[edge.row][edge.col] = player;
+  } else {
+    snapshot.vertical[edge.row][edge.col] = player;
+  }
+}
+
+function adjacentBoxes(edge) {
+  const boxes = [];
+  if (edge.type === "h") {
+    if (edge.row > 0) boxes.push({ row: edge.row - 1, col: edge.col });
+    if (edge.row < state.size) boxes.push({ row: edge.row, col: edge.col });
+  } else {
+    if (edge.col > 0) boxes.push({ row: edge.row, col: edge.col - 1 });
+    if (edge.col < state.size) boxes.push({ row: edge.row, col: edge.col });
+  }
+  return boxes;
+}
+
+function boxEdges(box) {
+  return [
+    { type: "h", row: box.row, col: box.col },
+    { type: "h", row: box.row + 1, col: box.col },
+    { type: "v", row: box.row, col: box.col },
+    { type: "v", row: box.row, col: box.col + 1 },
+  ];
+}
+
+function boxEdgeCount(box, snapshot = state) {
+  return boxEdges(box).filter((edge) => edgeOwner(edge, snapshot)).length;
+}
+
+function boxIsComplete(box, snapshot = state) {
+  return boxEdgeCount(box, snapshot) === 4;
+}
+
+function legalEdges(snapshot = state) {
+  const edges = [];
+  for (let row = 0; row <= snapshot.size; row += 1) {
+    for (let col = 0; col < snapshot.size; col += 1) {
+      if (!snapshot.horizontal[row][col]) edges.push({ type: "h", row, col });
+    }
+  }
+  for (let row = 0; row < snapshot.size; row += 1) {
+    for (let col = 0; col <= snapshot.size; col += 1) {
+      if (!snapshot.vertical[row][col]) edges.push({ type: "v", row, col });
+    }
+  }
+  return edges;
+}
+
+function completedBoxesBy(edge, snapshot = state) {
+  return adjacentBoxes(edge).filter((box) => !snapshot.boxes[box.row][box.col] && boxIsComplete(box, snapshot));
+}
+
+function edgeWouldScore(edge) {
+  const snapshot = cloneState();
+  setEdge(edge, state.current, snapshot);
+  return completedBoxesBy(edge, snapshot).length;
+}
+
+function edgeMakesThirdSide(edge) {
+  const snapshot = cloneState();
+  setEdge(edge, state.current, snapshot);
+  return adjacentBoxes(edge).some((box) => !snapshot.boxes[box.row][box.col] && boxEdgeCount(box, snapshot) === 3);
+}
+
+function cloneState() {
+  return {
+    size: state.size,
+    horizontal: state.horizontal.map((row) => [...row]),
+    vertical: state.vertical.map((row) => [...row]),
+    boxes: state.boxes.map((row) => [...row]),
+  };
+}
+
+function sameEdge(a, b) {
+  return Boolean(a && b && a.type === b.type && a.row === b.row && a.col === b.col);
+}
+
+function renderBoard() {
+  boardEl.innerHTML = "";
+  boardEl.style.setProperty("--dots", state.size);
+
+  for (let row = 0; row <= state.size * 2; row += 1) {
+    for (let col = 0; col <= state.size * 2; col += 1) {
+      if (row % 2 === 0 && col % 2 === 0) {
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        boardEl.append(dot);
+      } else if (row % 2 === 0) {
+        boardEl.append(edgeButton({ type: "h", row: row / 2, col: Math.floor(col / 2) }));
+      } else if (col % 2 === 0) {
+        boardEl.append(edgeButton({ type: "v", row: Math.floor(row / 2), col: col / 2 }));
+      } else {
+        const box = document.createElement("div");
+        const owner = state.boxes[Math.floor(row / 2)][Math.floor(col / 2)];
+        box.className = `box ${owner ? playerClass(owner) : ""}`;
+        boardEl.append(box);
+      }
+    }
+  }
+}
+
+function edgeButton(edge) {
+  const button = document.createElement("button");
+  const owner = edgeOwner(edge);
+  button.type = "button";
+  button.className = `edge ${edge.type === "h" ? "horizontal" : "vertical"}`;
+  button.dataset.type = edge.type;
+  button.dataset.row = String(edge.row);
+  button.dataset.col = String(edge.col);
+  button.setAttribute("aria-label", `${edge.type === "h" ? "Horizontal" : "Vertical"} line ${edge.row + 1}, ${edge.col + 1}`);
+  if (owner) {
+    button.classList.add("claimed", playerClass(owner));
+    button.disabled = true;
+  } else if (isCpuTurn() || state.gameOver) {
+    button.disabled = true;
+  }
+  if (sameEdge(edge, state.lastEdge)) button.classList.add("last");
+  return button;
+}
+
+function updateStatus() {
+  redScore.textContent = state.scores.R;
+  blueScore.textContent = state.scores.B;
+  edgeCount.textContent = `${claimedEdges()}/${totalEdges()}`;
+  sideChoice.classList.toggle("hidden", state.mode !== "cpu");
+  turnToken.textContent = state.current;
+  turnToken.className = `turn-token ${playerClass(state.current)}`;
+
+  if (state.gameOver) return;
+
+  const actor = isCpuTurn() ? "CPU" : playerName(state.current);
+  statusLine.textContent = `${actor}'s turn.`;
+  hintLine.textContent = "A completed box scores one point and gives the same player another line.";
+}
+
+function refresh() {
+  renderBoard();
+  updateStatus();
+}
+
+function placeEdge(edge) {
+  if (state.gameOver || edgeOwner(edge)) return false;
+
+  const player = state.current;
+  setEdge(edge, player);
+  state.lastEdge = edge;
+  const completed = completedBoxesBy(edge);
+
+  completed.forEach((box) => {
+    state.boxes[box.row][box.col] = player;
+    state.scores[player] += 1;
+  });
+
+  if (claimedEdges() === totalEdges()) {
+    finishGame();
+    return true;
+  }
+
+  if (completed.length === 0) {
+    state.current = opponent(state.current);
+  }
+
+  state.turnId += 1;
+  refresh();
+  maybeCpuMove();
+  return true;
+}
+
+function finishGame() {
+  state.gameOver = true;
+  const red = state.scores.R;
+  const blue = state.scores.B;
+  let resultClass = "draw";
+  let title = "Draw!";
+
+  if (red > blue) {
+    resultClass = "red";
+    title = "Red Wins!";
+    state.matchScores.R += 1;
+  } else if (blue > red) {
+    resultClass = "blue";
+    title = "Blue Wins!";
+    state.matchScores.B += 1;
+  }
+
+  refresh();
+  resultBanner.className = `result-banner ${resultClass}`;
+  resultKicker.textContent = "Game over";
+  resultTitle.textContent = title;
+  statusLine.textContent = red === blue ? "Every line is drawn. The game is tied." : `${title} ${red}-${blue}.`;
+  hintLine.textContent = "Start a new game for another board.";
+}
+
+function resetGame(keepMatchScores = true) {
+  state.size = Number(boardSizeEl.value);
+  state.horizontal = makeHorizontal(state.size);
+  state.vertical = makeVertical(state.size);
+  state.boxes = makeBoxes(state.size);
+  state.current = "R";
+  state.scores = { R: 0, B: 0 };
+  state.lastEdge = null;
+  state.gameOver = false;
+  state.turnId += 1;
+  if (!keepMatchScores) state.matchScores = { R: 0, B: 0 };
+  resultBanner.className = "result-banner hidden";
+  refresh();
+  maybeCpuMove();
+}
+
+function resign(player) {
+  if (state.gameOver) return;
+  const winner = opponent(player);
+  state.gameOver = true;
+  state.matchScores[winner] += 1;
+  refresh();
+  resultBanner.className = `result-banner ${playerClass(winner)}`;
+  resultKicker.textContent = "Resignation";
+  resultTitle.textContent = `${playerName(winner)} Wins!`;
+  statusLine.textContent = `${playerName(player)} resigns.`;
+  hintLine.textContent = `${playerName(winner)} wins this round.`;
+}
+
+function chooseCpuEdge() {
+  const moves = legalEdges();
+  const scoring = moves.filter((edge) => edgeWouldScore(edge) > 0);
+  if (scoring.length) {
+    scoring.sort((a, b) => edgeWouldScore(b) - edgeWouldScore(a));
+    return scoring[0];
+  }
+
+  const safe = moves.filter((edge) => !edgeMakesThirdSide(edge));
+  const pool = safe.length ? safe : moves;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function maybeCpuMove() {
+  if (state.gameOver || !isCpuTurn()) return;
+  const turn = state.turnId;
+  statusLine.textContent = "CPU is thinking.";
+  window.setTimeout(() => {
+    if (turn !== state.turnId || state.gameOver || !isCpuTurn()) return;
+    const edge = chooseCpuEdge();
+    if (edge) placeEdge(edge);
+  }, 260);
+}
+
+boardEl.addEventListener("click", (event) => {
+  const button = event.target.closest(".edge");
+  if (!button || button.disabled) return;
+  placeEdge({
+    type: button.dataset.type,
+    row: Number(button.dataset.row),
+    col: Number(button.dataset.col),
+  });
+});
+
+boardSizeEl.addEventListener("change", () => resetGame());
+
+modeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    modeButtons.forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    state.mode = button.dataset.mode;
+    resetGame();
+  });
+});
+
+humanButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    humanButtons.forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    state.human = button.dataset.human;
+    resetGame();
+  });
+});
+
+resignButtons.forEach((button) => {
+  button.addEventListener("click", () => resign(button.dataset.resign));
+});
+
+newGameButton.addEventListener("click", () => resetGame());
+clearScoreButton.addEventListener("click", () => resetGame(false));
+bannerNewGameButton.addEventListener("click", () => resetGame());
+
+resetGame();
+
+    </script>
+  </body>
+</html>

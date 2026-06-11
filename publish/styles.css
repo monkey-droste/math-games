@@ -186,7 +186,7 @@ select {
 
 .game-directory {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -289,6 +289,44 @@ select {
 
 .ttt-icon span::before {
   content: "X";
+}
+
+.dots-icon {
+  background:
+    radial-gradient(circle at 20% 20%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 50% 20%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 80% 20%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 20% 50%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 50% 50%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 80% 50%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 20% 80%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 50% 80%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 80% 80%, var(--line) 0 5px, transparent 6px),
+    var(--panel);
+}
+
+.dots-icon::before {
+  content: "";
+  position: absolute;
+  left: 20%;
+  top: 20%;
+  width: 60%;
+  height: 60%;
+  background:
+    linear-gradient(var(--danger), var(--danger)) 0 0 / 100% 6px no-repeat,
+    linear-gradient(var(--blue), var(--blue)) 0 100% / 100% 6px no-repeat,
+    linear-gradient(90deg, var(--danger), var(--danger)) 0 0 / 6px 100% no-repeat,
+    linear-gradient(90deg, var(--blue), var(--blue)) 100% 0 / 6px 100% no-repeat;
+}
+
+.dots-icon span {
+  width: 28px;
+  aspect-ratio: 1;
+  position: relative;
+  z-index: 1;
+  border: 3px solid var(--line);
+  background: var(--select);
+  transform: rotate(-5deg);
 }
 
 .home-band {

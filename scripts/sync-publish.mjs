@@ -11,9 +11,10 @@ const files = [
   "amazons.html",
   "app.js",
   "ultimate-tic-tac-toe.html",
+  "dots-and-boxes.html",
 ];
 
-const publicUrl = (process.env.PUBLIC_URL || "https://your-math-games-site.example")
+const publicUrl = (process.env.PUBLIC_URL || "https://monkey-droste.github.io/math-games")
   .trim()
   .replace(/\/+$/, "");
 
@@ -32,7 +33,7 @@ await writeFile(
   `User-agent: *\nAllow: /\nSitemap: ${publicUrl}/sitemap.xml\n`,
 );
 
-const pages = ["", "amazons.html", "ultimate-tic-tac-toe.html"];
+const pages = ["", "amazons.html", "ultimate-tic-tac-toe.html", "dots-and-boxes.html"];
 const today = new Date().toISOString().slice(0, 10);
 const urls = pages
   .map((page) => {
