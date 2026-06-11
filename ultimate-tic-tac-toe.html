@@ -474,6 +474,27 @@ h1 {
   line-height: 1.55;
 }
 
+.rules-panel section + section {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 2px solid rgba(38, 33, 27, 0.18);
+}
+
+.rules-panel ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.rules-panel li + li {
+  margin-top: 10px;
+}
+
+.rules-panel strong {
+  color: var(--ink);
+}
+
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -536,6 +557,20 @@ h1 {
         </header>
 
         <section class="controls" aria-label="Game settings">
+          <div class="control-row variant-row">
+            <label class="compact-field">
+              <span>Variant</span>
+              <select id="variantSelect">
+                <option value="classic" selected>Classic</option>
+                <option value="single">Single Win</option>
+                <option value="majority">Majority Rule</option>
+                <option value="drop3">Ultimate Drop 3</option>
+                <option value="dual">The Dual Game</option>
+                <option value="shared">Shared Territory</option>
+              </select>
+            </label>
+          </div>
+
           <div class="control-row action-row">
             <div class="segmented" role="group" aria-label="Game mode">
               <button type="button" class="segment active" data-mode="human">Two Players</button>
@@ -580,10 +615,23 @@ h1 {
       </section>
 
       <aside class="rules-panel" aria-label="Rules">
-        <h2>Rules</h2>
-        <p>Each small board is a normal game of tic-tac-toe. The square you choose sends the next player to the matching small board.</p>
-        <p>If that target board is already won or full, the next player may move on any open board.</p>
-        <p>Win a small board to claim its square on the big board. Three big-board squares in a row wins the game.</p>
+        <section>
+          <h2>Rules</h2>
+          <p>Each small board is a normal game of tic-tac-toe. The square you choose sends the next player to the matching small board.</p>
+          <p>If that target board is already won or full, the next player may move on any open board.</p>
+        </section>
+
+        <section>
+          <h2>Variants</h2>
+          <ol>
+            <li><strong>Classic.</strong> Win small boards to claim big-board squares. Three claimed big-board squares in a row wins.</li>
+            <li><strong>Single Win.</strong> The first player to win any small board wins the whole game immediately.</li>
+            <li><strong>Majority Rule.</strong> Big-board rows do not matter. Win more small boards than your opponent.</li>
+            <li><strong>Ultimate Drop 3.</strong> Play like Ultimate Tic-Tac-Toe, except marks drop to the lowest open square in the chosen column of the small board.</li>
+            <li><strong>The Dual Game.</strong> Reverse the usual steering. The previous move tells you which square position to fill, while you choose the small board.</li>
+            <li><strong>Shared Territory.</strong> Drawn small boards count for both players when checking big-board rows.</li>
+          </ol>
+        </section>
       </aside>
     </main>
 
@@ -599,9 +647,11 @@ const state = {
   meta: Array(9).fill(""),
   current: "X",
   nextBoard: null,
+  forcedCell: null,
   lastMove: null,
   gameOver: false,
   winner: "",
+  variant: "classic",
   mode: "human",
   human: "X",
   scores: { X: 0, O: 0, D: 0 },
@@ -612,6 +662,7 @@ const boardEl = document.querySelector("#board");
 const statusLine = document.querySelector("#statusLine");
 const hintLine = document.querySelector("#hintLine");
 const turnToken = document.querySelector("#turnToken");
+const variantSelect = document.querySelector("#variantSelect");
 const modeButtons = document.querySelectorAll("[data-mode]");
 const humanButtons = document.querySelectorAll("[data-human]");
 const resignButtons = document.querySelectorAll("[data-resign]");
@@ -650,31 +701,135 @@ function winnerOf(cells) {
   return cells.every(Boolean) ? "D" : "";
 }
 
-function isBoardOpen(index) {
-  return !state.meta[index] && state.boards[index].some((cell) => !cell);
+function miniWinner(cells, variant = state.variant) {
+  const result = winnerOf(cells);
+  if (variant === "drop3" && result === "D") return "";
+  return result;
 }
 
-function playableBoards() {
-  if (state.nextBoard !== null && isBoardOpen(state.nextBoard)) {
-    return [state.nextBoard];
+function claimedCount(meta, mark) {
+  return meta.filter((value) => value === mark).length;
+}
+
+function strictBigWinner(meta) {
+  return winnerOf(meta.map((value) => value === "D" ? "" : value));
+}
+
+function sharedBigWinner(meta, lastMark = "") {
+  let xWins = false;
+  let oWins = false;
+
+  for (const line of WIN_LINES) {
+    const values = line.map((index) => meta[index]);
+    if (values.some((value) => value === "X") && values.every((value) => value === "X" || value === "D")) {
+      xWins = true;
+    }
+    if (values.some((value) => value === "O") && values.every((value) => value === "O" || value === "D")) {
+      oWins = true;
+    }
   }
-  return state.meta.map((_, index) => index).filter(isBoardOpen);
+
+  if (xWins && oWins) return lastMark || "D";
+  if (xWins) return "X";
+  if (oWins) return "O";
+  return "";
+}
+
+function isBoardOpenIn(snapshot, index) {
+  return !snapshot.meta[index] && snapshot.boards[index].some((cell) => !cell);
+}
+
+function isBoardOpen(index) {
+  return isBoardOpenIn(state, index);
+}
+
+function playableBoards(snapshot = state) {
+  if ((snapshot.variant || "classic") === "dual" && snapshot.forcedCell !== null) {
+    const forcedBoards = snapshot.meta.map((_, index) => index).filter((index) => {
+      return !snapshot.meta[index] && !snapshot.boards[index][snapshot.forcedCell];
+    });
+    if (forcedBoards.length) return forcedBoards;
+  }
+
+  if (snapshot.nextBoard !== null && isBoardOpenIn(snapshot, snapshot.nextBoard)) {
+    return [snapshot.nextBoard];
+  }
+  return snapshot.meta.map((_, index) => index).filter((index) => isBoardOpenIn(snapshot, index));
 }
 
 function legalMoves(snapshot = state) {
-  const forced = snapshot.nextBoard !== null && !snapshot.meta[snapshot.nextBoard] &&
-    snapshot.boards[snapshot.nextBoard].some((cell) => !cell);
-  const boards = forced
-    ? [snapshot.nextBoard]
-    : snapshot.meta.map((_, index) => index).filter((index) => {
-      return !snapshot.meta[index] && snapshot.boards[index].some((cell) => !cell);
-    });
+  const boards = playableBoards(snapshot);
 
   return boards.flatMap((boardIndex) => {
+    if ((snapshot.variant || "classic") === "dual" && snapshot.forcedCell !== null) {
+      return snapshot.boards[boardIndex][snapshot.forcedCell] ? [] : [{ boardIndex, cellIndex: snapshot.forcedCell }];
+    }
+
+    if ((snapshot.variant || "classic") === "drop3") {
+      return [0, 1, 2]
+        .map((col) => dropCellIndex(snapshot.boards[boardIndex], col))
+        .filter((cellIndex) => cellIndex !== null)
+        .map((cellIndex) => ({ boardIndex, cellIndex }));
+    }
+
     return snapshot.boards[boardIndex]
       .map((cell, cellIndex) => cell ? null : { boardIndex, cellIndex })
       .filter(Boolean);
   });
+}
+
+function gameResult(snapshot = state, lastMark = "") {
+  const variant = snapshot.variant || "classic";
+  const openMoves = legalMoves(snapshot).length;
+
+  if (variant === "single") {
+    if (snapshot.meta.includes("X")) return "X";
+    if (snapshot.meta.includes("O")) return "O";
+    return openMoves === 0 ? "D" : "";
+  }
+
+  if (variant === "majority") {
+    const xCount = claimedCount(snapshot.meta, "X");
+    const oCount = claimedCount(snapshot.meta, "O");
+    if (xCount >= 5) return "X";
+    if (oCount >= 5) return "O";
+    if (openMoves === 0) {
+      if (xCount > oCount) return "X";
+      if (oCount > xCount) return "O";
+      return "D";
+    }
+    return "";
+  }
+
+  const bigWinner = variant === "shared"
+    ? sharedBigWinner(snapshot.meta, lastMark)
+    : strictBigWinner(snapshot.meta);
+  if (bigWinner === "X" || bigWinner === "O") return bigWinner;
+  if (openMoves === 0) return "D";
+  return "";
+}
+
+function dropCellIndex(board, col) {
+  for (let row = 2; row >= 0; row -= 1) {
+    const cellIndex = (row * 3) + col;
+    if (!board[cellIndex]) return cellIndex;
+  }
+  return null;
+}
+
+function applyMarkToSnapshot(snapshot, move, mark) {
+  if ((snapshot.variant || "classic") === "drop3") {
+    const col = move.cellIndex % 3;
+    const droppedCell = dropCellIndex(snapshot.boards[move.boardIndex], col);
+    if (droppedCell === null) return null;
+    snapshot.boards[move.boardIndex][droppedCell] = mark;
+    snapshot.meta[move.boardIndex] = miniWinner(snapshot.boards[move.boardIndex], snapshot.variant);
+    return { boardIndex: move.boardIndex, cellIndex: droppedCell };
+  }
+
+  snapshot.boards[move.boardIndex][move.cellIndex] = mark;
+  snapshot.meta[move.boardIndex] = miniWinner(snapshot.boards[move.boardIndex], snapshot.variant);
+  return move;
 }
 
 function cloneForMove(snapshot, move, mark) {
@@ -682,23 +837,35 @@ function cloneForMove(snapshot, move, mark) {
     boards: snapshot.boards.map((board) => [...board]),
     meta: [...snapshot.meta],
     current: opponent(mark),
+    variant: snapshot.variant || "classic",
+    forcedCell: null,
     nextBoard: null,
     gameOver: false,
     winner: "",
   };
-  next.boards[move.boardIndex][move.cellIndex] = mark;
-  next.meta[move.boardIndex] = winnerOf(next.boards[move.boardIndex]);
-  next.nextBoard = next.meta[move.cellIndex] ? null : move.cellIndex;
-  const metaResult = winnerOf(next.meta.map((value) => value === "D" ? "" : value));
-  next.gameOver = Boolean(metaResult) || legalMoves(next).length === 0;
-  next.winner = metaResult === "X" || metaResult === "O" ? metaResult : "";
+  const placed = applyMarkToSnapshot(next, move, mark);
+  if (!placed) {
+    next.gameOver = true;
+    next.winner = opponent(mark);
+    return next;
+  }
+  if (next.variant === "dual") {
+    next.forcedCell = placed.boardIndex;
+  } else {
+    next.nextBoard = isBoardOpenIn(next, placed.cellIndex) ? placed.cellIndex : null;
+  }
+  const result = gameResult(next, mark);
+  next.gameOver = Boolean(result);
+  next.winner = result === "X" || result === "O" ? result : "";
   return next;
 }
 
 function renderBoard() {
   boardEl.innerHTML = "";
   const playable = playableBoards();
-  const freeChoice = state.nextBoard === null || !isBoardOpen(state.nextBoard);
+  const freeChoice = state.variant === "dual"
+    ? state.forcedCell === null
+    : state.nextBoard === null || !isBoardOpen(state.nextBoard);
 
   state.boards.forEach((smallBoard, boardIndex) => {
     const mini = document.createElement("div");
@@ -735,19 +902,30 @@ function renderBoard() {
 function canPlay(boardIndex, cellIndex) {
   if (state.gameOver) return false;
   if (state.mode === "ai" && state.current !== state.human) return false;
-  if (state.boards[boardIndex][cellIndex]) return false;
   if (state.meta[boardIndex]) return false;
-  return playableBoards().includes(boardIndex);
+  if (!playableBoards().includes(boardIndex)) return false;
+
+  if (state.variant === "dual" && state.forcedCell !== null) {
+    return cellIndex === state.forcedCell && !state.boards[boardIndex][cellIndex];
+  }
+
+  if (state.variant === "drop3") {
+    return !state.boards[boardIndex][cellIndex] &&
+      dropCellIndex(state.boards[boardIndex], cellIndex % 3) !== null;
+  }
+
+  if (state.boards[boardIndex][cellIndex]) return false;
+  return true;
 }
 
 function updateStatus() {
   turnToken.textContent = state.current;
   turnToken.className = `turn-token ${state.current.toLowerCase()}`;
-  const metaResult = state.winner || winnerOf(state.meta.map((value) => value === "D" ? "" : value));
-  updateResultBanner(metaResult);
+  const result = state.winner || gameResult(state);
+  updateResultBanner(result);
 
-  if (metaResult === "X" || metaResult === "O") {
-    statusLine.textContent = `${metaResult} wins the big board.`;
+  if (result === "X" || result === "O") {
+    statusLine.textContent = `${result} wins the game.`;
     hintLine.textContent = "Start a new game and see whether a different opening changes the story.";
     return;
   }
@@ -760,8 +938,18 @@ function updateStatus() {
 
   const actor = state.mode === "ai" && state.current !== state.human ? "CPU" : state.current;
   statusLine.textContent = `${actor}'s turn.`;
-  if (state.nextBoard !== null && isBoardOpen(state.nextBoard)) {
+  if (state.variant === "dual" && state.forcedCell !== null) {
+    hintLine.textContent = `The Dual Game: choose any open board, but play square ${state.forcedCell + 1}.`;
+  } else if (state.nextBoard !== null && isBoardOpen(state.nextBoard)) {
     hintLine.textContent = `You must play on small board ${state.nextBoard + 1}.`;
+  } else if (state.variant === "single") {
+    hintLine.textContent = "Single Win: the first small-board win ends the game.";
+  } else if (state.variant === "majority") {
+    hintLine.textContent = "Majority Rule: claim more small boards than your opponent.";
+  } else if (state.variant === "drop3") {
+    hintLine.textContent = "Drop 3: choose a column; your mark falls to the lowest open square.";
+  } else if (state.variant === "shared") {
+    hintLine.textContent = "Shared Territory: drawn small boards count for both players in big-board rows.";
   } else {
     hintLine.textContent = "The target board is unavailable, so you may choose any highlighted board.";
   }
@@ -785,23 +973,35 @@ function updateResultBanner(metaResult) {
 }
 
 function placeMark(boardIndex, cellIndex) {
-  if (state.boards[boardIndex][cellIndex] || state.meta[boardIndex] || state.gameOver) return false;
-  state.boards[boardIndex][cellIndex] = state.current;
-  state.lastMove = { boardIndex, cellIndex };
-  state.meta[boardIndex] = winnerOf(state.boards[boardIndex]);
+  if (!canPlay(boardIndex, cellIndex)) return false;
+  const player = state.current;
+  const placed = applyMarkToSnapshot(state, { boardIndex, cellIndex }, player);
+  if (!placed) return false;
+  state.lastMove = placed;
 
-  const bigWinner = winnerOf(state.meta.map((value) => value === "D" ? "" : value));
-  state.nextBoard = state.meta[cellIndex] ? null : cellIndex;
-  if (bigWinner === "X" || bigWinner === "O") {
+  if (state.variant === "dual") {
+    state.forcedCell = placed.boardIndex;
+    state.nextBoard = null;
+  } else {
+    state.forcedCell = null;
+    state.nextBoard = isBoardOpen(placed.cellIndex) ? placed.cellIndex : null;
+  }
+  const result = gameResult(state, player);
+  if (result === "X" || result === "O") {
     state.gameOver = true;
-    state.winner = bigWinner;
-    state.scores[bigWinner] += 1;
-  } else if (legalMoves().length === 0) {
+    state.winner = result;
+    state.scores[result] += 1;
+  } else if (result === "D") {
     state.gameOver = true;
     state.scores.D += 1;
   }
 
-  state.current = opponent(state.current);
+  if (!state.gameOver) {
+    state.current = opponent(state.current);
+  } else {
+    state.current = opponent(state.current);
+  }
+
   refresh();
   maybeComputerMove();
   return true;
@@ -843,12 +1043,14 @@ function scoreLine(values, aiMark) {
 }
 
 function evaluateSnapshot(snapshot, aiMark) {
-  const big = winnerOf(snapshot.meta.map((value) => value === "D" ? "" : value));
+  const big = gameResult(snapshot, aiMark);
   if (big === aiMark) return 100000;
   if (big === opponent(aiMark)) return -100000;
 
   let score = 0;
-  const metaForLines = snapshot.meta.map((value) => value === "D" ? "" : value);
+  const metaForLines = (snapshot.variant || "classic") === "shared"
+    ? snapshot.meta.map((value) => value === "D" ? aiMark : value)
+    : snapshot.meta.map((value) => value === "D" ? "" : value);
   for (const line of WIN_LINES) {
     score += scoreLine(line.map((index) => metaForLines[index]), aiMark) * 9;
   }
@@ -856,6 +1058,10 @@ function evaluateSnapshot(snapshot, aiMark) {
   snapshot.boards.forEach((smallBoard, boardIndex) => {
     if (snapshot.meta[boardIndex] === aiMark) score += 550;
     if (snapshot.meta[boardIndex] === opponent(aiMark)) score -= 550;
+    if ((snapshot.variant || "classic") === "majority") {
+      if (snapshot.meta[boardIndex] === aiMark) score += 240;
+      if (snapshot.meta[boardIndex] === opponent(aiMark)) score -= 240;
+    }
     if (snapshot.meta[boardIndex]) return;
     for (const line of WIN_LINES) {
       score += scoreLine(line.map((index) => smallBoard[index]), aiMark);
@@ -873,7 +1079,7 @@ function evaluateSnapshot(snapshot, aiMark) {
 
 function minimax(snapshot, depth, alpha, beta, maximizing, aiMark) {
   const moves = legalMoves(snapshot);
-  const big = winnerOf(snapshot.meta.map((value) => value === "D" ? "" : value));
+  const big = gameResult(snapshot, aiMark);
   if (depth === 0 || snapshot.gameOver || big) {
     return evaluateSnapshot(snapshot, aiMark);
   }
@@ -937,6 +1143,7 @@ function resetGame(keepScores = true) {
   state.meta = Array(9).fill("");
   state.current = "X";
   state.nextBoard = null;
+  state.forcedCell = null;
   state.lastMove = null;
   state.gameOver = false;
   state.winner = "";
@@ -949,6 +1156,11 @@ boardEl.addEventListener("click", (event) => {
   const cell = event.target.closest(".cell");
   if (!cell || cell.disabled) return;
   placeMark(Number(cell.dataset.board), Number(cell.dataset.cell));
+});
+
+variantSelect.addEventListener("change", () => {
+  state.variant = variantSelect.value;
+  resetGame();
 });
 
 modeButtons.forEach((button) => {
