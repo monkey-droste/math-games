@@ -404,11 +404,12 @@ function resign(player) {
 }
 
 function chooseCpuMove() {
-  const allMoves = legalMoves(state.board, state.current);
+  const moveLimit = state.size === 10 ? 900 : state.size === 8 ? 600 : 260;
+  const allMoves = legalMoves(state.board, state.current, moveLimit);
   if (!allMoves.length) return null;
 
   const shuffled = [...allMoves].sort(() => Math.random() - 0.5);
-  const sampleLimit = state.size === 10 ? 420 : state.size === 8 ? 280 : 160;
+  const sampleLimit = state.size === 10 ? 320 : state.size === 8 ? 220 : 140;
   const candidates = shuffled.slice(0, sampleLimit);
   let bestScore = -Infinity;
   let bestMoves = [];
@@ -455,7 +456,7 @@ function maybeCpuMove() {
     applyMove(move, state.current);
     state.lastCpuMove = move;
     endTurn();
-  }, 260);
+  }, 120);
 }
 
 boardEl.addEventListener("click", (event) => {
