@@ -295,56 +295,48 @@ select {
 .dots-icon {
   overflow: hidden;
   background:
-    radial-gradient(circle at 18% 18%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 50% 18%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 82% 18%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 18% 50%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 24% 24%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 50% 24%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 76% 24%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 24% 50%, var(--line) 0 5px, transparent 6px),
     radial-gradient(circle at 50% 50%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 82% 50%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 18% 82%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 50% 82%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 82% 82%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 76% 50%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 24% 76%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 50% 76%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 76% 76%, var(--line) 0 5px, transparent 6px),
     var(--panel);
 }
 
 .dots-icon::before {
   content: "";
   position: absolute;
-  inset: 18%;
+  inset: 23% 19%;
   background:
-    linear-gradient(var(--danger), var(--danger)) 0 0 / 100% 7px no-repeat,
-    linear-gradient(var(--blue), var(--blue)) 0 50% / 100% 7px no-repeat,
-    linear-gradient(var(--green), var(--green)) 0 100% / 100% 7px no-repeat,
-    linear-gradient(90deg, var(--danger), var(--danger)) 0 0 / 7px 100% no-repeat,
-    linear-gradient(90deg, var(--blue), var(--blue)) 50% 0 / 7px 100% no-repeat,
-    linear-gradient(90deg, var(--green), var(--green)) 100% 0 / 7px 100% no-repeat;
+    linear-gradient(var(--danger), var(--danger)) 0 0 / 57% 6px no-repeat,
+    linear-gradient(var(--blue), var(--blue)) 100% 50% / 57% 6px no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 0 0 / 6px 50% no-repeat,
+    linear-gradient(90deg, var(--green), var(--green)) 50% 50% / 6px 50% no-repeat;
   z-index: 1;
 }
 
 .dots-icon::after {
   content: "";
   position: absolute;
-  left: 21%;
-  top: 21%;
-  width: 27%;
-  aspect-ratio: 1;
-  background: rgba(225, 93, 86, 0.32);
-  box-shadow:
-    26px 0 0 rgba(64, 120, 201, 0.28),
-    26px 26px 0 rgba(79, 156, 99, 0.3);
-  transform: rotate(-2deg);
-  z-index: 0;
+  left: 48%;
+  top: 22%;
+  width: 6px;
+  height: 28px;
+  background: var(--blue);
+  z-index: 1;
 }
 
 .dots-icon span {
   position: absolute;
-  right: 12px;
-  bottom: 12px;
-  width: 17px;
-  aspect-ratio: 1;
-  border: 3px solid var(--line);
-  border-radius: 50%;
-  background: var(--panel);
+  right: 17px;
+  bottom: 17px;
+  width: 26px;
+  height: 6px;
+  background: var(--danger);
   z-index: 2;
 }
 
@@ -364,10 +356,10 @@ select {
 .order-icon::before {
   content: "X";
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 8px;
   color: var(--danger);
-  font-size: 2.2rem;
+  font-size: 1.95rem;
   font-weight: 1000;
   transform: rotate(-8deg);
 }
@@ -375,60 +367,95 @@ select {
 .order-icon::after {
   content: "O";
   position: absolute;
-  right: 10px;
-  bottom: 8px;
+  right: 12px;
+  top: 8px;
   color: var(--blue);
-  font-size: 2.2rem;
+  font-size: 1.95rem;
   font-weight: 1000;
   transform: rotate(7deg);
 }
 
 .order-icon span {
   position: absolute;
-  inset: 38px 8px auto;
-  height: 7px;
-  background: var(--green);
-  transform: rotate(-35deg);
+  inset: 0;
+}
+
+.order-icon span::before {
+  content: "X";
+  position: absolute;
+  left: 15px;
+  bottom: 7px;
+  color: var(--blue);
+  font-size: 1.95rem;
+  font-weight: 1000;
+  transform: rotate(7deg);
+}
+
+.order-icon span::after {
+  content: "O";
+  position: absolute;
+  right: 11px;
+  bottom: 7px;
+  color: var(--danger);
+  font-size: 1.95rem;
+  font-weight: 1000;
+  transform: rotate(-8deg);
 }
 
 .quantum-icon {
   overflow: hidden;
-  background:
-    radial-gradient(circle at 25% 26%, var(--danger) 0 9px, transparent 10px),
-    radial-gradient(circle at 72% 28%, var(--blue) 0 9px, transparent 10px),
-    radial-gradient(circle at 50% 72%, var(--danger) 0 9px, transparent 10px),
-    var(--panel);
-}
-
-.quantum-icon::before,
-.quantum-icon::after,
-.quantum-icon span {
-  content: "";
-  position: absolute;
-  height: 4px;
-  background: var(--line);
-  transform-origin: left center;
+  background: var(--panel);
 }
 
 .quantum-icon::before {
-  left: 25%;
-  top: 27%;
-  width: 48%;
-  transform: rotate(4deg);
+  content: "X";
+  position: absolute;
+  left: 15px;
+  top: 17px;
+  width: 29px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--danger);
+  border-radius: 50%;
+  color: var(--danger);
+  font-size: 1.55rem;
+  font-weight: 1000;
+  background: rgba(255, 250, 240, 0.88);
+  z-index: 2;
 }
 
 .quantum-icon::after {
-  left: 30%;
-  top: 34%;
-  width: 50%;
-  transform: rotate(58deg);
+  content: "O";
+  position: absolute;
+  right: 14px;
+  bottom: 15px;
+  width: 29px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--blue);
+  border-radius: 50%;
+  color: var(--blue);
+  font-size: 1.55rem;
+  font-weight: 1000;
+  background: rgba(255, 250, 240, 0.88);
+  z-index: 2;
 }
 
 .quantum-icon span {
-  left: 50%;
-  top: 70%;
-  width: 32%;
-  transform: rotate(-62deg);
+  position: absolute;
+  left: 24px;
+  top: 33px;
+  width: 42px;
+  height: 7px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(217, 79, 69, 0.18), var(--line), rgba(36, 120, 166, 0.18));
+  box-shadow: 0 0 10px rgba(36, 120, 166, 0.42);
+  transform: rotate(39deg);
+  transform-origin: left center;
+  z-index: 1;
 }
 
 .three-d-icon {
@@ -437,43 +464,44 @@ select {
 }
 
 .three-d-icon::before,
-.three-d-icon::after,
-.three-d-icon span {
+.three-d-icon::after {
   content: "";
   position: absolute;
-  width: 42px;
+  width: 43px;
   aspect-ratio: 1;
   border: 3px solid var(--line);
   background:
-    linear-gradient(var(--line), var(--line)) 50% 33% / 100% 2px no-repeat,
-    linear-gradient(var(--line), var(--line)) 50% 66% / 100% 2px no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 33% 50% / 2px 100% no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 66% 50% / 2px 100% no-repeat,
-    rgba(255, 250, 240, 0.88);
+    linear-gradient(var(--line), var(--line)) 50% 25% / 100% 2px no-repeat,
+    linear-gradient(var(--line), var(--line)) 50% 50% / 100% 2px no-repeat,
+    linear-gradient(var(--line), var(--line)) 50% 75% / 100% 2px no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 25% 50% / 2px 100% no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 50% 50% / 2px 100% no-repeat,
+    linear-gradient(90deg, var(--line), var(--line)) 75% 50% / 2px 100% no-repeat,
+    rgba(255, 250, 240, 0.82);
 }
 
 .three-d-icon::before {
-  left: 13px;
-  top: 12px;
-  box-shadow: 7px 7px 0 rgba(36, 120, 166, 0.28);
+  left: 21px;
+  top: 13px;
+  background-color: rgba(36, 120, 166, 0.18);
 }
 
 .three-d-icon::after {
-  right: 11px;
-  bottom: 11px;
-  box-shadow: -7px -7px 0 rgba(217, 79, 69, 0.26);
+  left: 12px;
+  top: 24px;
+  background-color: rgba(239, 200, 74, 0.62);
+  z-index: 2;
 }
 
 .three-d-icon span {
-  left: 22px;
-  top: 22px;
+  position: absolute;
+  inset: 14px 14px 14px 12px;
   background:
-    linear-gradient(var(--line), var(--line)) 50% 33% / 100% 2px no-repeat,
-    linear-gradient(var(--line), var(--line)) 50% 66% / 100% 2px no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 33% 50% / 2px 100% no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 66% 50% / 2px 100% no-repeat,
-    rgba(239, 200, 74, 0.72);
-  z-index: 2;
+    linear-gradient(135deg, transparent 0 38%, var(--line) 39% 43%, transparent 44%) 0 0 / 16px 16px no-repeat,
+    linear-gradient(135deg, transparent 0 38%, var(--line) 39% 43%, transparent 44%) 100% 0 / 16px 16px no-repeat,
+    linear-gradient(135deg, transparent 0 38%, var(--line) 39% 43%, transparent 44%) 0 100% / 16px 16px no-repeat,
+    linear-gradient(135deg, transparent 0 38%, var(--line) 39% 43%, transparent 44%) 100% 100% / 16px 16px no-repeat;
+  z-index: 1;
 }
 
 .home-band {

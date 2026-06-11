@@ -18,9 +18,11 @@ const state = {
   winLine: [],
   scores: { X: 0, O: 0, D: 0 },
   turnId: 0,
+  zoom: 1,
 };
 
 const boardEl = document.querySelector("#board");
+const sceneEl = document.querySelector(".ttt3d-scene");
 const statusLine = document.querySelector("#statusLine");
 const hintLine = document.querySelector("#hintLine");
 const turnToken = document.querySelector("#turnToken");
@@ -37,6 +39,9 @@ const resultBanner = document.querySelector("#resultBanner");
 const resultKicker = document.querySelector("#resultKicker");
 const resultTitle = document.querySelector("#resultTitle");
 const bannerNewGameButton = document.querySelector("#bannerNewGame");
+const zoomOutButton = document.querySelector("#zoomOut");
+const zoomResetButton = document.querySelector("#zoomReset");
+const zoomLevel = document.querySelector("#zoomLevel");
 
 function opponent(mark) {
   return mark === "X" ? "O" : "X";
@@ -103,6 +108,7 @@ function winnerLine(board = state.board) {
 
 function render() {
   boardEl.innerHTML = "";
+  updateBoardZoom();
   xScore.textContent = state.scores.X;
   oScore.textContent = state.scores.O;
   drawScore.textContent = state.scores.D;
@@ -140,6 +146,17 @@ function render() {
   }
 
   updateStatus();
+}
+
+function updateBoardZoom() {
+  sceneEl.style.width = `${Math.round(760 * state.zoom)}px`;
+  sceneEl.style.maxWidth = state.zoom <= 1 ? "100%" : "none";
+  zoomLevel.textContent = `${Math.round(state.zoom * 100)}%`;
+}
+
+function setZoom(nextZoom) {
+  state.zoom = Math.min(1, Math.max(0.6, Number(nextZoom.toFixed(2))));
+  updateBoardZoom();
 }
 
 function updateStatus() {
@@ -304,5 +321,8 @@ resignButtons.forEach((button) => {
 newGameButton.addEventListener("click", () => resetGame());
 clearScoreButton.addEventListener("click", () => resetGame(false));
 bannerNewGameButton.addEventListener("click", () => resetGame());
+zoomOutButton.addEventListener("click", () => setZoom(state.zoom - 0.1));
+zoomResetButton.addEventListener("click", () => setZoom(1));
+window.addEventListener("resize", updateBoardZoom);
 
 resetGame();

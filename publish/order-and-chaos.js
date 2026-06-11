@@ -23,6 +23,7 @@ const state = {
   winLine: [],
   scores: { O: 0, C: 0, D: 0 },
   turnId: 0,
+  zoom: 1,
 };
 
 const boardEl = document.querySelector("#board");
@@ -43,6 +44,9 @@ const resultBanner = document.querySelector("#resultBanner");
 const resultKicker = document.querySelector("#resultKicker");
 const resultTitle = document.querySelector("#resultTitle");
 const bannerNewGameButton = document.querySelector("#bannerNewGame");
+const zoomOutButton = document.querySelector("#zoomOut");
+const zoomResetButton = document.querySelector("#zoomReset");
+const zoomLevel = document.querySelector("#zoomLevel");
 
 function opponent(player) {
   return player === "O" ? "C" : "O";
@@ -102,6 +106,7 @@ function gameResult(board = state.board) {
 
 function render() {
   boardEl.innerHTML = "";
+  updateBoardZoom();
   orderScore.textContent = state.scores.O;
   chaosScore.textContent = state.scores.C;
   drawScore.textContent = state.scores.D;
@@ -122,6 +127,17 @@ function render() {
   });
 
   updateStatus();
+}
+
+function updateBoardZoom() {
+  boardEl.style.width = `${Math.round(680 * state.zoom)}px`;
+  boardEl.style.maxWidth = state.zoom <= 1 ? "100%" : "none";
+  zoomLevel.textContent = `${Math.round(state.zoom * 100)}%`;
+}
+
+function setZoom(nextZoom) {
+  state.zoom = Math.min(1, Math.max(0.6, Number(nextZoom.toFixed(2))));
+  updateBoardZoom();
 }
 
 function updateStatus() {
@@ -286,5 +302,8 @@ resignButtons.forEach((button) => {
 newGameButton.addEventListener("click", () => resetGame());
 clearScoreButton.addEventListener("click", () => resetGame(false));
 bannerNewGameButton.addEventListener("click", () => resetGame());
+zoomOutButton.addEventListener("click", () => setZoom(state.zoom - 0.1));
+zoomResetButton.addEventListener("click", () => setZoom(1));
+window.addEventListener("resize", updateBoardZoom);
 
 resetGame();
