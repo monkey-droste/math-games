@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Math Games</title>
+    <meta
+      name="description"
+      content="Math Games is an unofficial fan-made playable game site inspired by Ben Orlin's Math Games with Bad Drawings."
+    >
+    <meta name="theme-color" content="#f6f1e4">
+    <meta property="og:title" content="Math Games">
+    <meta
+      property="og:description"
+      content="A fan-made playable game site inspired by Ben Orlin's Math Games with Bad Drawings."
+    >
+    <meta property="og:type" content="website">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="home-shell">
+      <header class="site-header" aria-label="Site header">
+        <a class="brand-mark" href="index.html" aria-label="Math Games home">
+          <span aria-hidden="true">M</span>
+        </a>
+      </header>
+
+      <section class="home-hero" aria-label="Math Games intro">
+        <div class="hero-copy">
+          <p class="kicker">Playable strategy puzzles</p>
+          <h1>Math Games</h1>
+          <p class="credit-note">
+            A tiny playable fan site inspired by Ben Orlin's <em>Math Games with Bad Drawings</em>.
+            This is an unofficial project for readers who want to try the games directly in a browser.
+            Built with assistance from Codex.
+          </p>
+        </div>
+
+        <div class="doodle-board" aria-hidden="true">
+          <span class="doodle-square x">x</span>
+          <span class="doodle-square path"></span>
+          <span class="doodle-square arrow"></span>
+          <span class="doodle-square o">o</span>
+          <span class="doodle-piece"></span>
+          <span class="doodle-square sum">3</span>
+          <span class="doodle-square target"></span>
+          <span class="doodle-square plus">+</span>
+          <span class="doodle-square win">=</span>
+        </div>
+      </section>
+
+      <section id="games" class="game-directory" aria-label="Game directory">
+        <a class="game-card amazons-card" href="amazons.html">
+          <span class="game-icon amazons-icon" aria-hidden="true">
+            <span></span>
+          </span>
+          <span class="game-card-copy">
+            <span class="game-label">Territory</span>
+            <strong>Game of the Amazons</strong>
+            <small>Move an amazon, shoot an arrow, and slowly trap the other side.</small>
+          </span>
+        </a>
+
+        <a class="game-card ttt-card" href="ultimate-tic-tac-toe.html">
+          <span class="game-icon ttt-icon" aria-hidden="true">
+            <span></span>
+          </span>
+          <span class="game-card-copy">
+            <span class="game-label">Nested boards</span>
+            <strong>Ultimate Tic-Tac-Toe</strong>
+            <small>A tic-tac-toe board made of nine smaller boards, with a twist.</small>
+          </span>
+        </a>
+      </section>
+
+      <section id="about" class="home-band" aria-label="About Math Games">
+        <div>
+          <h2>Unofficial Fan Project</h2>
+          <p>
+            Math Games is made by a reader and is not an official Ben Orlin website. The games,
+            framing, and playful spirit are inspired by Ben Orlin's book <em>Math Games with Bad Drawings</em>.
+            The site was built with assistance from Codex.
+          </p>
+        </div>
+        <div>
+          <h2>Local First, Web Ready</h2>
+          <p>
+            Edit the files in this folder, refresh the browser, then sync the publish folder.
+            New games can be added as plain HTML, CSS, and JavaScript files.
+          </p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

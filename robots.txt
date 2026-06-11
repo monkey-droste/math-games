@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://monkey-droste.github.io/math-games/sitemap.xml

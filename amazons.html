@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game of the Amazons | Math Games</title>
+    <meta
+      name="description"
+      content="Play Game of the Amazons in Math Games, an unofficial fan-made site inspired by Ben Orlin's Math Games with Bad Drawings."
+    >
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="game-panel" aria-label="Game of the Amazons">
+        <header class="topbar">
+          <div>
+            <a class="game-home-link" href="index.html">Return</a>
+            <h1>Game of the Amazons</h1>
+          </div>
+          <div class="score-card" aria-label="Score">
+            <div><span id="whiteScore">0</span><small>Gold</small></div>
+            <div><span id="blackScore">0</span><small>Teal</small></div>
+          </div>
+        </header>
+
+        <section class="game-controls" aria-label="Game settings">
+          <div class="control-row variant-row">
+            <label class="compact-field">
+              <span>Variant</span>
+              <select id="boardSize">
+                <option value="8" selected>8 x 8 - 3 amazons each</option>
+                <option value="10">10 x 10 - 4 amazons each</option>
+                <option value="6">6 x 6 - 2 amazons each</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="control-row action-row">
+            <div class="segmented" role="group" aria-label="Mode">
+              <button type="button" class="segment active" data-mode="human">Two Players</button>
+              <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
+            </div>
+
+            <div id="sideField" class="segmented hidden" role="group" aria-label="Human side">
+              <button type="button" class="segment active" data-side="W">Play Gold</button>
+              <button type="button" class="segment" data-side="B">Play Teal</button>
+            </div>
+
+            <button type="button" id="newGame" class="text-button">New Game</button>
+            <button type="button" class="text-button" data-resign="W">Gold Resigns</button>
+            <button type="button" class="text-button" data-resign="B">Teal Resigns</button>
+            <button type="button" id="resetScore" class="text-button">Clear Score</button>
+          </div>
+
+          <div class="control-row zoom-row">
+            <div class="zoom-controls" role="group" aria-label="Board zoom">
+              <button type="button" id="zoomOut" class="icon-button" aria-label="Zoom out" title="Zoom out">−</button>
+              <span id="zoomLevel" class="zoom-readout">100%</span>
+              <button type="button" id="zoomReset" class="text-button">100%</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="status-card" aria-live="polite">
+          <div id="turnBadge" class="turn-badge gold" aria-label="Gold turn"></div>
+          <div>
+            <p id="statusLine">Gold starts. Choose an amazon.</p>
+            <p id="hintLine">Move like a queen, then shoot an arrow like a queen.</p>
+          </div>
+        </section>
+
+        <section id="resultBanner" class="result-banner hidden" aria-live="assertive">
+          <p id="resultKicker">Game over</p>
+          <h2 id="resultTitle">Gold Wins!</h2>
+          <button type="button" id="bannerNewGame">New Game</button>
+        </section>
+
+        <div class="board-wrap">
+          <div id="board" class="board" aria-label="Amazons board"></div>
+        </div>
+      </section>
+
+      <aside class="settings-panel" aria-label="Rules">
+        <section>
+          <h2>Rules</h2>
+          <p>Gold moves first, then Teal. Each side controls the amazons in its own board color.</p>
+          <p>On your turn, move one amazon in any straight or diagonal line, like a chess queen.</p>
+          <p>From the amazon's new square, shoot one arrow in any straight or diagonal line. That square disappears from the board.</p>
+          <p>If you begin your turn with no legal move, you lose.</p>
+        </section>
+
+        <section>
+          <h2>Variants</h2>
+          <p>6 x 6 is a tiny two-amazon duel. 8 x 8 is a fast three-amazon board. 10 x 10 is the classic setup.</p>
+        </section>
+      </aside>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
