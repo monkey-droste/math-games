@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>3D Tic-Tac-Toe | Math Games</title>
+    <meta
+      name="description"
+      content="Play 3D Tic-Tac-Toe in Math Games, an unofficial fan-made site inspired by Ben Orlin's Math Games with Bad Drawings."
+    >
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="game-page.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="play-surface" aria-label="3D tic-tac-toe game">
+        <header class="topbar">
+          <div>
+            <a class="game-home-link" href="./">Return</a>
+            <h1>3D Tic-Tac-Toe</h1>
+          </div>
+          <div class="score-strip" aria-label="Score">
+            <div><span id="xScore">0</span><small>X</small></div>
+            <div><span id="drawScore">0</span><small>Draw</small></div>
+            <div><span id="oScore">0</span><small>O</small></div>
+          </div>
+        </header>
+
+        <section class="controls" aria-label="Game settings">
+          <div class="control-row">
+            <div class="segmented" role="group" aria-label="Game mode">
+              <button type="button" class="segment active" data-mode="human">Two Players</button>
+              <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
+            </div>
+            <div id="sideChoice" class="segmented hidden" role="group" aria-label="Side choice">
+              <button type="button" class="segment active" data-human="X">Play X</button>
+              <button type="button" class="segment" data-human="O">Play O</button>
+            </div>
+            <button type="button" id="newGame" class="text-button">New Game</button>
+            <button type="button" class="text-button" data-resign="X">X Resigns</button>
+            <button type="button" class="text-button" data-resign="O">O Resigns</button>
+            <button type="button" id="clearScore" class="text-button">Clear Score</button>
+          </div>
+        </section>
+
+        <section class="status-panel" aria-live="polite">
+          <div class="turn-token x" id="turnToken">X</div>
+          <div>
+            <p id="statusLine">X starts. Choose any open cube.</p>
+            <p id="hintLine">Make four in a row across rows, columns, layers, pillars, or true space diagonals.</p>
+          </div>
+        </section>
+
+        <section id="resultBanner" class="result-banner hidden" aria-live="assertive">
+          <p id="resultKicker">Game over</p>
+          <h2 id="resultTitle">X Wins!</h2>
+          <button type="button" id="bannerNewGame">New Game</button>
+        </section>
+
+        <div class="board-viewport">
+          <div class="ttt3d-scene">
+            <div id="board" class="ttt3d-stack" aria-label="3D tic-tac-toe board"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="rules-panel" aria-label="Rules">
+        <h2>Rules</h2>
+        <p>The board is a 4 x 4 x 4 cube, shown as four stacked layers. X and O alternate placing one mark.</p>
+        <p>Win by making four in a straight line anywhere in the cube: on one layer, straight through the layers, or along a 3D diagonal.</p>
+        <p>If all 64 cubes fill with no four-in-a-row, the game is a draw.</p>
+      </aside>
+    </main>
+
+    <script src="three-d-tic-tac-toe.js"></script>
+  </body>
+</html>

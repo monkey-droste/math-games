@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Order and Chaos | Math Games</title>
+    <meta
+      name="description"
+      content="Play Order and Chaos in Math Games, an unofficial fan-made site inspired by Ben Orlin's Math Games with Bad Drawings."
+    >
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="game-page.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="play-surface" aria-label="Order and Chaos game">
+        <header class="topbar">
+          <div>
+            <a class="game-home-link" href="./">Return</a>
+            <h1>Order and Chaos</h1>
+          </div>
+          <div class="score-strip" aria-label="Score">
+            <div><span id="orderScore">0</span><small>Order</small></div>
+            <div><span id="drawScore">0</span><small>Draw</small></div>
+            <div><span id="chaosScore">0</span><small>Chaos</small></div>
+          </div>
+        </header>
+
+        <section class="controls" aria-label="Game settings">
+          <div class="control-row">
+            <div class="segmented" role="group" aria-label="Game mode">
+              <button type="button" class="segment active" data-mode="human">Two Players</button>
+              <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
+            </div>
+            <div id="sideChoice" class="segmented hidden" role="group" aria-label="Side choice">
+              <button type="button" class="segment active" data-human="O">Play Order</button>
+              <button type="button" class="segment" data-human="C">Play Chaos</button>
+            </div>
+            <div class="segmented" role="group" aria-label="Symbol choice">
+              <button type="button" class="segment symbol-choice active" data-symbol="X">Place X</button>
+              <button type="button" class="segment symbol-choice" data-symbol="O">Place O</button>
+            </div>
+          </div>
+          <div class="control-row">
+            <button type="button" id="newGame" class="text-button">New Game</button>
+            <button type="button" id="clearScore" class="text-button">Clear Score</button>
+          </div>
+        </section>
+
+        <section class="status-panel" aria-live="polite">
+          <div class="turn-token order" id="turnToken">O</div>
+          <div>
+            <p id="statusLine">Order starts. Choose X or O, then place it.</p>
+            <p id="hintLine">Order wants five matching marks in a row. Chaos wants to fill the board without one.</p>
+          </div>
+        </section>
+
+        <section id="resultBanner" class="result-banner hidden" aria-live="assertive">
+          <p id="resultKicker">Game over</p>
+          <h2 id="resultTitle">Order Wins!</h2>
+          <button type="button" id="bannerNewGame">New Game</button>
+        </section>
+
+        <div class="board-viewport">
+          <div id="board" class="game-board grid-board order-board" aria-label="Order and Chaos board"></div>
+        </div>
+      </section>
+
+      <aside class="rules-panel" aria-label="Rules">
+        <h2>Rules</h2>
+        <p>Order and Chaos is played on a 6 x 6 board. On every turn, the player may place either X or O.</p>
+        <p>Order wins as soon as there are five matching marks in a row horizontally, vertically, or diagonally.</p>
+        <p>Chaos wins if the whole board fills before Order makes a five-in-a-row.</p>
+      </aside>
+    </main>
+
+    <script src="order-and-chaos.js"></script>
+  </body>
+</html>
