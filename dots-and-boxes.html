@@ -490,9 +490,9 @@ h1 {
             <h1>Dots and Boxes</h1>
           </div>
           <div class="score-strip" aria-label="Score">
-            <div><span id="redScore">0</span><small>Red</small></div>
-            <div><span id="edgeCount">0</span><small>Lines</small></div>
-            <div><span id="blueScore">0</span><small>Blue</small></div>
+            <div><span id="redScore">0</span><small>Red Wins</small></div>
+            <div><span id="drawScore">0</span><small>Draw</small></div>
+            <div><span id="blueScore">0</span><small>Blue Wins</small></div>
           </div>
         </header>
 
@@ -566,7 +566,7 @@ const state = {
   mode: "human",
   human: "R",
   scores: { R: 0, B: 0 },
-  matchScores: { R: 0, B: 0 },
+  matchScores: { R: 0, B: 0, D: 0 },
   lastEdge: null,
   gameOver: false,
   turnId: 0,
@@ -579,7 +579,7 @@ const hintLine = document.querySelector("#hintLine");
 const turnToken = document.querySelector("#turnToken");
 const redScore = document.querySelector("#redScore");
 const blueScore = document.querySelector("#blueScore");
-const edgeCount = document.querySelector("#edgeCount");
+const drawScore = document.querySelector("#drawScore");
 const modeButtons = document.querySelectorAll("[data-mode]");
 const humanButtons = document.querySelectorAll("[data-human]");
 const resignButtons = document.querySelectorAll("[data-resign]");
@@ -758,9 +758,9 @@ function edgeButton(edge) {
 }
 
 function updateStatus() {
-  redScore.textContent = state.scores.R;
-  blueScore.textContent = state.scores.B;
-  edgeCount.textContent = `${claimedEdges()}/${totalEdges()}`;
+  redScore.textContent = state.matchScores.R;
+  blueScore.textContent = state.matchScores.B;
+  drawScore.textContent = state.matchScores.D;
   sideChoice.classList.toggle("hidden", state.mode !== "cpu");
   turnToken.textContent = state.current;
   turnToken.className = `turn-token ${playerClass(state.current)}`;
@@ -820,6 +820,8 @@ function finishGame() {
     resultClass = "blue";
     title = "Blue Wins!";
     state.matchScores.B += 1;
+  } else {
+    state.matchScores.D += 1;
   }
 
   refresh();
@@ -840,7 +842,7 @@ function resetGame(keepMatchScores = true) {
   state.lastEdge = null;
   state.gameOver = false;
   state.turnId += 1;
-  if (!keepMatchScores) state.matchScores = { R: 0, B: 0 };
+  if (!keepMatchScores) state.matchScores = { R: 0, B: 0, D: 0 };
   resultBanner.className = "result-banner hidden";
   refresh();
   maybeCpuMove();
