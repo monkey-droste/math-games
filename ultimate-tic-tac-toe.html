@@ -642,7 +642,7 @@ h1 {
             <li><strong>Single Win.</strong> The first player to win any small board wins the whole game immediately.</li>
             <li><strong>Majority Rule.</strong> Big-board rows do not matter. Win more small boards than your opponent.</li>
             <li><strong>Ultimate Drop 3.</strong> Play like Ultimate Tic-Tac-Toe, except marks drop to the lowest open square in the chosen column of the small board.</li>
-            <li><strong>The Dual Game.</strong> Reverse the usual steering. The previous move's small square tells you which square position to fill, while you choose the small board.</li>
+            <li><strong>The Dual Game.</strong> Reverse the usual steering. The previous move's small board tells you which square position to fill, while you choose the small board.</li>
             <li><strong>Shared Territory.</strong> Drawn small boards count for both players when checking big-board rows.</li>
           </ol>
         </section>
@@ -868,7 +868,7 @@ function cloneForMove(snapshot, move, mark) {
     return next;
   }
   if (next.variant === "dual") {
-    next.forcedCell = placed.cellIndex;
+    next.forcedCell = placed.boardIndex;
   } else {
     next.nextBoard = isBoardOpenIn(next, placed.cellIndex) ? placed.cellIndex : null;
   }
@@ -966,7 +966,7 @@ function updateStatus() {
   const actor = state.mode === "ai" && state.current !== state.human ? "CPU" : state.current;
   statusLine.textContent = `${actor}'s turn.`;
   if (state.variant === "dual" && state.forcedCell !== null) {
-    hintLine.textContent = `The Dual Game: the last move's small square sets square ${state.forcedCell + 1}; choose which board gets that square.`;
+    hintLine.textContent = `The Dual Game: the last move's small board sets square ${state.forcedCell + 1}; choose which board gets that square.`;
   } else if (state.nextBoard !== null && isBoardOpen(state.nextBoard)) {
     hintLine.textContent = `You must play on small board ${state.nextBoard + 1}.`;
   } else if (state.variant === "single") {
@@ -976,7 +976,7 @@ function updateStatus() {
   } else if (state.variant === "drop3") {
     hintLine.textContent = "Drop 3: choose a column; your mark falls to the lowest open square.";
   } else if (state.variant === "dual") {
-    hintLine.textContent = "The Dual Game: choose any opening; after that, the last move's small square sets the next square.";
+    hintLine.textContent = "The Dual Game: choose any opening; after that, the last move's small board sets the next square.";
   } else if (state.variant === "shared") {
     hintLine.textContent = "Shared Territory: drawn small boards count for both players in big-board rows.";
   } else {
@@ -1009,7 +1009,7 @@ function placeMark(boardIndex, cellIndex) {
   state.lastMove = placed;
 
   if (state.variant === "dual") {
-    state.forcedCell = placed.cellIndex;
+    state.forcedCell = placed.boardIndex;
     state.nextBoard = null;
   } else {
     state.forcedCell = null;
