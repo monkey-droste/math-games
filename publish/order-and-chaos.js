@@ -35,6 +35,7 @@ const drawScore = document.querySelector("#drawScore");
 const modeButtons = document.querySelectorAll("[data-mode]");
 const humanButtons = document.querySelectorAll("[data-human]");
 const symbolButtons = document.querySelectorAll("[data-symbol]");
+const resignButtons = document.querySelectorAll("[data-resign]");
 const sideChoice = document.querySelector("#sideChoice");
 const newGameButton = document.querySelector("#newGame");
 const clearScoreButton = document.querySelector("#clearScore");
@@ -240,6 +241,11 @@ function resetGame(keepScores = true) {
   maybeCpuMove();
 }
 
+function resign(player) {
+  if (state.gameOver) return;
+  finishGame(opponent(player));
+}
+
 boardEl.addEventListener("click", (event) => {
   const button = event.target.closest(".order-cell");
   if (!button || button.disabled) return;
@@ -271,6 +277,10 @@ symbolButtons.forEach((button) => {
     state.selectedSymbol = button.dataset.symbol;
     updateStatus();
   });
+});
+
+resignButtons.forEach((button) => {
+  button.addEventListener("click", () => resign(button.dataset.resign));
 });
 
 newGameButton.addEventListener("click", () => resetGame());
