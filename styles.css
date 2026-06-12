@@ -295,24 +295,24 @@ select {
 .dots-icon {
   overflow: hidden;
   background:
-    radial-gradient(circle at 24% 24%, var(--line) 0 4px, transparent 5px),
-    radial-gradient(circle at 50% 24%, var(--line) 0 4px, transparent 5px),
-    radial-gradient(circle at 76% 24%, var(--line) 0 4px, transparent 5px),
-    radial-gradient(circle at 24% 50%, var(--line) 0 4px, transparent 5px),
-    radial-gradient(circle at 50% 50%, var(--line) 0 4px, transparent 5px),
-    radial-gradient(circle at 76% 50%, var(--line) 0 4px, transparent 5px),
-    radial-gradient(circle at 24% 76%, var(--line) 0 4px, transparent 5px),
-    radial-gradient(circle at 50% 76%, var(--line) 0 4px, transparent 5px),
-    radial-gradient(circle at 76% 76%, var(--line) 0 4px, transparent 5px),
+    radial-gradient(circle at 25% 25%, var(--line) 0 4px, transparent 4.8px),
+    radial-gradient(circle at 50% 25%, var(--line) 0 4px, transparent 4.8px),
+    radial-gradient(circle at 75% 25%, var(--line) 0 4px, transparent 4.8px),
+    radial-gradient(circle at 25% 50%, var(--line) 0 4px, transparent 4.8px),
+    radial-gradient(circle at 50% 50%, var(--line) 0 4px, transparent 4.8px),
+    radial-gradient(circle at 75% 50%, var(--line) 0 4px, transparent 4.8px),
+    radial-gradient(circle at 25% 75%, var(--line) 0 4px, transparent 4.8px),
+    radial-gradient(circle at 50% 75%, var(--line) 0 4px, transparent 4.8px),
+    radial-gradient(circle at 75% 75%, var(--line) 0 4px, transparent 4.8px),
     var(--panel);
 }
 
 .dots-icon::before {
   content: "";
   position: absolute;
-  left: 24%;
-  top: 24%;
-  width: 52%;
+  left: 25%;
+  top: calc(25% - 3px);
+  width: 50%;
   height: 6px;
   border-radius: 999px;
   background: var(--danger);
@@ -322,9 +322,9 @@ select {
 .dots-icon::after {
   content: "";
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 26%;
+  left: 25%;
+  top: calc(50% - 3px);
+  width: 50%;
   height: 6px;
   border-radius: 999px;
   background: var(--blue);
