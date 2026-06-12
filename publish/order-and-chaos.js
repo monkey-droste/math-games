@@ -16,7 +16,7 @@ const state = {
   current: "O",
   mode: "human",
   human: "O",
-  selectedSymbol: "X",
+  pendingIndex: null,
   gameOver: false,
   winner: "",
   lastMove: null,
@@ -35,7 +35,6 @@ const chaosScore = document.querySelector("#chaosScore");
 const drawScore = document.querySelector("#drawScore");
 const modeButtons = document.querySelectorAll("[data-mode]");
 const humanButtons = document.querySelectorAll("[data-human]");
-const symbolButtons = document.querySelectorAll("[data-symbol]");
 const resignButtons = document.querySelectorAll("[data-resign]");
 const sideChoice = document.querySelector("#sideChoice");
 const newGameButton = document.querySelector("#newGame");
@@ -113,17 +112,29 @@ function render() {
   sideChoice.classList.toggle("hidden", state.mode !== "cpu");
 
   state.board.forEach((value, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "cell-button order-cell";
-    button.dataset.index = String(index);
-    button.setAttribute("aria-label", `Row ${Math.floor(index / SIZE) + 1}, column ${(index % SIZE) + 1}`);
-    button.textContent = value;
-    if (value) button.classList.add(value.toLowerCase());
-    if (state.lastMove === index) button.classList.add("last");
-    if (state.winLine.includes(index)) button.classList.add("win");
-    button.disabled = state.gameOver || Boolean(value) || isCpuTurn();
-    boardEl.append(button);
+    const isChoosing = state.pendingIndex === index && !value && !state.gameOver && !isCpuTurn();
+    const cell = document.createElement(isChoosing ? "div" : "button");
+    if (!isChoosing) cell.type = "button";
+    cell.className = "cell-button order-cell";
+    cell.dataset.index = String(index);
+    cell.setAttribute("aria-label", `Row ${Math.floor(index / SIZE) + 1}, column ${(index % SIZE) + 1}`);
+    if (value) {
+      cell.textContent = value;
+      cell.classList.add(value.toLowerCase());
+    }
+    if (isChoosing) {
+      cell.classList.add("choosing");
+      cell.setAttribute("role", "group");
+      cell.setAttribute("aria-label", `Choose X or O for row ${Math.floor(index / SIZE) + 1}, column ${(index % SIZE) + 1}`);
+      cell.innerHTML = `
+        <button type="button" class="order-symbol-option x" data-symbol-choice="X" aria-label="Place X">X</button>
+        <button type="button" class="order-symbol-option o" data-symbol-choice="O" aria-label="Place O">O</button>
+      `;
+    }
+    if (state.lastMove === index) cell.classList.add("last");
+    if (state.winLine.includes(index)) cell.classList.add("win");
+    if (!isChoosing) cell.disabled = state.gameOver || Boolean(value) || isCpuTurn();
+    boardEl.append(cell);
   });
 
   updateStatus();
@@ -147,13 +158,16 @@ function updateStatus() {
   if (state.gameOver) return;
 
   if (isCpuTurn()) {
+    state.pendingIndex = null;
     statusLine.textContent = `CPU (${PLAYERS[state.current].name}) is thinking.`;
     hintLine.textContent = "It can choose either X or O before placing.";
     return;
   }
 
   statusLine.textContent = `${PLAYERS[state.current].name}'s turn.`;
-  hintLine.textContent = `${PLAYERS[state.current].name} will place ${state.selectedSymbol}. Change the symbol before choosing a square.`;
+  hintLine.textContent = state.pendingIndex === null
+    ? "Tap an empty square, then choose X or O inside it."
+    : "Choose X or O in this square, or tap another empty square to move the choice.";
 }
 
 function finishGame(winner, line = []) {
@@ -174,6 +188,7 @@ function finishGame(winner, line = []) {
 function placeAt(index, symbol) {
   if (state.gameOver || state.board[index]) return false;
   state.board[index] = symbol;
+  state.pendingIndex = null;
   state.lastMove = index;
   state.turnId += 1;
   const result = gameResult();
@@ -250,6 +265,7 @@ function resetGame(keepScores = true) {
   state.winner = "";
   state.lastMove = null;
   state.winLine = [];
+  state.pendingIndex = null;
   state.turnId += 1;
   if (!keepScores) state.scores = { O: 0, C: 0, D: 0 };
   resultBanner.className = "result-banner hidden";
@@ -263,9 +279,18 @@ function resign(player) {
 }
 
 boardEl.addEventListener("click", (event) => {
+  const symbolButton = event.target.closest("[data-symbol-choice]");
+  if (symbolButton) {
+    if (state.pendingIndex !== null) placeAt(state.pendingIndex, symbolButton.dataset.symbolChoice);
+    return;
+  }
+
   const button = event.target.closest(".order-cell");
   if (!button || button.disabled) return;
-  placeAt(Number(button.dataset.index), state.selectedSymbol);
+  const index = Number(button.dataset.index);
+  if (state.gameOver || state.board[index] || isCpuTurn()) return;
+  state.pendingIndex = index;
+  render();
 });
 
 modeButtons.forEach((button) => {
@@ -283,15 +308,6 @@ humanButtons.forEach((button) => {
     button.classList.add("active");
     state.human = button.dataset.human;
     resetGame();
-  });
-});
-
-symbolButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    symbolButtons.forEach((item) => item.classList.remove("active"));
-    button.classList.add("active");
-    state.selectedSymbol = button.dataset.symbol;
-    updateStatus();
   });
 });
 
