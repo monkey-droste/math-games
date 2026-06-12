@@ -129,8 +129,8 @@ function render() {
       cell.setAttribute("role", "group");
       cell.setAttribute("aria-label", `Choose X or O for row ${Math.floor(index / SIZE) + 1}, column ${(index % SIZE) + 1}`);
       cell.innerHTML = `
-        <button type="button" class="order-symbol-option x" data-symbol-choice="X" aria-label="Place X">X</button>
-        <button type="button" class="order-symbol-option o" data-symbol-choice="O" aria-label="Place O">O</button>
+        <button type="button" class="order-symbol-option x" data-symbol-choice="X" aria-label="Place X"></button>
+        <button type="button" class="order-symbol-option o" data-symbol-choice="O" aria-label="Place O"></button>
       `;
     }
     if (state.lastMove === index) cell.classList.add("last");

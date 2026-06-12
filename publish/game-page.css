@@ -471,16 +471,28 @@ h1 {
   z-index: 1;
 }
 
+.order-symbol-option::before {
+  display: block;
+}
+
 .order-symbol-option.x {
-  place-items: start start;
-  padding: 14% 0 0 18%;
+  place-items: center;
   clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
+.order-symbol-option.x::before {
+  content: "X";
+  transform: translate(-34%, -34%);
+}
+
 .order-symbol-option.o {
-  place-items: end end;
-  padding: 0 18% 14% 0;
+  place-items: center;
   clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.order-symbol-option.o::before {
+  content: "O";
+  transform: translate(34%, 34%);
 }
 
 .order-cell.choosing.order .order-symbol-option {
