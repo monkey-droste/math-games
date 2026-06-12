@@ -41,22 +41,24 @@ await writeFile(
 );
 
 const pages = [
-  "",
-  "amazons.html",
-  "ultimate-tic-tac-toe.html",
-  "dots-and-boxes.html",
-  "order-and-chaos.html",
-  "quantum-tic-tac-toe.html",
-  "three-d-tic-tac-toe.html",
+  { path: "", priority: "1.0", changefreq: "weekly" },
+  { path: "amazons.html", priority: "0.8", changefreq: "monthly" },
+  { path: "ultimate-tic-tac-toe.html", priority: "0.8", changefreq: "monthly" },
+  { path: "dots-and-boxes.html", priority: "0.8", changefreq: "monthly" },
+  { path: "order-and-chaos.html", priority: "0.8", changefreq: "monthly" },
+  { path: "quantum-tic-tac-toe.html", priority: "0.8", changefreq: "monthly" },
+  { path: "three-d-tic-tac-toe.html", priority: "0.8", changefreq: "monthly" },
 ];
 const today = new Date().toISOString().slice(0, 10);
 const urls = pages
   .map((page) => {
-    const loc = page ? `${publicUrl}/${page}` : `${publicUrl}/`;
+    const loc = page.path ? `${publicUrl}/${page.path}` : `${publicUrl}/`;
     return [
       "  <url>",
       `    <loc>${loc}</loc>`,
       `    <lastmod>${today}</lastmod>`,
+      `    <changefreq>${page.changefreq}</changefreq>`,
+      `    <priority>${page.priority}</priority>`,
       "  </url>",
     ].join("\n");
   })
