@@ -336,6 +336,7 @@ select {
 }
 
 .order-icon {
+  overflow: hidden;
   background:
     linear-gradient(var(--line), var(--line)) 50% 20% / 76% 3px no-repeat,
     linear-gradient(var(--line), var(--line)) 50% 40% / 76% 3px no-repeat,
@@ -349,32 +350,28 @@ select {
 }
 
 .order-icon::before {
-  content: "X";
+  content: "";
   position: absolute;
-  left: 12px;
-  top: 17px;
-  background: linear-gradient(90deg, var(--danger) 0 50%, var(--blue) 50% 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  font-size: 2.75rem;
-  font-weight: 1000;
-  line-height: 1;
-  transform: rotate(-7deg);
+  inset: 10px;
+  background:
+    radial-gradient(ellipse 19px 13px at 31% 31%, rgba(225, 93, 86, 0.9) 0 61%, transparent 64%),
+    radial-gradient(ellipse 13px 9px at 40% 39%, rgba(225, 93, 86, 0.72) 0 58%, transparent 62%),
+    radial-gradient(ellipse 11px 8px at 22% 45%, rgba(225, 93, 86, 0.78) 0 58%, transparent 62%),
+    radial-gradient(ellipse 20px 14px at 67% 64%, rgba(64, 120, 201, 0.88) 0 61%, transparent 64%),
+    radial-gradient(ellipse 12px 9px at 58% 54%, rgba(64, 120, 201, 0.7) 0 58%, transparent 62%),
+    radial-gradient(ellipse 10px 8px at 78% 48%, rgba(64, 120, 201, 0.78) 0 58%, transparent 62%);
+  transform: rotate(-8deg);
 }
 
 .order-icon::after {
-  content: "O";
+  content: "";
   position: absolute;
-  right: 10px;
-  top: 17px;
-  background: linear-gradient(90deg, var(--danger) 0 50%, var(--blue) 50% 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  font-size: 2.75rem;
-  font-weight: 1000;
-  line-height: 1;
+  inset: 9px;
+  background:
+    radial-gradient(ellipse 14px 10px at 62% 27%, rgba(64, 120, 201, 0.82) 0 58%, transparent 62%),
+    radial-gradient(ellipse 9px 7px at 73% 36%, rgba(64, 120, 201, 0.68) 0 55%, transparent 60%),
+    radial-gradient(ellipse 15px 11px at 39% 70%, rgba(225, 93, 86, 0.82) 0 58%, transparent 62%),
+    radial-gradient(ellipse 8px 6px at 28% 63%, rgba(225, 93, 86, 0.66) 0 55%, transparent 60%);
   transform: rotate(7deg);
 }
 
