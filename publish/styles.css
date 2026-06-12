@@ -336,65 +336,41 @@ select {
 }
 
 .order-icon {
-  background:
-    linear-gradient(var(--line), var(--line)) 50% 20% / 76% 3px no-repeat,
-    linear-gradient(var(--line), var(--line)) 50% 40% / 76% 3px no-repeat,
-    linear-gradient(var(--line), var(--line)) 50% 60% / 76% 3px no-repeat,
-    linear-gradient(var(--line), var(--line)) 50% 80% / 76% 3px no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 20% 50% / 3px 76% no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 40% 50% / 3px 76% no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 60% 50% / 3px 76% no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 80% 50% / 3px 76% no-repeat,
-    var(--panel);
+  background: var(--panel);
 }
 
 .order-icon::before {
   content: "X";
   position: absolute;
-  left: 14px;
-  top: 8px;
-  color: var(--danger);
-  font-size: 1.95rem;
+  left: 12px;
+  top: 17px;
+  background: linear-gradient(90deg, var(--danger) 0 50%, var(--blue) 50% 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-size: 2.75rem;
   font-weight: 1000;
-  transform: rotate(-8deg);
+  line-height: 1;
+  transform: rotate(-7deg);
 }
 
 .order-icon::after {
   content: "O";
   position: absolute;
-  right: 12px;
-  top: 8px;
-  color: var(--blue);
-  font-size: 1.95rem;
+  right: 10px;
+  top: 17px;
+  background: linear-gradient(90deg, var(--danger) 0 50%, var(--blue) 50% 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-size: 2.75rem;
   font-weight: 1000;
+  line-height: 1;
   transform: rotate(7deg);
 }
 
 .order-icon span {
-  position: absolute;
-  inset: 0;
-}
-
-.order-icon span::before {
-  content: "X";
-  position: absolute;
-  left: 15px;
-  bottom: 7px;
-  color: var(--blue);
-  font-size: 1.95rem;
-  font-weight: 1000;
-  transform: rotate(7deg);
-}
-
-.order-icon span::after {
-  content: "O";
-  position: absolute;
-  right: 11px;
-  bottom: 7px;
-  color: var(--danger);
-  font-size: 1.95rem;
-  font-weight: 1000;
-  transform: rotate(-8deg);
+  display: none;
 }
 
 .quantum-icon {
