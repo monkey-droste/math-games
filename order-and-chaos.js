@@ -13,6 +13,7 @@ const DIRECTIONS = [
 
 const state = {
   board: Array(SIZE * SIZE).fill(""),
+  owners: Array(SIZE * SIZE).fill(""),
   current: "O",
   mode: "human",
   human: "O",
@@ -121,9 +122,10 @@ function render() {
     if (value) {
       cell.textContent = value;
       cell.classList.add(value.toLowerCase());
+      if (state.owners[index]) cell.classList.add(PLAYERS[state.owners[index]].className);
     }
     if (isChoosing) {
-      cell.classList.add("choosing");
+      cell.classList.add("choosing", PLAYERS[state.current].className);
       cell.setAttribute("role", "group");
       cell.setAttribute("aria-label", `Choose X or O for row ${Math.floor(index / SIZE) + 1}, column ${(index % SIZE) + 1}`);
       cell.innerHTML = `
@@ -188,6 +190,7 @@ function finishGame(winner, line = []) {
 function placeAt(index, symbol) {
   if (state.gameOver || state.board[index]) return false;
   state.board[index] = symbol;
+  state.owners[index] = state.current;
   state.pendingIndex = null;
   state.lastMove = index;
   state.turnId += 1;
@@ -260,6 +263,7 @@ function maybeCpuMove() {
 
 function resetGame(keepScores = true) {
   state.board = Array(SIZE * SIZE).fill("");
+  state.owners = Array(SIZE * SIZE).fill("");
   state.current = "O";
   state.gameOver = false;
   state.winner = "";
