@@ -295,49 +295,44 @@ select {
 .dots-icon {
   overflow: hidden;
   background:
-    radial-gradient(circle at 24% 24%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 50% 24%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 76% 24%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 24% 50%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 50% 50%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 76% 50%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 24% 76%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 50% 76%, var(--line) 0 5px, transparent 6px),
-    radial-gradient(circle at 76% 76%, var(--line) 0 5px, transparent 6px),
+    radial-gradient(circle at 24% 24%, var(--line) 0 4px, transparent 5px),
+    radial-gradient(circle at 50% 24%, var(--line) 0 4px, transparent 5px),
+    radial-gradient(circle at 76% 24%, var(--line) 0 4px, transparent 5px),
+    radial-gradient(circle at 24% 50%, var(--line) 0 4px, transparent 5px),
+    radial-gradient(circle at 50% 50%, var(--line) 0 4px, transparent 5px),
+    radial-gradient(circle at 76% 50%, var(--line) 0 4px, transparent 5px),
+    radial-gradient(circle at 24% 76%, var(--line) 0 4px, transparent 5px),
+    radial-gradient(circle at 50% 76%, var(--line) 0 4px, transparent 5px),
+    radial-gradient(circle at 76% 76%, var(--line) 0 4px, transparent 5px),
     var(--panel);
 }
 
 .dots-icon::before {
   content: "";
   position: absolute;
-  inset: 23% 19%;
-  background:
-    linear-gradient(var(--danger), var(--danger)) 0 0 / 57% 6px no-repeat,
-    linear-gradient(var(--blue), var(--blue)) 100% 50% / 57% 6px no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 0 0 / 6px 50% no-repeat,
-    linear-gradient(90deg, var(--green), var(--green)) 50% 50% / 6px 50% no-repeat;
+  left: 24%;
+  top: 24%;
+  width: 52%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--danger);
   z-index: 1;
 }
 
 .dots-icon::after {
   content: "";
   position: absolute;
-  left: 48%;
-  top: 22%;
-  width: 6px;
-  height: 28px;
+  left: 50%;
+  top: 50%;
+  width: 26%;
+  height: 6px;
+  border-radius: 999px;
   background: var(--blue);
   z-index: 1;
 }
 
 .dots-icon span {
-  position: absolute;
-  right: 17px;
-  bottom: 17px;
-  width: 26px;
-  height: 6px;
-  background: var(--danger);
-  z-index: 2;
+  display: none;
 }
 
 .order-icon {
