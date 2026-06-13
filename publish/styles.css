@@ -401,7 +401,9 @@ select {
 }
 
 .three-d-icon {
-  background: var(--panel);
+  background:
+    linear-gradient(90deg, rgba(225, 93, 86, 0.28) 0 50%, rgba(64, 120, 201, 0.28) 50% 100%),
+    var(--panel);
   overflow: hidden;
 }
 
