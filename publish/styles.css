@@ -381,26 +381,19 @@ select {
 
 .quantum-icon {
   overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(64, 120, 201, 0.13) 0 23%, transparent 24%),
-    radial-gradient(circle at 47% 47%, rgba(225, 93, 86, 0.11) 0 20%, transparent 21%),
-    var(--panel);
+  background: var(--panel);
 }
 
 .quantum-icon::before {
   content: "";
   position: absolute;
-  inset: 6px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82 82'%3E%3Cg transform='rotate(7 41 41)' opacity='.78'%3E%3Crect x='18' y='18' width='46' height='46' fill='%23fffdf7' stroke='%23e15d56' stroke-width='3'/%3E%3Cpath d='M33.3 18 V64 M48.7 18 V64 M18 33.3 H64 M18 48.7 H64' stroke='%23e15d56' stroke-width='2.3'/%3E%3C/g%3E%3Cg transform='rotate(-8 41 41)' opacity='.88'%3E%3Crect x='16' y='16' width='46' height='46' fill='%23fffdf7' fill-opacity='.64' stroke='%234078c9' stroke-width='3'/%3E%3Cpath d='M31.3 16 V62 M46.7 16 V62 M16 31.3 H62 M16 46.7 H62' stroke='%234078c9' stroke-width='2.3'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  inset: 3px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82 82'%3E%3Cpath d='M16 41 C16 24 39 24 41 41 C43 58 66 58 66 41 C66 24 43 24 41 41 C39 58 16 58 16 41' fill='none' stroke='%234078c9' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M16 41 C16 24 39 24 41 41 C43 58 66 58 66 41' fill='none' stroke='%23e15d56' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='22' cy='41' r='13' fill='%23fffdf7' stroke='%23e15d56' stroke-width='4'/%3E%3Ccircle cx='60' cy='41' r='13' fill='%23fffdf7' stroke='%234078c9' stroke-width='4'/%3E%3Ctext x='14' y='49' font-family='Arial,sans-serif' font-size='23' font-weight='900' fill='%23e15d56'%3EX%3C/text%3E%3Ccircle cx='60' cy='41' r='7.2' fill='none' stroke='%234078c9' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
   z-index: 1;
 }
 
 .quantum-icon::after {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82 82'%3E%3Cpath d='M11 43 C17 14 62 13 70 38 C79 66 35 72 15 54' fill='none' stroke='%234078c9' stroke-width='3.1' stroke-linecap='round' opacity='.9'/%3E%3Cpath d='M12 27 C28 64 56 66 70 29' fill='none' stroke='%23e15d56' stroke-width='2.8' stroke-linecap='round' opacity='.88'/%3E%3Cpath d='M17 58 C26 32 43 28 64 22' fill='none' stroke='%234078c9' stroke-width='1.8' stroke-linecap='round' opacity='.72'/%3E%3Ctext x='21' y='41' font-family='Arial,sans-serif' font-size='24' font-weight='900' fill='%23e15d56' transform='rotate(-9 21 41)'%3EX%3C/text%3E%3Ccircle cx='56' cy='51' r='10' fill='none' stroke='%234078c9' stroke-width='4.7'/%3E%3Ccircle cx='42' cy='41' r='4.2' fill='%234078c9' opacity='.92'/%3E%3Ccircle cx='35' cy='52' r='3.2' fill='%23e15d56' opacity='.78'/%3E%3Ccircle cx='50' cy='29' r='3.2' fill='%23e15d56' opacity='.78'/%3E%3C/svg%3E") center / contain no-repeat;
-  z-index: 2;
+  content: none;
 }
 
 .quantum-icon span {
@@ -415,8 +408,8 @@ select {
 .three-d-icon::before {
   content: "";
   position: absolute;
-  inset: 2px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82 82'%3E%3Cpolygon points='15,25 31,9 69,9 53,25' fill='%23dfeaf7' stroke='%2320242d' stroke-width='3' stroke-linejoin='round'/%3E%3Cpolygon points='53,25 69,9 69,51 53,67' fill='%23cfe0f4' stroke='%2320242d' stroke-width='3' stroke-linejoin='round'/%3E%3Cpolygon points='15,25 53,25 53,67 15,67' fill='%23fffdf7' stroke='%2320242d' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M24.5 25 V67 M34 25 V67 M43.5 25 V67 M15 35.5 H53 M15 46 H53 M15 56.5 H53' stroke='%2320242d' stroke-width='1.8'/%3E%3Cpath d='M19 21 L35 5 M24 17 L40 1 M30 13 L46 -3 M37 9 V25 M45 9 V25 M53 9 V25 M61 9 V25' stroke='%2320242d' stroke-width='1.35' opacity='.9'/%3E%3Cpath d='M57 21 V63 M61 17 V59 M65 13 V55 M53 35 L69 19 M53 46 L69 30 M53 56 L69 40' stroke='%2320242d' stroke-width='1.35' opacity='.9'/%3E%3C/svg%3E") center / contain no-repeat;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82 82'%3E%3Cpolygon points='20,29 35,14 65,14 50,29' fill='%23dfeaf7' stroke='%2320242d' stroke-width='4' stroke-linejoin='round'/%3E%3Cpolygon points='50,29 65,14 65,50 50,65' fill='%23cfe0f4' stroke='%2320242d' stroke-width='4' stroke-linejoin='round'/%3E%3Cpolygon points='20,29 50,29 50,65 20,65' fill='%23fffdf7' stroke='%2320242d' stroke-width='4' stroke-linejoin='round'/%3E%3Cpath d='M20 29 L35 14 M50 29 L65 14 M50 65 L65 50' stroke='%2320242d' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .three-d-icon::after {
