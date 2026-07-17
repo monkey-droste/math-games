@@ -137,18 +137,6 @@ h1 {
   font-weight: 800;
 }
 
-#orderScore,
-#orderScore + small,
-.score-strip div:has(#orderScore) small {
-  color: var(--order);
-}
-
-#chaosScore,
-#chaosScore + small,
-.score-strip div:has(#chaosScore) small {
-  color: var(--chaos);
-}
-
 .controls {
   margin: 14px 0;
   display: grid;
@@ -490,7 +478,6 @@ h1 {
   position: absolute;
   inset: 0;
   border: 0;
-  display: grid;
   background: #fffaf0;
   cursor: pointer;
   font-size: clamp(1.25rem, 5.5vw, 3.2rem);
@@ -501,26 +488,29 @@ h1 {
 
 .order-symbol-option::before {
   display: block;
+  position: absolute;
 }
 
 .order-symbol-option.x {
-  place-items: center;
   clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
 .order-symbol-option.x::before {
   content: "X";
-  transform: translate(-34%, -34%);
+  left: 34%;
+  top: 34%;
+  transform: translate(-50%, -50%);
 }
 
 .order-symbol-option.o {
-  place-items: center;
   clip-path: polygon(100% 0, 100% 100%, 0 100%);
 }
 
 .order-symbol-option.o::before {
   content: "O";
-  transform: translate(34%, 34%);
+  left: 66%;
+  top: 66%;
+  transform: translate(-50%, -50%);
 }
 
 .order-cell.choosing.order .order-symbol-option {
