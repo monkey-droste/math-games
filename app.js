@@ -218,6 +218,7 @@ function render() {
   whiteScore.textContent = state.scores.W;
   blackScore.textContent = state.scores.B;
   sideField.classList.toggle("hidden", state.mode !== "cpu");
+  updateResignButtons();
 
   for (let row = 0; row < state.size; row += 1) {
     for (let col = 0; col < state.size; col += 1) {
@@ -395,12 +396,22 @@ function handleSquareClick(row, col) {
 
 function resign(player) {
   if (state.gameOver) return;
+  if (state.mode === "cpu" && player !== state.humanSide) return;
   const winner = opponent(player);
   finishGame(
     winner,
-    `${playerName(player)} resigns.`,
+    "Resigned.",
     `${playerName(winner)} wins the game.`,
   );
+}
+
+function updateResignButtons() {
+  resignButtons.forEach((button) => {
+    if (!button.dataset.defaultLabel) button.dataset.defaultLabel = button.textContent;
+    const isHumanResign = state.mode === "cpu" && button.dataset.resign === state.humanSide;
+    button.classList.toggle("hidden", state.mode === "cpu" && !isHumanResign);
+    button.textContent = state.mode === "cpu" && isHumanResign ? "Resign" : button.dataset.defaultLabel;
+  });
 }
 
 function chooseCpuMove() {

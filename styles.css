@@ -379,27 +379,6 @@ select {
   display: none;
 }
 
-.quantum-icon {
-  overflow: hidden;
-  background: var(--panel);
-}
-
-.quantum-icon::before {
-  content: "";
-  position: absolute;
-  inset: 3px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82 82'%3E%3Cpath d='M16 41 C16 24 39 24 41 41 C43 58 66 58 66 41 C66 24 43 24 41 41 C39 58 16 58 16 41' fill='none' stroke='%234078c9' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M16 41 C16 24 39 24 41 41 C43 58 66 58 66 41' fill='none' stroke='%23e15d56' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='22' cy='41' r='13' fill='%23fffdf7' stroke='%23e15d56' stroke-width='4'/%3E%3Ccircle cx='60' cy='41' r='13' fill='%23fffdf7' stroke='%234078c9' stroke-width='4'/%3E%3Ctext x='14' y='49' font-family='Arial,sans-serif' font-size='23' font-weight='900' fill='%23e15d56'%3EX%3C/text%3E%3Ccircle cx='60' cy='41' r='7.2' fill='none' stroke='%234078c9' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
-  z-index: 1;
-}
-
-.quantum-icon::after {
-  content: none;
-}
-
-.quantum-icon span {
-  display: none;
-}
-
 .three-d-icon {
   background:
     linear-gradient(90deg, #9bdf8f 0 50%, #c995dd 50% 100%);

@@ -1160,13 +1160,14 @@ function placeMark(boardIndex, cellIndex) {
 
 function resign(mark) {
   if (state.gameOver) return;
+  if (state.mode === "ai" && mark !== state.human) return;
   const winner = opponent(mark);
   state.gameOver = true;
   state.winner = winner;
   state.scores[winner] += 1;
   state.current = winner;
   refresh();
-  statusLine.textContent = `${mark} resigns.`;
+  statusLine.textContent = "Resigned.";
   hintLine.textContent = `${winner} wins the game.`;
 }
 
@@ -1175,8 +1176,18 @@ function refresh() {
   document.querySelector("#oWins").textContent = state.scores.O;
   document.querySelector("#draws").textContent = state.scores.D;
   sideChoice.classList.toggle("hidden", state.mode !== "ai");
+  updateResignButtons();
   renderBoard();
   updateStatus();
+}
+
+function updateResignButtons() {
+  resignButtons.forEach((button) => {
+    if (!button.dataset.defaultLabel) button.dataset.defaultLabel = button.textContent;
+    const isHumanResign = state.mode === "ai" && button.dataset.resign === state.human;
+    button.classList.toggle("hidden", state.mode === "ai" && !isHumanResign);
+    button.textContent = state.mode === "ai" && isHumanResign ? "Resign" : button.dataset.defaultLabel;
+  });
 }
 
 function scoreLine(values, aiMark) {

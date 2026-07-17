@@ -111,6 +111,7 @@ function render() {
   chaosScore.textContent = state.scores.C;
   drawScore.textContent = state.scores.D;
   sideChoice.classList.toggle("hidden", state.mode !== "cpu");
+  updateResignButtons();
 
   state.board.forEach((value, index) => {
     const isChoosing = state.pendingIndex === index && !value && !state.gameOver && !isCpuTurn();
@@ -279,7 +280,17 @@ function resetGame(keepScores = true) {
 
 function resign(player) {
   if (state.gameOver) return;
+  if (state.mode === "cpu" && player !== state.human) return;
   finishGame(opponent(player));
+}
+
+function updateResignButtons() {
+  resignButtons.forEach((button) => {
+    if (!button.dataset.defaultLabel) button.dataset.defaultLabel = button.textContent;
+    const isHumanResign = state.mode === "cpu" && button.dataset.resign === state.human;
+    button.classList.toggle("hidden", state.mode === "cpu" && !isHumanResign);
+    button.textContent = state.mode === "cpu" && isHumanResign ? "Resign" : button.dataset.defaultLabel;
+  });
 }
 
 boardEl.addEventListener("click", (event) => {

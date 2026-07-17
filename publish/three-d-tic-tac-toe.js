@@ -22,13 +22,9 @@ const state = {
 };
 
 const MARKS = {
-  X: { symbol: "×", className: "x" },
-  O: { symbol: "○", className: "o" },
+  X: { symbol: "X" },
+  O: { symbol: "O" },
 };
-
-function markHtml(mark) {
-  return `<span class="three-d-symbol ${MARKS[mark].className}">${MARKS[mark].symbol}</span>`;
-}
 
 const boardEl = document.querySelector("#board");
 const sceneEl = document.querySelector(".ttt3d-scene");
@@ -122,6 +118,7 @@ function render() {
   oScore.textContent = state.scores.O;
   drawScore.textContent = state.scores.D;
   sideChoice.classList.toggle("hidden", state.mode !== "cpu");
+  updateResignButtons();
 
   for (let z = 0; z < SIZE; z += 1) {
     const layer = document.createElement("section");
@@ -160,6 +157,7 @@ function render() {
 function updateBoardZoom() {
   sceneEl.style.width = `${Math.round(760 * state.zoom)}px`;
   sceneEl.style.maxWidth = state.zoom <= 1 ? "100%" : "none";
+  boardEl.style.setProperty("--cell-mark-size", `${Math.round(40 * state.zoom)}px`);
   zoomLevel.textContent = `${Math.round(state.zoom * 100)}%`;
 }
 
@@ -173,11 +171,11 @@ function updateStatus() {
   turnToken.className = `turn-token ${state.current.toLowerCase()}`;
   if (state.gameOver) return;
   if (isCpuTurn()) {
-    statusLine.innerHTML = `CPU (${markHtml(state.current)}) is thinking.`;
+    statusLine.textContent = `CPU (${state.current}) is thinking.`;
     hintLine.textContent = "It is scanning the cube for threats and lines.";
     return;
   }
-  statusLine.innerHTML = `${markHtml(state.current)}'s turn.`;
+  statusLine.textContent = `${state.current}'s turn.`;
   hintLine.textContent = "Choose any open cube. Four in a straight 3D line wins.";
 }
 
@@ -189,8 +187,8 @@ function finishGame(winner, line = []) {
   render();
   resultBanner.className = `result-banner ${winner.toLowerCase()}`;
   resultKicker.textContent = "Game over";
-  resultTitle.innerHTML = `${markHtml(winner)} Wins!`;
-  statusLine.innerHTML = `${markHtml(winner)} wins in 3D.`;
+  resultTitle.textContent = `${winner} Wins!`;
+  statusLine.textContent = `${winner} wins in 3D.`;
   hintLine.textContent = "The highlighted cubes make a straight line through the cube.";
 }
 
@@ -296,7 +294,17 @@ function resetGame(keepScores = true) {
 
 function resign(mark) {
   if (state.gameOver) return;
+  if (state.mode === "cpu" && mark !== state.human) return;
   finishGame(opponent(mark));
+}
+
+function updateResignButtons() {
+  resignButtons.forEach((button) => {
+    if (!button.dataset.defaultLabel) button.dataset.defaultLabel = button.textContent;
+    const isHumanResign = state.mode === "cpu" && button.dataset.resign === state.human;
+    button.classList.toggle("hidden", state.mode === "cpu" && !isHumanResign);
+    button.textContent = state.mode === "cpu" && isHumanResign ? "Resign" : button.dataset.defaultLabel;
+  });
 }
 
 boardEl.addEventListener("click", (event) => {
