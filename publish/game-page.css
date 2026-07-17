@@ -637,6 +637,36 @@ h1 {
   background: #eadfc8;
 }
 
+.three-d-page .turn-token.x {
+  background: #67f24f;
+  color: var(--ink);
+  font-size: 0.8rem;
+}
+
+.three-d-page .turn-token.o {
+  background: #e06cff;
+  color: var(--ink);
+  font-size: 0.8rem;
+}
+
+.three-d-page .result-banner.x {
+  background: #d9ffd2;
+  color: #238522;
+}
+
+.three-d-page .result-banner.o {
+  background: #f7dcff;
+  color: #9d2ebd;
+}
+
+.three-d-page .mark-x {
+  color: #34d82f;
+}
+
+.three-d-page .mark-o {
+  color: #d84dff;
+}
+
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 1fr;
