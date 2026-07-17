@@ -834,6 +834,7 @@ function updateStatus() {
   blueScore.textContent = state.matchScores.B;
   drawScore.textContent = state.matchScores.D;
   sideChoice.classList.toggle("hidden", state.mode !== "cpu");
+  updateResignButtons();
   turnToken.textContent = state.current;
   turnToken.className = `turn-token ${playerClass(state.current)}`;
 
@@ -922,15 +923,25 @@ function resetGame(keepMatchScores = true) {
 
 function resign(player) {
   if (state.gameOver) return;
+  if (state.mode === "cpu" && player !== state.human) return;
   const winner = opponent(player);
   state.gameOver = true;
   state.matchScores[winner] += 1;
   refresh();
   resultBanner.className = `result-banner ${playerClass(winner)}`;
-  resultKicker.textContent = "Resignation";
+  resultKicker.textContent = "Game over";
   resultTitle.textContent = `${playerName(winner)} Wins!`;
-  statusLine.textContent = `${playerName(player)} resigns.`;
+  statusLine.textContent = "Resigned.";
   hintLine.textContent = `${playerName(winner)} wins this round.`;
+}
+
+function updateResignButtons() {
+  resignButtons.forEach((button) => {
+    if (!button.dataset.defaultLabel) button.dataset.defaultLabel = button.textContent;
+    const isHumanResign = state.mode === "cpu" && button.dataset.resign === state.human;
+    button.classList.toggle("hidden", state.mode === "cpu" && !isHumanResign);
+    button.textContent = state.mode === "cpu" && isHumanResign ? "Resign" : button.dataset.defaultLabel;
+  });
 }
 
 function countBoxesWithEdges(snapshot, edgeCount) {
