@@ -21,6 +21,11 @@ const state = {
   zoom: 1,
 };
 
+const MARKS = {
+  X: { name: "Bright Green", shortName: "Green" },
+  O: { name: "Pink Purple", shortName: "Purple" },
+};
+
 const boardEl = document.querySelector("#board");
 const sceneEl = document.querySelector(".ttt3d-scene");
 const statusLine = document.querySelector("#statusLine");
@@ -160,15 +165,15 @@ function setZoom(nextZoom) {
 }
 
 function updateStatus() {
-  turnToken.textContent = state.current;
+  turnToken.textContent = MARKS[state.current].shortName;
   turnToken.className = `turn-token ${state.current.toLowerCase()}`;
   if (state.gameOver) return;
   if (isCpuTurn()) {
-    statusLine.textContent = "CPU is thinking.";
+    statusLine.textContent = `CPU (${MARKS[state.current].name}) is thinking.`;
     hintLine.textContent = "It is scanning the cube for threats and lines.";
     return;
   }
-  statusLine.textContent = `${state.current}'s turn.`;
+  statusLine.textContent = `${MARKS[state.current].name}'s turn.`;
   hintLine.textContent = "Choose any open cube. Four in a straight 3D line wins.";
 }
 
@@ -180,8 +185,8 @@ function finishGame(winner, line = []) {
   render();
   resultBanner.className = `result-banner ${winner.toLowerCase()}`;
   resultKicker.textContent = "Game over";
-  resultTitle.textContent = `${winner} Wins!`;
-  statusLine.textContent = `${winner} wins in 3D.`;
+  resultTitle.textContent = `${MARKS[winner].name} Wins!`;
+  statusLine.textContent = `${MARKS[winner].name} wins in 3D.`;
   hintLine.textContent = "The highlighted cubes make a straight line through the cube.";
 }
 
