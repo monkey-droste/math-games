@@ -637,34 +637,50 @@ h1 {
   background: #eadfc8;
 }
 
+.three-d-symbol {
+  font-weight: 1000;
+}
+
+.three-d-symbol.x {
+  color: #66c95c;
+}
+
+.three-d-symbol.o {
+  color: #bd7ad6;
+}
+
 .three-d-page .turn-token.x {
-  background: #67f24f;
-  color: var(--ink);
-  font-size: 0.8rem;
+  border-color: currentColor;
+  border-radius: 50%;
+  background: #f4fff0;
+  color: #66c95c;
+  font-size: 1.9rem;
 }
 
 .three-d-page .turn-token.o {
-  background: #e06cff;
-  color: var(--ink);
-  font-size: 0.8rem;
+  border-color: currentColor;
+  border-radius: 50%;
+  background: #fbf0ff;
+  color: #bd7ad6;
+  font-size: 1.9rem;
 }
 
 .three-d-page .result-banner.x {
-  background: #d9ffd2;
-  color: #238522;
+  background: #effeea;
+  color: #4da642;
 }
 
 .three-d-page .result-banner.o {
-  background: #f7dcff;
-  color: #9d2ebd;
+  background: #f8eaff;
+  color: #a15fba;
 }
 
 .three-d-page .mark-x {
-  color: #34d82f;
+  color: #66c95c;
 }
 
 .three-d-page .mark-o {
-  color: #d84dff;
+  color: #bd7ad6;
 }
 
 @media (max-width: 900px) {

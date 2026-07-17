@@ -22,9 +22,13 @@ const state = {
 };
 
 const MARKS = {
-  X: { name: "Bright Green", shortName: "Green" },
-  O: { name: "Pink Purple", shortName: "Purple" },
+  X: { symbol: "×", className: "x" },
+  O: { symbol: "○", className: "o" },
 };
+
+function markHtml(mark) {
+  return `<span class="three-d-symbol ${MARKS[mark].className}">${MARKS[mark].symbol}</span>`;
+}
 
 const boardEl = document.querySelector("#board");
 const sceneEl = document.querySelector(".ttt3d-scene");
@@ -137,7 +141,7 @@ function render() {
         button.className = `cell-button cell-3d depth-${z}`;
         button.dataset.index = String(index);
         button.setAttribute("aria-label", `Layer ${z + 1}, row ${y + 1}, column ${x + 1}`);
-        button.textContent = value;
+        button.textContent = value ? MARKS[value].symbol : "";
         if (value) button.classList.add(`mark-${value.toLowerCase()}`);
         if (state.lastMove === index) button.classList.add("last");
         if (state.winLine.includes(index)) button.classList.add("win");
@@ -165,15 +169,15 @@ function setZoom(nextZoom) {
 }
 
 function updateStatus() {
-  turnToken.textContent = MARKS[state.current].shortName;
+  turnToken.textContent = MARKS[state.current].symbol;
   turnToken.className = `turn-token ${state.current.toLowerCase()}`;
   if (state.gameOver) return;
   if (isCpuTurn()) {
-    statusLine.textContent = `CPU (${MARKS[state.current].name}) is thinking.`;
+    statusLine.innerHTML = `CPU (${markHtml(state.current)}) is thinking.`;
     hintLine.textContent = "It is scanning the cube for threats and lines.";
     return;
   }
-  statusLine.textContent = `${MARKS[state.current].name}'s turn.`;
+  statusLine.innerHTML = `${markHtml(state.current)}'s turn.`;
   hintLine.textContent = "Choose any open cube. Four in a straight 3D line wins.";
 }
 
@@ -185,8 +189,8 @@ function finishGame(winner, line = []) {
   render();
   resultBanner.className = `result-banner ${winner.toLowerCase()}`;
   resultKicker.textContent = "Game over";
-  resultTitle.textContent = `${MARKS[winner].name} Wins!`;
-  statusLine.textContent = `${MARKS[winner].name} wins in 3D.`;
+  resultTitle.innerHTML = `${markHtml(winner)} Wins!`;
+  statusLine.innerHTML = `${markHtml(winner)} wins in 3D.`;
   hintLine.textContent = "The highlighted cubes make a straight line through the cube.";
 }
 

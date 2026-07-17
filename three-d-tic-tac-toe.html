@@ -16,7 +16,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://monkey-droste.github.io/math-games/three-d-tic-tac-toe.html">
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="game-page.css?v=three-d-green-purple-1">
+    <link rel="stylesheet" href="game-page.css?v=three-d-green-purple-2">
   </head>
   <body class="three-d-page">
     <main class="app-shell">
@@ -27,9 +27,9 @@
             <h1>3D Tic-Tac-Toe</h1>
           </div>
           <div class="score-strip" aria-label="Score">
-            <div><span id="xScore">0</span><small>Bright Green</small></div>
+            <div><span id="xScore">0</span><small><span class="three-d-symbol x">×</span></small></div>
             <div><span id="drawScore">0</span><small>Draw</small></div>
-            <div><span id="oScore">0</span><small>Pink Purple</small></div>
+            <div><span id="oScore">0</span><small><span class="three-d-symbol o">○</span></small></div>
           </div>
         </header>
 
@@ -40,12 +40,12 @@
               <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
             </div>
             <div id="sideChoice" class="segmented hidden" role="group" aria-label="Side choice">
-              <button type="button" class="segment active" data-human="X">Play Bright Green</button>
-              <button type="button" class="segment" data-human="O">Play Pink Purple</button>
+              <button type="button" class="segment active" data-human="X">Play <span class="three-d-symbol x">×</span></button>
+              <button type="button" class="segment" data-human="O">Play <span class="three-d-symbol o">○</span></button>
             </div>
             <button type="button" id="newGame" class="text-button">New Game</button>
-            <button type="button" class="text-button" data-resign="X">Bright Green Resigns</button>
-            <button type="button" class="text-button" data-resign="O">Pink Purple Resigns</button>
+            <button type="button" class="text-button" data-resign="X"><span class="three-d-symbol x">×</span> Resigns</button>
+            <button type="button" class="text-button" data-resign="O"><span class="three-d-symbol o">○</span> Resigns</button>
             <button type="button" id="clearScore" class="text-button">Clear Score</button>
           </div>
           <div class="control-row zoom-row">
@@ -58,16 +58,16 @@
         </section>
 
         <section class="status-panel" aria-live="polite">
-          <div class="turn-token x" id="turnToken">Bright Green</div>
+          <div class="turn-token x" id="turnToken">×</div>
           <div>
-            <p id="statusLine">Bright Green starts. Choose any open cube.</p>
+            <p id="statusLine"><span class="three-d-symbol x">×</span> starts. Choose any open cube.</p>
             <p id="hintLine">Make four in a row across rows, columns, layers, pillars, or true space diagonals.</p>
           </div>
         </section>
 
         <section id="resultBanner" class="result-banner hidden" aria-live="assertive">
           <p id="resultKicker">Game over</p>
-          <h2 id="resultTitle">Bright Green Wins!</h2>
+          <h2 id="resultTitle"><span class="three-d-symbol x">×</span> Wins!</h2>
           <button type="button" id="bannerNewGame">New Game</button>
         </section>
 
@@ -80,12 +80,12 @@
 
       <aside class="rules-panel" aria-label="Rules">
         <h2>Rules</h2>
-        <p>The board is a 4 x 4 x 4 cube, shown as four stacked layers. Bright Green and Pink Purple alternate placing one mark.</p>
+        <p>The board is a 4 x 4 x 4 cube, shown as four stacked layers. <span class="three-d-symbol x">×</span> and <span class="three-d-symbol o">○</span> alternate placing one mark.</p>
         <p>Win by making four in a straight line anywhere in the cube: on one layer, straight through the layers, or along a 3D diagonal.</p>
         <p>If all 64 cubes fill with no four-in-a-row, the game is a draw.</p>
       </aside>
     </main>
 
-    <script src="three-d-tic-tac-toe.js?v=three-d-green-purple-1"></script>
+    <script src="three-d-tic-tac-toe.js?v=three-d-green-purple-2"></script>
   </body>
 </html>
