@@ -6,6 +6,8 @@
   --muted: #645f59;
   --red: #d94f45;
   --blue: #2478a6;
+  --order: #7460a8;
+  --chaos: #8b8f34;
   --green: #5aa35f;
   --yellow: #efc84a;
   --line: #2d2f39;
@@ -135,6 +137,16 @@ h1 {
   font-weight: 800;
 }
 
+#orderScore,
+#orderScore + small {
+  color: var(--order);
+}
+
+#chaosScore,
+#chaosScore + small {
+  color: var(--chaos);
+}
+
 .controls {
   margin: 14px 0;
   display: grid;
@@ -252,15 +264,21 @@ h1 {
 }
 
 .turn-token.red,
-.turn-token.order,
 .turn-token.x {
   background: var(--red);
 }
 
 .turn-token.blue,
-.turn-token.chaos,
 .turn-token.o {
   background: var(--blue);
+}
+
+.turn-token.order {
+  background: var(--order);
+}
+
+.turn-token.chaos {
+  background: var(--chaos);
 }
 
 #statusLine {
@@ -286,17 +304,25 @@ h1 {
 }
 
 .result-banner.red,
-.result-banner.order,
 .result-banner.x {
   background: #ffe5e2;
   color: var(--red);
 }
 
 .result-banner.blue,
-.result-banner.chaos,
 .result-banner.o {
   background: #dff1f8;
   color: var(--blue);
+}
+
+.result-banner.order {
+  background: #eee7ff;
+  color: var(--order);
+}
+
+.result-banner.chaos {
+  background: #f1f3c5;
+  color: #73772a;
 }
 
 .result-banner.draw {
@@ -431,11 +457,11 @@ h1 {
 }
 
 .order-cell.order {
-  color: var(--red);
+  color: var(--order);
 }
 
 .order-cell.chaos {
-  color: var(--blue);
+  color: var(--chaos);
 }
 
 .order-cell.choosing {
@@ -496,11 +522,11 @@ h1 {
 }
 
 .order-cell.choosing.order .order-symbol-option {
-  color: var(--red);
+  color: var(--order);
 }
 
 .order-cell.choosing.chaos .order-symbol-option {
-  color: var(--blue);
+  color: var(--chaos);
 }
 
 .order-symbol-option:hover {
