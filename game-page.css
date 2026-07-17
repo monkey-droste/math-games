@@ -6,8 +6,8 @@
   --muted: #645f59;
   --red: #d94f45;
   --blue: #2478a6;
-  --order: #7460a8;
-  --chaos: #8b8f34;
+  --order: #7357c9;
+  --chaos: #c06b3f;
   --green: #5aa35f;
   --yellow: #efc84a;
   --line: #2d2f39;
@@ -138,12 +138,14 @@ h1 {
 }
 
 #orderScore,
-#orderScore + small {
+#orderScore + small,
+.score-strip div:has(#orderScore) small {
   color: var(--order);
 }
 
 #chaosScore,
-#chaosScore + small {
+#chaosScore + small,
+.score-strip div:has(#chaosScore) small {
   color: var(--chaos);
 }
 
@@ -321,8 +323,8 @@ h1 {
 }
 
 .result-banner.chaos {
-  background: #f1f3c5;
-  color: #73772a;
+  background: #ffe9d8;
+  color: var(--chaos);
 }
 
 .result-banner.draw {
