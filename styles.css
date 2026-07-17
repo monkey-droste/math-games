@@ -315,20 +315,22 @@ select {
   width: 50%;
   height: 6px;
   border-radius: 999px;
-  background: var(--danger);
+  background:
+    linear-gradient(#c04f86, #c04f86) 0 0 / 50% 6px no-repeat,
+    linear-gradient(#249eb4, #249eb4) 100% 0 / 50% 6px no-repeat,
+    linear-gradient(#249eb4, #249eb4) 0 calc(25% - 3px) / 6px 50% no-repeat,
+    linear-gradient(#c04f86, #c04f86) 50% calc(25% - 3px) / 6px 50% no-repeat,
+    linear-gradient(#c04f86, #c04f86) 100% calc(25% - 3px) / 6px 50% no-repeat,
+    linear-gradient(#249eb4, #249eb4) 0 calc(50% - 3px) / 50% 6px no-repeat,
+    linear-gradient(#c04f86, #c04f86) 50% calc(50% - 3px) / 50% 6px no-repeat;
+  background-repeat: no-repeat;
+  width: 50%;
+  height: 50%;
   z-index: 1;
 }
 
 .dots-icon::after {
-  content: "";
-  position: absolute;
-  left: 25%;
-  top: calc(50% - 3px);
-  width: 50%;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--blue);
-  z-index: 1;
+  content: none;
 }
 
 .dots-icon span {
@@ -339,20 +341,11 @@ select {
   overflow: hidden;
   background:
     linear-gradient(135deg, transparent calc(50% - 2px), var(--line) calc(50% - 2px) calc(50% + 2px), transparent calc(50% + 2px)),
-    linear-gradient(135deg, #7460a8 0 50%, #8b8f34 50% 100%);
+    linear-gradient(135deg, #7357c9 0 50%, #c06b3f 50% 100%);
 }
 
 .order-icon::before {
-  content: "";
-  position: absolute;
-  inset: 12px;
-  border: 3px solid var(--line);
-  background:
-    linear-gradient(var(--line), var(--line)) 50% 33% / 100% 3px no-repeat,
-    linear-gradient(var(--line), var(--line)) 50% 66% / 100% 3px no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 33% 50% / 3px 100% no-repeat,
-    linear-gradient(90deg, var(--line), var(--line)) 66% 50% / 3px 100% no-repeat,
-    rgba(255, 253, 247, 0.82);
+  content: none;
 }
 
 .order-icon::after {
@@ -663,14 +656,16 @@ h2 {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 82%;
+  width: 88%;
   aspect-ratio: 1;
   background:
-    radial-gradient(circle at 50% 70%, #ffd36a 0 18%, transparent 19%),
-    radial-gradient(ellipse at 48% 66%, #ff812d 0 33%, transparent 34%),
-    radial-gradient(ellipse at 52% 55%, #e9442d 0 52%, transparent 53%);
-  clip-path: polygon(50% 0, 66% 24%, 74% 8%, 84% 38%, 96% 56%, 88% 84%, 68% 100%, 50% 94%, 32% 100%, 12% 84%, 4% 58%, 18% 36%, 27% 12%, 36% 26%);
-  filter: drop-shadow(0 2px 0 rgba(32, 36, 45, 0.46));
+    radial-gradient(ellipse at 50% 73%, #fff06f 0 14%, transparent 15%),
+    radial-gradient(ellipse at 46% 70%, #ffb12d 0 27%, transparent 28%),
+    radial-gradient(ellipse at 56% 60%, #ff6a22 0 42%, transparent 43%),
+    radial-gradient(ellipse at 43% 56%, #e52424 0 53%, transparent 54%),
+    radial-gradient(ellipse at 58% 50%, #b9151f 0 63%, transparent 64%);
+  clip-path: polygon(50% 0, 58% 17%, 69% 4%, 72% 28%, 86% 18%, 82% 45%, 96% 62%, 87% 85%, 67% 100%, 52% 92%, 37% 100%, 14% 86%, 4% 62%, 17% 44%, 15% 21%, 33% 32%);
+  filter: drop-shadow(0 2px 0 rgba(32, 36, 45, 0.58)) saturate(1.18);
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 2;

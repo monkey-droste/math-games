@@ -23,8 +23,8 @@
   --panel: #fffaf0;
   --ink: #20242d;
   --muted: #645f59;
-  --red: #d94f45;
-  --blue: #2478a6;
+  --red: #c04f86;
+  --blue: #249eb4;
   --green: #5aa35f;
   --yellow: #efc84a;
   --edge: #2d2f39;
@@ -152,6 +152,18 @@ h1 {
 .score-strip small {
   color: var(--muted);
   font-weight: 800;
+}
+
+#redScore,
+#redScore + small,
+.score-strip div:has(#redScore) small {
+  color: var(--red);
+}
+
+#blueScore,
+#blueScore + small,
+.score-strip div:has(#blueScore) small {
+  color: var(--blue);
 }
 
 .controls {
