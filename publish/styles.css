@@ -362,39 +362,30 @@ select {
 .chess-icon {
   overflow: hidden;
   background:
-    linear-gradient(45deg, #f3e0ac 25%, transparent 25%),
-    linear-gradient(-45deg, #f3e0ac 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #f3e0ac 75%),
-    linear-gradient(-45deg, transparent 75%, #f3e0ac 75%),
-    #7f8e66;
-  background-position: 0 0, 0 20.5px, 20.5px -20.5px, -20.5px 0;
-  background-size: 41px 41px;
+    linear-gradient(45deg, #769656 25%, transparent 25%),
+    linear-gradient(-45deg, #769656 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #769656 75%),
+    linear-gradient(-45deg, transparent 75%, #769656 75%),
+    #eeeed2;
+  background-position: 0 0, 0 41px, 41px -41px, -41px 0;
+  background-size: 82px 82px;
 }
 
 .chess-icon::before {
-  content: "♞";
-  position: relative;
+  content: "";
+  position: absolute;
   z-index: 1;
-  width: 46px;
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  border: 3px solid var(--line);
-  border-radius: 50%;
-  background: #fffdf7;
-  color: #1f2430;
-  font-size: 2.35rem;
-  line-height: 1;
-  box-shadow: 4px 4px 0 rgba(31, 36, 45, 0.2);
+  inset: 10px;
+  background: url("https://images.chesscomfiles.com/chess-themes/pieces/neo/300/wp.png") center / contain no-repeat;
+  filter: drop-shadow(1px 3px 0 rgba(31, 36, 45, 0.28));
 }
 
 .chess-icon::after {
   content: "";
   position: absolute;
-  inset: 12px 18px 14px 50px;
-  border-top: 4px solid #b64b4b;
-  border-right: 4px solid #b64b4b;
-  transform: rotate(14deg);
+  inset: 9px;
+  border: 2px solid rgba(30, 36, 48, 0.2);
+  pointer-events: none;
 }
 
 .chess-icon span {
