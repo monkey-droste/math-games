@@ -361,7 +361,6 @@ select {
 
 .chess-icon {
   overflow: hidden;
-  border: 5px solid var(--line);
   background:
     linear-gradient(45deg, #769656 25%, transparent 25%),
     linear-gradient(-45deg, #769656 25%, transparent 25%),
@@ -370,20 +369,23 @@ select {
     #eeeed2;
   background-position: 0 0, 0 41px, 41px -41px, -41px 0;
   background-size: 82px 82px;
-  box-shadow: 4px 4px 0 rgba(31, 36, 45, 0.18);
 }
 
 .chess-icon::before {
   content: "";
   position: absolute;
   z-index: 1;
-  inset: 10px;
+  inset: 6px;
   background: url("https://images.chesscomfiles.com/chess-themes/pieces/neo/300/wp.png") center / contain no-repeat;
-  filter: drop-shadow(1px 3px 0 rgba(31, 36, 45, 0.28));
+  filter: brightness(0) saturate(0);
 }
 
 .chess-icon::after {
-  content: none;
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 10px;
+  background: url("https://images.chesscomfiles.com/chess-themes/pieces/neo/300/wp.png") center / contain no-repeat;
 }
 
 .chess-icon span {
