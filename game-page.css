@@ -626,6 +626,119 @@ h1 {
   line-height: 1;
 }
 
+.chess-page {
+  --chess-light: #f1d99a;
+  --chess-dark: #7b8e68;
+  --chess-white: #fffaf0;
+  --chess-black: #20242d;
+}
+
+.chess-board {
+  width: min(680px, 100%);
+  aspect-ratio: 1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  border: 4px solid var(--ink);
+  background: var(--ink);
+  gap: 0;
+  overflow: hidden;
+}
+
+.chess-square {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.chess-square.light {
+  background: var(--chess-light);
+}
+
+.chess-square.dark {
+  background: var(--chess-dark);
+}
+
+.chess-square.selected {
+  box-shadow: inset 0 0 0 5px var(--yellow);
+}
+
+.chess-square.last {
+  box-shadow: inset 0 0 0 5px var(--green);
+}
+
+.chess-square.selected.last {
+  box-shadow: inset 0 0 0 5px var(--yellow), inset 0 0 0 10px var(--green);
+}
+
+.chess-square.check {
+  background: #ffb7ae;
+}
+
+.chess-square.legal-move::after,
+.chess-square.capture-move::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.chess-square.legal-move::after {
+  width: 28%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(32, 36, 45, 0.42);
+}
+
+.chess-square.capture-move::after {
+  inset: 9%;
+  border: 5px solid rgba(220, 67, 58, 0.78);
+  border-radius: 50%;
+}
+
+.chess-piece {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-size: var(--chess-piece-size, 3.4rem);
+  line-height: 1;
+  filter: drop-shadow(1px 2px 0 rgba(31, 28, 22, 0.24));
+}
+
+.white-piece {
+  color: var(--chess-white);
+  -webkit-text-stroke: 1.3px var(--ink);
+}
+
+.black-piece {
+  color: var(--chess-black);
+  -webkit-text-stroke: 0.5px #fffaf0;
+}
+
+.chess-page .turn-token.white {
+  background: var(--chess-white);
+  color: var(--ink);
+}
+
+.chess-page .turn-token.black {
+  background: var(--chess-black);
+  color: var(--chess-white);
+}
+
+.chess-page .result-banner.white {
+  background: #fff7dc;
+  color: var(--ink);
+}
+
+.chess-page .result-banner.black {
+  background: #e0e2dc;
+  color: var(--ink);
+}
+
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 1fr;

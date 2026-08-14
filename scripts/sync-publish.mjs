@@ -17,6 +17,8 @@ const files = [
   "order-and-chaos.js",
   "three-d-tic-tac-toe.html",
   "three-d-tic-tac-toe.js",
+  "chess.html",
+  "chess.js",
 ];
 
 const publicUrl = (process.env.PUBLIC_URL || "https://monkey-droste.github.io/math-games")
@@ -45,6 +47,7 @@ const pages = [
   { path: "dots-and-boxes.html", priority: "0.8", changefreq: "monthly" },
   { path: "order-and-chaos.html", priority: "0.8", changefreq: "monthly" },
   { path: "three-d-tic-tac-toe.html", priority: "0.8", changefreq: "monthly" },
+  { path: "chess.html", priority: "0.8", changefreq: "monthly" },
 ];
 const today = new Date().toISOString().slice(0, 10);
 const urls = pages

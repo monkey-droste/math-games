@@ -3,22 +3,22 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Playable Math Games with Bad Drawings Fan Site</title>
+    <title>Math Games with Bad Drawings Online | Play Fan-Made Strategy Games</title>
     <meta
       name="description"
-      content="Play fan-made strategy games inspired by Ben Orlin's Math Games with Bad Drawings, including Amazons, Ultimate Tic-Tac-Toe, Dots and Boxes, Order and Chaos, and 3D Tic-Tac-Toe."
+      content="Play fan-made Math Games with Bad Drawings online, including Amazons, Ultimate Tic-Tac-Toe, Dots and Boxes, Order and Chaos, 3D Tic-Tac-Toe, and Chess. A hand-drawn strategy game fan site inspired by Ben Orlin."
     >
     <meta
       name="keywords"
-      content="playable Math Games with Bad Drawings, Ben Orlin math games, Math Games fan site, strategy puzzle games, Game of the Amazons, Ultimate Tic-Tac-Toe, Dots and Boxes, Order and Chaos, 3D Tic-Tac-Toe"
+      content="Math Games with Bad Drawings online, play Math Games with Bad Drawings, Ben Orlin math games, bad drawings games, hand drawn strategy games, 数学游戏, 手绘小游戏, 在线策略游戏, Game of the Amazons, Ultimate Tic-Tac-Toe, Dots and Boxes, Order and Chaos, 3D Tic-Tac-Toe, Chess"
     >
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#f6f1e4">
     <link rel="canonical" href="https://monkey-droste.github.io/math-games/">
-    <meta property="og:title" content="Playable Math Games with Bad Drawings Fan Site">
+    <meta property="og:title" content="Math Games with Bad Drawings Online">
     <meta
       property="og:description"
-      content="A playable fan-made strategy game site inspired by Ben Orlin's Math Games with Bad Drawings."
+      content="Play a fan-made collection of hand-drawn strategy games inspired by Ben Orlin's Math Games with Bad Drawings."
     >
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://monkey-droste.github.io/math-games/">
@@ -28,25 +28,76 @@
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "Playable Math Games with Bad Drawings Fan Site",
+        "name": "Math Games with Bad Drawings Online",
         "alternateName": [
           "Math Games Playground",
           "Ben Orlin Math Games Fan Site",
-          "Math Games with Bad Drawings Playable Games"
+          "Math Games with Bad Drawings Playable Games",
+          "Bad Drawings Strategy Games",
+          "数学游戏手绘版",
+          "手绘数学策略小游戏"
         ],
         "url": "https://monkey-droste.github.io/math-games/",
         "description": "A fan-made playable strategy game site inspired by Ben Orlin's Math Games with Bad Drawings.",
         "keywords": [
+          "Math Games with Bad Drawings online",
           "playable Math Games with Bad Drawings",
           "Ben Orlin math games",
+          "bad drawings games",
+          "hand drawn strategy games",
+          "数学游戏",
+          "手绘小游戏",
+          "在线策略游戏",
           "Game of the Amazons",
           "Ultimate Tic-Tac-Toe",
           "Dots and Boxes",
           "Order and Chaos",
-          "3D Tic-Tac-Toe"
+          "3D Tic-Tac-Toe",
+          "Chess"
         ],
         "isAccessibleForFree": true,
-        "inLanguage": "en"
+        "inLanguage": ["en", "zh-CN"],
+        "mainEntity": {
+          "@type": "ItemList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Game of the Amazons",
+              "url": "https://monkey-droste.github.io/math-games/amazons.html"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Ultimate Tic-Tac-Toe",
+              "url": "https://monkey-droste.github.io/math-games/ultimate-tic-tac-toe.html"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Dots and Boxes",
+              "url": "https://monkey-droste.github.io/math-games/dots-and-boxes.html"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "Order and Chaos",
+              "url": "https://monkey-droste.github.io/math-games/order-and-chaos.html"
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "name": "3D Tic-Tac-Toe",
+              "url": "https://monkey-droste.github.io/math-games/three-d-tic-tac-toe.html"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "name": "Chess",
+              "url": "https://monkey-droste.github.io/math-games/chess.html"
+            }
+          ]
+        }
       }
     </script>
   </head>
@@ -61,11 +112,15 @@
       <section class="home-hero" aria-label="Math Games intro">
         <div class="hero-copy">
           <p class="kicker">Playable strategy puzzles</p>
-          <h1>Math Games</h1>
+          <h1>Math Games with Bad Drawings Online</h1>
           <p class="credit-note">
             A tiny playable fan site inspired by Ben Orlin's <em>Math Games with Bad Drawings</em>.
             This is an unofficial project for readers who want to try the games directly in a browser.
             Built with assistance from Codex.
+          </p>
+          <p class="credit-note">
+            中文说明：这是一个可以直接在线玩的手绘风数学策略小游戏网站，收录 Amazons、
+            Ultimate Tic-Tac-Toe、Dots and Boxes、Order and Chaos、3D Tic-Tac-Toe、Chess 等游戏。
           </p>
         </div>
 
@@ -137,6 +192,17 @@
             <small>A 4 x 4 x 4 cube where rows, pillars, and space diagonals all count.</small>
           </span>
         </a>
+
+        <a class="game-card chess-card" href="chess.html">
+          <span class="game-icon chess-icon" aria-hidden="true">
+            <span></span>
+          </span>
+          <span class="game-card-copy">
+            <span class="game-label">Classic strategy</span>
+            <strong>Chess</strong>
+            <small>Play standard chess with castling, promotion, and CPU levels up to Deep Blue.</small>
+          </span>
+        </a>
       </section>
 
       <section id="about" class="home-band" aria-label="About Math Games">
@@ -146,6 +212,10 @@
             Math Games is made by a reader and is not an official Ben Orlin website. The games,
             framing, and playful spirit are inspired by Ben Orlin's book <em>Math Games with Bad Drawings</em>.
             The site was built with assistance from Codex.
+          </p>
+          <p>
+            Search terms that describe this site include Math Games with Bad Drawings online,
+            Ben Orlin math games, hand-drawn strategy games, 数学游戏, 手绘小游戏, and 在线策略游戏.
           </p>
         </div>
         <div>
