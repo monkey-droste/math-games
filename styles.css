@@ -361,6 +361,7 @@ select {
 
 .chess-icon {
   overflow: hidden;
+  border: 5px solid var(--line);
   background:
     linear-gradient(45deg, #769656 25%, transparent 25%),
     linear-gradient(-45deg, #769656 25%, transparent 25%),
@@ -369,6 +370,7 @@ select {
     #eeeed2;
   background-position: 0 0, 0 41px, 41px -41px, -41px 0;
   background-size: 82px 82px;
+  box-shadow: 4px 4px 0 rgba(31, 36, 45, 0.18);
 }
 
 .chess-icon::before {
@@ -381,11 +383,7 @@ select {
 }
 
 .chess-icon::after {
-  content: "";
-  position: absolute;
-  inset: 9px;
-  border: 2px solid rgba(30, 36, 48, 0.2);
-  pointer-events: none;
+  content: none;
 }
 
 .chess-icon span {
