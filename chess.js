@@ -114,11 +114,6 @@ function boardFacingColor() {
   return state.mode === "cpu" ? state.human : state.current;
 }
 
-function displayIndexes() {
-  const indexes = Array.from({ length: BOARD_SIZE * BOARD_SIZE }, (_, index) => index);
-  return boardFacingColor() === "b" ? indexes.reverse() : indexes;
-}
-
 function clonePosition(position) {
   return {
     board: [...position.board],
@@ -534,12 +529,12 @@ function render() {
   sideChoice.classList.toggle("hidden", state.mode !== "cpu");
   difficultyField.classList.toggle("hidden", state.mode !== "cpu");
   updateResignButtons();
+  boardEl.classList.toggle("facing-away", boardFacingColor() === "b");
 
   const legalTargets = new Map(state.legalForSelected.map((move) => [move.to, move]));
   const checkIndex = inCheck(currentPosition(), state.current) ? kingIndex(currentPosition(), state.current) : -1;
 
-  for (const index of displayIndexes()) {
-    const piece = state.board[index];
+  state.board.forEach((piece, index) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `chess-square ${((rowOf(index) + colOf(index)) % 2) ? "dark" : "light"}`;
@@ -561,7 +556,7 @@ function render() {
     if (checkIndex === index) button.classList.add("check");
     button.disabled = state.gameOver || isCpuTurn();
     boardEl.append(button);
-  }
+  });
 
   updateStatus();
 }
