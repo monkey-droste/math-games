@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Play Chess | Math Games with Bad Drawings Fan Site</title>
+    <meta
+      name="description"
+      content="Play Chess online with two players or a CPU opponent from easy to Deep Blue level in a fan-made Math Games with Bad Drawings strategy game site. 在线游玩手绘风国际象棋。"
+    >
+    <meta name="keywords" content="play chess online, chess CPU game, Deep Blue chess challenge, Ben Orlin Math Games with Bad Drawings, playable math games fan site, 国际象棋, 在线棋盘游戏, 手绘策略游戏">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://monkey-droste.github.io/math-games/chess.html">
+    <meta property="og:title" content="Play Chess | Math Games Fan Site">
+    <meta property="og:description" content="A playable fan-made Chess board with CPU levels from easy to Deep Blue.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://monkey-droste.github.io/math-games/chess.html">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="game-page.css?v=chess-1">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Game",
+        "name": "Chess Online",
+        "alternateName": ["Chess CPU game", "国际象棋在线游戏"],
+        "url": "https://monkey-droste.github.io/math-games/chess.html",
+        "description": "A fan-made online Chess game with CPU difficulty levels inspired by Math Games with Bad Drawings.",
+        "isAccessibleForFree": true,
+        "inLanguage": ["en", "zh-CN"]
+      }
+    </script>
+  </head>
+  <body class="chess-page">
+    <main class="app-shell">
+      <section class="play-surface" aria-label="Chess game">
+        <header class="topbar">
+          <div>
+            <a class="game-home-link" href="./">Return</a>
+            <h1>Chess</h1>
+          </div>
+          <div class="score-strip" aria-label="Score">
+            <div><span id="whiteScore">0</span><small>White</small></div>
+            <div><span id="drawScore">0</span><small>Draw</small></div>
+            <div><span id="blackScore">0</span><small>Black</small></div>
+          </div>
+        </header>
+
+        <section class="controls" aria-label="Game settings">
+          <div class="control-row">
+            <div class="segmented" role="group" aria-label="Game mode">
+              <button type="button" class="segment active" data-mode="human">Two Players</button>
+              <button type="button" class="segment" data-mode="cpu">Vs CPU</button>
+            </div>
+            <div id="sideChoice" class="segmented hidden" role="group" aria-label="Side choice">
+              <button type="button" class="segment active" data-human="w">Play White</button>
+              <button type="button" class="segment" data-human="b">Play Black</button>
+            </div>
+            <label id="difficultyField" class="compact-field hidden">
+              <span>CPU</span>
+              <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="casual">Casual</option>
+                <option value="strong" selected>Strong</option>
+                <option value="expert">Expert</option>
+                <option value="deepblue">Deep Blue</option>
+              </select>
+            </label>
+          </div>
+          <div class="control-row">
+            <button type="button" id="newGame" class="text-button">New Game</button>
+            <button type="button" class="text-button" data-resign="w">White Resigns</button>
+            <button type="button" class="text-button" data-resign="b">Black Resigns</button>
+            <button type="button" id="clearScore" class="text-button">Clear Score</button>
+          </div>
+          <div class="control-row zoom-row">
+            <div class="zoom-controls" role="group" aria-label="Board zoom">
+              <button type="button" id="zoomOut" class="icon-button" aria-label="Zoom out" title="Zoom out">−</button>
+              <span id="zoomLevel" class="zoom-readout">100%</span>
+              <button type="button" id="zoomReset" class="text-button">100%</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="status-panel" aria-live="polite">
+          <div class="turn-token white" id="turnToken">♔</div>
+          <div>
+            <p id="statusLine">White starts. Choose a piece.</p>
+            <p id="hintLine">Legal moves light up. Checkmate wins; stalemate is a draw.</p>
+          </div>
+        </section>
+
+        <section id="resultBanner" class="result-banner hidden" aria-live="assertive">
+          <p id="resultKicker">Game over</p>
+          <h2 id="resultTitle">White Wins!</h2>
+          <button type="button" id="bannerNewGame">New Game</button>
+        </section>
+
+        <div class="board-viewport">
+          <div id="board" class="game-board chess-board" aria-label="Chess board"></div>
+        </div>
+      </section>
+
+      <aside class="rules-panel" aria-label="Rules">
+        <h2>Rules</h2>
+        <p>White moves first. Pieces use standard chess movement, including castling, en passant, and pawn promotion.</p>
+        <p>A king in check must escape check. Win by checkmating the other king.</p>
+        <p>If the side to move has no legal move and is not in check, the game is a draw.</p>
+        <h2>CPU Levels</h2>
+        <p>Easy makes noisy one-move choices. Casual, Strong, and Expert search deeper tactics. Deep Blue uses the deepest search here with sharper move ordering and evaluation.</p>
+      </aside>
+    </main>
+
+    <script src="chess.js?v=chess-1"></script>
+  </body>
+</html>
