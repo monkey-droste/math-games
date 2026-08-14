@@ -40,7 +40,7 @@ const DIFFICULTIES = {
   casual: { depth: 2, noise: 90, blunder: 0.12, time: 420 },
   strong: { depth: 3, noise: 18, blunder: 0.03, time: 900 },
   expert: { depth: 4, noise: 3, blunder: 0, time: 1500 },
-  deepblue: { depth: 5, noise: 0, blunder: 0, time: 2600 },
+  impossible: { depth: 5, noise: 0, blunder: 0, time: 2600 },
 };
 
 const state = {
@@ -473,7 +473,7 @@ function chooseCpuMove() {
   if (!moves.length) return null;
   const config = DIFFICULTIES[state.difficulty] || DIFFICULTIES.strong;
   const deadline = Date.now() + config.time;
-  const depth = state.difficulty === "deepblue" && position.board.filter(Boolean).length <= 18
+  const depth = state.difficulty === "impossible" && position.board.filter(Boolean).length <= 18
     ? config.depth + 1
     : config.depth;
   const scored = moves.map((move) => {
@@ -569,8 +569,8 @@ function updateStatus(lastCpuMove = "") {
   if (state.gameOver) return;
   if (isCpuTurn()) {
     statusLine.textContent = `CPU (${NAMES[state.current]}) is thinking.`;
-    hintLine.textContent = state.difficulty === "deepblue"
-      ? "Deep Blue level is searching deeper tactical lines."
+    hintLine.textContent = state.difficulty === "impossible"
+      ? "Impossible level is searching the deepest tactical lines."
       : "The CPU is choosing from legal chess moves.";
     return;
   }
