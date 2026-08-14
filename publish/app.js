@@ -1,5 +1,6 @@
 const EMPTY = "";
-const ARROW = "#";
+const GOLD_ARROW = "#G";
+const TEAL_ARROW = "#T";
 const WHITE = "W";
 const BLACK = "B";
 const DIRECTIONS = [
@@ -80,6 +81,16 @@ function playerName(player) {
 
 function playerClass(player) {
   return player === WHITE ? "gold" : "teal";
+}
+
+function arrowFor(player) {
+  return player === WHITE ? GOLD_ARROW : TEAL_ARROW;
+}
+
+function arrowClass(value) {
+  if (value === GOLD_ARROW) return "gold-fire";
+  if (value === TEAL_ARROW) return "teal-fire";
+  return "";
 }
 
 function boardFacingPlayer() {
@@ -181,7 +192,7 @@ function mobility(board, player) {
 function applyMove(move, player) {
   state.board[move.start.row][move.start.col] = EMPTY;
   state.board[move.end.row][move.end.col] = player;
-  state.board[move.arrow.row][move.arrow.col] = ARROW;
+  state.board[move.arrow.row][move.arrow.col] = arrowFor(player);
 }
 
 function lastCpuMarked(square) {
@@ -236,8 +247,10 @@ function render() {
       square.dataset.col = String(col);
       square.setAttribute("aria-label", coordName(row, col));
 
-      if (value === ARROW) {
+      const blockedClass = arrowClass(value);
+      if (blockedClass) {
         square.classList.add("blocked");
+        square.classList.add(blockedClass);
       }
       if (squareInList(currentSquare, state.legalTargets)) {
         square.classList.add("legal");
@@ -394,7 +407,7 @@ function handleSquareClick(row, col) {
       statusLine.textContent = "The arrow cannot land there.";
       return;
     }
-    state.board[row][col] = ARROW;
+    state.board[row][col] = arrowFor(state.current);
     endTurn();
   }
 }
@@ -467,7 +480,7 @@ function chooseCpuMove() {
 
 function applyMoveToBoard(board, move, player) {
   const copy = movePieceOn(board, move.start, move.end);
-  copy[move.arrow.row][move.arrow.col] = ARROW;
+  copy[move.arrow.row][move.arrow.col] = arrowFor(player);
   copy[move.end.row][move.end.col] = player;
   return copy;
 }
