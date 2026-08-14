@@ -510,47 +510,10 @@ function pieceName(piece) {
   return `${NAMES[colorOf(piece)]} ${names[piece.toLowerCase()]}`;
 }
 
-function pieceSvg(piece) {
+function pieceAsset(piece) {
+  const color = colorOf(piece);
   const type = piece.toLowerCase();
-  const shapes = {
-    p: `
-      <circle class="piece-fill" cx="50" cy="24" r="13"></circle>
-      <path class="piece-fill" d="M38 45 C38 36 62 36 62 45 L66 66 H34 Z"></path>
-      <path class="piece-fill" d="M27 78 C31 69 69 69 73 78 L78 89 H22 Z"></path>
-    `,
-    n: `
-      <path class="piece-fill" d="M29 88 H75 L70 76 C66 66 68 56 75 45 C66 46 58 39 55 28 C48 36 39 38 35 49 L45 51 C47 57 44 64 37 70 C33 74 29 79 29 88 Z"></path>
-      <path class="piece-detail" d="M45 43 C50 46 55 47 62 45"></path>
-      <circle class="piece-dot" cx="51" cy="36" r="3"></circle>
-    `,
-    b: `
-      <path class="piece-fill" d="M50 12 C66 27 67 45 54 60 L65 73 H35 L46 60 C33 45 34 27 50 12 Z"></path>
-      <path class="piece-detail" d="M57 25 L43 47"></path>
-      <path class="piece-fill" d="M27 80 C32 71 68 71 73 80 L77 89 H23 Z"></path>
-    `,
-    r: `
-      <path class="piece-fill" d="M27 18 H37 V29 H45 V18 H55 V29 H63 V18 H73 V40 H67 L63 70 H37 L33 40 H27 Z"></path>
-      <path class="piece-fill" d="M27 80 C31 73 69 73 73 80 L77 89 H23 Z"></path>
-    `,
-    q: `
-      <path class="piece-fill" d="M22 39 L30 18 L43 36 L50 13 L57 36 L70 18 L78 39 L68 53 H32 Z"></path>
-      <path class="piece-fill" d="M36 53 H64 L68 72 H32 Z"></path>
-      <path class="piece-fill" d="M24 81 C31 72 69 72 76 81 L79 89 H21 Z"></path>
-      <circle class="piece-dot" cx="30" cy="18" r="4"></circle>
-      <circle class="piece-dot" cx="50" cy="13" r="4"></circle>
-      <circle class="piece-dot" cx="70" cy="18" r="4"></circle>
-    `,
-    k: `
-      <path class="piece-fill" d="M46 10 H54 V22 H66 V31 H54 V43 H46 V31 H34 V22 H46 Z"></path>
-      <path class="piece-fill" d="M34 51 C34 41 66 41 66 51 L63 71 H37 Z"></path>
-      <path class="piece-fill" d="M25 80 C31 72 69 72 75 80 L79 89 H21 Z"></path>
-    `,
-  };
-  return `
-    <svg class="piece-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-      ${shapes[type]}
-    </svg>
-  `;
+  return `https://images.chesscomfiles.com/chess-themes/pieces/neo/300/${color}${type}.png`;
 }
 
 function render() {
@@ -575,7 +538,11 @@ function render() {
     if (piece) {
       const mark = document.createElement("span");
       mark.className = `chess-piece ${colorOf(piece) === "w" ? "white-piece" : "black-piece"} piece-${piece.toLowerCase()}`;
-      mark.innerHTML = pieceSvg(piece);
+      const image = document.createElement("img");
+      image.src = pieceAsset(piece);
+      image.alt = "";
+      image.draggable = false;
+      mark.append(image);
       button.append(mark);
     }
     if (state.selected === index) button.classList.add("selected");
@@ -602,7 +569,7 @@ function setZoom(nextZoom) {
 }
 
 function updateStatus(lastCpuMove = "") {
-  turnToken.textContent = state.current === "w" ? "♔" : "♚";
+  turnToken.textContent = state.current === "w" ? "W" : "B";
   turnToken.className = `turn-token ${state.current === "w" ? "white" : "black"}`;
   if (state.gameOver) return;
   if (isCpuTurn()) {
