@@ -82,6 +82,15 @@ function playerClass(player) {
   return player === WHITE ? "gold" : "teal";
 }
 
+function boardFacingPlayer() {
+  return state.mode === "cpu" ? state.humanSide : state.current;
+}
+
+function displayLine(size, facing) {
+  const line = Array.from({ length: size }, (_, index) => index);
+  return facing === BLACK ? line.reverse() : line;
+}
+
 function coordName(row, col) {
   return `${String.fromCharCode(65 + col)}${state.size - row}`;
 }
@@ -220,8 +229,12 @@ function render() {
   sideField.classList.toggle("hidden", state.mode !== "cpu");
   updateResignButtons();
 
-  for (let row = 0; row < state.size; row += 1) {
-    for (let col = 0; col < state.size; col += 1) {
+  const facing = boardFacingPlayer();
+  const rows = displayLine(state.size, facing);
+  const cols = displayLine(state.size, facing);
+
+  for (const row of rows) {
+    for (const col of cols) {
       const square = document.createElement("button");
       const value = state.board[row][col];
       const currentSquare = { row, col };
