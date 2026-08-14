@@ -110,6 +110,15 @@ function rankFile(index) {
   return `${"abcdefgh"[colOf(index)]}${8 - rowOf(index)}`;
 }
 
+function boardFacingColor() {
+  return state.mode === "cpu" ? state.human : state.current;
+}
+
+function displayIndexes() {
+  const indexes = Array.from({ length: BOARD_SIZE * BOARD_SIZE }, (_, index) => index);
+  return boardFacingColor() === "b" ? indexes.reverse() : indexes;
+}
+
 function clonePosition(position) {
   return {
     board: [...position.board],
@@ -529,7 +538,8 @@ function render() {
   const legalTargets = new Map(state.legalForSelected.map((move) => [move.to, move]));
   const checkIndex = inCheck(currentPosition(), state.current) ? kingIndex(currentPosition(), state.current) : -1;
 
-  state.board.forEach((piece, index) => {
+  for (const index of displayIndexes()) {
+    const piece = state.board[index];
     const button = document.createElement("button");
     button.type = "button";
     button.className = `chess-square ${((rowOf(index) + colOf(index)) % 2) ? "dark" : "light"}`;
@@ -551,7 +561,7 @@ function render() {
     if (checkIndex === index) button.classList.add("check");
     button.disabled = state.gameOver || isCpuTurn();
     boardEl.append(button);
-  });
+  }
 
   updateStatus();
 }
