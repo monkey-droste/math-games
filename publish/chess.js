@@ -31,12 +31,16 @@ const ROOK_DIRS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 const QUEEN_DIRS = [...BISHOP_DIRS, ...ROOK_DIRS];
 
 const DIFFICULTIES = {
-  easy: { depth: 1, noise: 260, blunder: 0.34, time: 160 },
-  casual: { depth: 2, noise: 90, blunder: 0.12, time: 420 },
-  strong: { depth: 3, noise: 18, blunder: 0.03, time: 900 },
-  expert: { depth: 4, noise: 3, blunder: 0, time: 1500 },
-  impossible: { depth: 5, noise: 0, blunder: 0, time: 2600 },
+  easy: { depth: 2, noise: 24, blunder: 0, time: 550, engineTime: 650, skill: 6 },
+  casual: { depth: 3, noise: 8, blunder: 0, time: 1000, engineTime: 1100, skill: 10 },
+  strong: { depth: 4, noise: 2, blunder: 0, time: 1800, engineTime: 1900, skill: 15 },
+  expert: { depth: 5, noise: 0, blunder: 0, time: 3200, engineTime: 3400, skill: 20 },
+  impossible: { depth: 6, noise: 0, blunder: 0, time: 5200, engineTime: 6200, skill: 20 },
 };
+
+const STOCKFISH_URL = "https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js";
+const PROMOTION_TYPES = ["q", "r", "b", "n"];
+const PROMOTION_NAMES = { q: "Queen", r: "Rook", b: "Bishop", n: "Knight" };
 
 const state = {
   board: [...START],
@@ -53,9 +57,17 @@ const state = {
   gameOver: false,
   winner: "",
   lastMove: null,
+  pendingPromotionMoves: [],
   scores: { w: 0, b: 0, d: 0 },
   turnId: 0,
   zoom: 1,
+};
+
+const engineState = {
+  worker: null,
+  readyPromise: null,
+  waiting: null,
+  failed: false,
 };
 
 const boardEl = document.querySelector("#board");
@@ -80,6 +92,13 @@ const bannerNewGameButton = document.querySelector("#bannerNewGame");
 const zoomOutButton = document.querySelector("#zoomOut");
 const zoomResetButton = document.querySelector("#zoomReset");
 const zoomLevel = document.querySelector("#zoomLevel");
+const promotionPicker = document.createElement("div");
+
+promotionPicker.className = "promotion-picker hidden";
+promotionPicker.setAttribute("role", "dialog");
+promotionPicker.setAttribute("aria-modal", "true");
+promotionPicker.setAttribute("aria-label", "Choose promotion piece");
+document.body.append(promotionPicker);
 
 function colorOf(piece) {
   if (!piece) return "";
@@ -108,6 +127,14 @@ function inBounds(row, col) {
 
 function rankFile(index) {
   return `${"abcdefgh"[colOf(index)]}${8 - rowOf(index)}`;
+}
+
+function squareName(index) {
+  return rankFile(index);
+}
+
+function uciForMove(move) {
+  return `${squareName(move.from)}${squareName(move.to)}${move.promotion || ""}`;
 }
 
 function boardFacingColor() {
@@ -220,6 +247,13 @@ function addSlideMoves(position, moves, from, color, dirs) {
 function pseudoMoves(position) {
   const moves = [];
   const color = position.current;
+  const addPawnMove = (move, reachesPromotion) => {
+    if (!reachesPromotion) {
+      moves.push(move);
+      return;
+    }
+    PROMOTION_TYPES.forEach((promotion) => moves.push({ ...move, promotion }));
+  };
   position.board.forEach((piece, from) => {
     if (!piece || colorOf(piece) !== color) return;
     const type = piece.toLowerCase();
@@ -234,7 +268,7 @@ function pseudoMoves(position) {
       if (inBounds(oneRow, col)) {
         const one = indexOf(oneRow, col);
         if (!position.board[one]) {
-          moves.push({ from, to: one, promotion: oneRow === promotionRow ? "q" : "" });
+          addPawnMove({ from, to: one }, oneRow === promotionRow);
           const twoRow = row + (dir * 2);
           const two = indexOf(twoRow, col);
           if (row === startRow && !position.board[two]) moves.push({ from, to: two, doublePawn: true });
@@ -247,7 +281,7 @@ function pseudoMoves(position) {
         const to = indexOf(captureRow, captureCol);
         const target = position.board[to];
         if (target && colorOf(target) !== color) {
-          moves.push({ from, to, capture: target, promotion: captureRow === promotionRow ? "q" : "" });
+          addPawnMove({ from, to, capture: target }, captureRow === promotionRow);
         } else if (position.enPassant === to) {
           moves.push({ from, to, enPassant: true, capture: color === "w" ? "p" : "P" });
         }
@@ -383,10 +417,45 @@ function moveLabel(move) {
   const piece = state.board[move.from].toUpperCase();
   const name = piece === "P" ? "" : piece;
   const capture = move.capture ? "x" : "-";
-  const suffix = move.promotion ? "=Q" : "";
+  const suffix = move.promotion ? `=${move.promotion.toUpperCase()}` : "";
   if (move.castle === "K" || move.castle === "k") return "O-O";
   if (move.castle === "Q" || move.castle === "q") return "O-O-O";
   return `${name}${rankFile(move.from)}${capture}${rankFile(move.to)}${suffix}`;
+}
+
+function positionFen(position = currentPosition()) {
+  const rows = [];
+  for (let row = 0; row < BOARD_SIZE; row += 1) {
+    let empty = 0;
+    let text = "";
+    for (let col = 0; col < BOARD_SIZE; col += 1) {
+      const piece = position.board[indexOf(row, col)];
+      if (!piece) {
+        empty += 1;
+      } else {
+        if (empty) text += String(empty);
+        text += piece;
+        empty = 0;
+      }
+    }
+    if (empty) text += String(empty);
+    rows.push(text);
+  }
+  const castling = ["K", "Q", "k", "q"].filter((right) => position.castling[right]).join("") || "-";
+  const enPassant = position.enPassant === null ? "-" : rankFile(position.enPassant);
+  return `${rows.join("/")} ${position.current} ${castling} ${enPassant} ${position.halfmove} ${position.fullmove}`;
+}
+
+function moveFromUci(uci, position = currentPosition()) {
+  const from = ("abcdefgh".indexOf(uci[0]) + ((8 - Number(uci[1])) * BOARD_SIZE));
+  const to = ("abcdefgh".indexOf(uci[2]) + ((8 - Number(uci[3])) * BOARD_SIZE));
+  const promotion = uci[4] || "";
+  if (!inBounds(rowOf(from), colOf(from)) || !inBounds(rowOf(to), colOf(to))) return null;
+  return legalMoves(position).find((move) => (
+    move.from === from
+    && move.to === to
+    && ((move.promotion || "") === promotion)
+  )) || null;
 }
 
 function pieceSquare(piece, index) {
@@ -466,11 +535,9 @@ function search(position, depth, alpha, beta, rootColor, deadline, ply = 0) {
   return best;
 }
 
-function chooseCpuMove() {
-  const position = currentPosition();
+function chooseFallbackCpuMove(position = currentPosition(), config = DIFFICULTIES.strong) {
   const moves = orderedMoves(position);
   if (!moves.length) return null;
-  const config = DIFFICULTIES[state.difficulty] || DIFFICULTIES.strong;
   const deadline = Date.now() + config.time;
   const depth = state.difficulty === "impossible" && position.board.filter(Boolean).length <= 18
     ? config.depth + 1
@@ -486,7 +553,103 @@ function chooseCpuMove() {
   return scored[0].move;
 }
 
+function createStockfishWorker(source) {
+  const blob = new Blob([source], { type: "application/javascript" });
+  const url = URL.createObjectURL(blob);
+  const worker = new Worker(url);
+  worker.addEventListener("error", () => {
+    engineState.failed = true;
+    if (engineState.waiting) {
+      engineState.waiting.resolve(null);
+      engineState.waiting = null;
+    }
+  });
+  worker.addEventListener("message", (event) => {
+    const line = String(event.data || "");
+    if (line === "uciok" && engineState.waiting?.type === "ready") {
+      engineState.waiting.resolve(true);
+      engineState.waiting = null;
+      return;
+    }
+    if (line.startsWith("bestmove ") && engineState.waiting?.type === "move") {
+      const best = line.split(/\s+/)[1] || "";
+      engineState.waiting.resolve(best);
+      engineState.waiting = null;
+    }
+  });
+  return worker;
+}
+
+async function ensureStockfish() {
+  if (engineState.failed) return null;
+  if (engineState.worker) return engineState.worker;
+  if (engineState.readyPromise) {
+    await engineState.readyPromise;
+    return engineState.worker;
+  }
+
+  engineState.readyPromise = (async () => {
+    try {
+      const response = await fetch(STOCKFISH_URL, { cache: "force-cache" });
+      if (!response.ok) throw new Error("Stockfish unavailable");
+      const source = await response.text();
+      engineState.worker = createStockfishWorker(source);
+      await new Promise((resolve, reject) => {
+        const timer = window.setTimeout(() => reject(new Error("Stockfish timeout")), 5000);
+        engineState.waiting = {
+          type: "ready",
+          resolve: (value) => {
+            window.clearTimeout(timer);
+            resolve(value);
+          },
+        };
+        engineState.worker.postMessage("uci");
+      });
+      engineState.worker.postMessage("ucinewgame");
+      return true;
+    } catch {
+      engineState.failed = true;
+      if (engineState.worker) engineState.worker.terminate();
+      engineState.worker = null;
+      return false;
+    }
+  })();
+
+  await engineState.readyPromise;
+  return engineState.worker;
+}
+
+async function stockfishMove(position, config) {
+  const worker = await ensureStockfish();
+  if (!worker || engineState.waiting) return null;
+  const best = await new Promise((resolve) => {
+    const timer = window.setTimeout(() => {
+      engineState.waiting = null;
+      resolve("");
+    }, config.engineTime + 1800);
+    engineState.waiting = {
+      type: "move",
+      resolve: (value) => {
+        window.clearTimeout(timer);
+        resolve(value);
+      },
+    };
+    worker.postMessage(`setoption name Skill Level value ${config.skill}`);
+    worker.postMessage(`position fen ${positionFen(position)}`);
+    worker.postMessage(`go movetime ${config.engineTime}`);
+  });
+  return best ? moveFromUci(best, position) : null;
+}
+
+async function chooseCpuMove() {
+  const position = currentPosition();
+  const config = DIFFICULTIES[state.difficulty] || DIFFICULTIES.strong;
+  const engineMove = await stockfishMove(position, config);
+  return engineMove || chooseFallbackCpuMove(position, config);
+}
+
 function applyMoveToState(move) {
+  hidePromotionPicker();
   const label = moveLabel(move);
   const next = makeMove(currentPosition(), move);
   state.board = next.board;
@@ -561,6 +724,46 @@ function render() {
   updateStatus();
 }
 
+function hidePromotionPicker() {
+  state.pendingPromotionMoves = [];
+  promotionPicker.className = "promotion-picker hidden";
+  promotionPicker.innerHTML = "";
+}
+
+function showPromotionPicker(moves) {
+  state.pendingPromotionMoves = moves;
+  promotionPicker.innerHTML = "";
+  const panel = document.createElement("div");
+  panel.className = "promotion-panel";
+  const title = document.createElement("p");
+  title.textContent = "Promote to";
+  panel.append(title);
+  const options = document.createElement("div");
+  options.className = "promotion-options";
+  const color = state.current;
+  PROMOTION_TYPES.forEach((promotion) => {
+    const move = moves.find((item) => item.promotion === promotion);
+    if (!move) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "promotion-choice";
+    button.setAttribute("aria-label", PROMOTION_NAMES[promotion]);
+    const piece = color === "w" ? promotion.toUpperCase() : promotion;
+    const image = document.createElement("img");
+    image.src = pieceAsset(piece);
+    image.alt = "";
+    image.draggable = false;
+    const label = document.createElement("span");
+    label.textContent = PROMOTION_NAMES[promotion];
+    button.append(image, label);
+    button.addEventListener("click", () => applyMoveToState(move));
+    options.append(button);
+  });
+  panel.append(options);
+  promotionPicker.append(panel);
+  promotionPicker.className = "promotion-picker";
+}
+
 function updateBoardZoom() {
   boardEl.style.width = `${Math.round(680 * state.zoom)}px`;
   boardEl.style.maxWidth = state.zoom <= 1 ? "100%" : "none";
@@ -624,9 +827,10 @@ function maybeCpuMove(lastMove = "") {
   }
   const turn = state.turnId;
   render();
-  window.setTimeout(() => {
+  window.setTimeout(async () => {
     if (state.gameOver || !isCpuTurn() || turn !== state.turnId) return;
-    const move = chooseCpuMove();
+    const move = await chooseCpuMove();
+    if (state.gameOver || !isCpuTurn() || turn !== state.turnId) return;
     if (move) applyMoveToState(move);
   }, 180);
 }
@@ -640,12 +844,14 @@ function resetGame(keepScores = true) {
   state.fullmove = 1;
   state.selected = null;
   state.legalForSelected = [];
+  state.pendingPromotionMoves = [];
   state.gameOver = false;
   state.winner = "";
   state.lastMove = null;
   state.turnId += 1;
   if (!keepScores) state.scores = { w: 0, b: 0, d: 0 };
   resultBanner.className = "result-banner hidden";
+  hidePromotionPicker();
   render();
   maybeCpuMove();
 }
@@ -670,11 +876,17 @@ boardEl.addEventListener("click", (event) => {
   if (!square || square.disabled) return;
   const index = Number(square.dataset.index);
   const piece = state.board[index];
-  const chosenMove = state.legalForSelected.find((move) => move.to === index);
-  if (chosenMove) {
-    applyMoveToState(chosenMove);
+  const chosenMoves = state.legalForSelected.filter((move) => move.to === index);
+  if (chosenMoves.length) {
+    const promotionMoves = chosenMoves.filter((move) => move.promotion);
+    if (promotionMoves.length > 1) {
+      showPromotionPicker(promotionMoves);
+      return;
+    }
+    applyMoveToState(chosenMoves[0]);
     return;
   }
+  hidePromotionPicker();
   if (piece && colorOf(piece) === state.current) {
     state.selected = index;
     state.legalForSelected = legalMovesFrom(index);
