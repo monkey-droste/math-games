@@ -38,7 +38,7 @@ const DIFFICULTIES = {
   impossible: { depth: 6, noise: 0, blunder: 0, time: 5200, engineTime: 6200, skill: 20 },
 };
 
-const STOCKFISH_URL = "https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js";
+const STOCKFISH_URL = "assets/vendor/stockfish.js";
 const PROMOTION_TYPES = ["q", "r", "b", "n"];
 const PROMOTION_NAMES = { q: "Queen", r: "Rook", b: "Bishop", n: "Knight" };
 
