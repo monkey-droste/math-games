@@ -38,12 +38,14 @@ const DIFFICULTIES = {
     time: 450,
     engineTime: 320,
     skill: 0,
-    limitStrength: true,
-    elo: 1320,
     mistakeRate: 0.26,
     mistakeWindow: 240,
     mistakePool: 6,
     humanizeDepth: 1,
+    drawBehind: -60,
+    drawEqualMove: 18,
+    drawEqualWindow: 170,
+    drawEndgameMove: 34,
   },
   casual: {
     depth: 3,
@@ -52,12 +54,14 @@ const DIFFICULTIES = {
     time: 850,
     engineTime: 850,
     skill: 5,
-    limitStrength: true,
-    elo: 1550,
     mistakeRate: 0.13,
     mistakeWindow: 140,
     mistakePool: 4,
     humanizeDepth: 1,
+    drawBehind: -110,
+    drawEqualMove: 26,
+    drawEqualWindow: 130,
+    drawEndgameMove: 42,
   },
   strong: {
     depth: 4,
@@ -66,12 +70,14 @@ const DIFFICULTIES = {
     time: 1500,
     engineTime: 1700,
     skill: 11,
-    limitStrength: true,
-    elo: 1900,
     mistakeRate: 0.04,
     mistakeWindow: 70,
     mistakePool: 3,
     humanizeDepth: 2,
+    drawBehind: -180,
+    drawEqualMove: 36,
+    drawEqualWindow: 90,
+    drawEndgameMove: 52,
   },
   expert: {
     depth: 5,
@@ -80,12 +86,14 @@ const DIFFICULTIES = {
     time: 3200,
     engineTime: 3600,
     skill: 17,
-    limitStrength: true,
-    elo: 2350,
     mistakeRate: 0,
     mistakeWindow: 0,
     mistakePool: 1,
     humanizeDepth: 2,
+    drawBehind: -280,
+    drawEqualMove: 48,
+    drawEqualWindow: 55,
+    drawEndgameMove: 62,
   },
   impossible: {
     depth: 6,
@@ -94,12 +102,14 @@ const DIFFICULTIES = {
     time: 5600,
     engineTime: 7600,
     skill: 20,
-    limitStrength: false,
-    elo: 3190,
     mistakeRate: 0,
     mistakeWindow: 0,
     mistakePool: 1,
     humanizeDepth: 3,
+    drawBehind: -420,
+    drawEqualMove: 60,
+    drawEqualWindow: 30,
+    drawEndgameMove: 72,
   },
 };
 
@@ -122,6 +132,7 @@ const state = {
   gameOver: false,
   winner: "",
   lastMove: null,
+  drawOfferBy: "",
   pendingPromotionMoves: [],
   scores: { w: 0, b: 0, d: 0 },
   turnId: 0,
@@ -149,6 +160,7 @@ const sideChoice = document.querySelector("#sideChoice");
 const difficultyField = document.querySelector("#difficultyField");
 const difficultySelect = document.querySelector("#difficulty");
 const newGameButton = document.querySelector("#newGame");
+const offerDrawButton = document.querySelector("#offerDraw");
 const clearScoreButton = document.querySelector("#clearScore");
 const resultBanner = document.querySelector("#resultBanner");
 const resultKicker = document.querySelector("#resultKicker");
@@ -721,8 +733,6 @@ async function stockfishMove(position, config) {
       },
     };
     worker.postMessage(`setoption name Skill Level value ${config.skill}`);
-    worker.postMessage(`setoption name UCI_LimitStrength value ${config.limitStrength ? "true" : "false"}`);
-    if (config.limitStrength) worker.postMessage(`setoption name UCI_Elo value ${config.elo}`);
     worker.postMessage(`position fen ${positionFen(position)}`);
     worker.postMessage(`go movetime ${config.engineTime}`);
   });
@@ -738,6 +748,7 @@ async function chooseCpuMove() {
 
 function applyMoveToState(move) {
   hidePromotionPicker();
+  state.drawOfferBy = "";
   const label = moveLabel(move);
   const next = makeMove(currentPosition(), move);
   state.board = next.board;
@@ -779,6 +790,8 @@ function render() {
   drawScore.textContent = state.scores.d;
   sideChoice.classList.toggle("hidden", state.mode !== "cpu");
   difficultyField.classList.toggle("hidden", state.mode !== "cpu");
+  offerDrawButton.disabled = state.gameOver || isCpuTurn();
+  offerDrawButton.textContent = state.mode === "human" && state.drawOfferBy ? "Accept Draw" : "Offer Draw";
   updateResignButtons();
   boardEl.classList.toggle("facing-away", boardFacingColor() === "b");
 
@@ -878,6 +891,8 @@ function updateStatus(lastCpuMove = "") {
   statusLine.textContent = `${NAMES[state.current]}'s turn.`;
   if (inCheck(currentPosition(), state.current)) {
     hintLine.textContent = `${NAMES[state.current]} is in check. Find a legal escape.`;
+  } else if (state.drawOfferBy && state.mode === "human") {
+    hintLine.textContent = `${NAMES[state.drawOfferBy]} offered a draw. ${NAMES[opponent(state.drawOfferBy)]} can accept with Offer Draw, or play on.`;
   } else if (state.selected !== null) {
     hintLine.textContent = "Choose a highlighted square, or choose another piece.";
   } else {
@@ -908,6 +923,18 @@ function finishDraw() {
   hintLine.textContent = "No legal winning move remains.";
 }
 
+function finishAgreedDraw(message = "Draw agreed.") {
+  state.gameOver = true;
+  state.drawOfferBy = "";
+  state.scores.d += 1;
+  render();
+  resultBanner.className = "result-banner draw";
+  resultKicker.textContent = "Game over";
+  resultTitle.textContent = "Draw!";
+  statusLine.textContent = "Draw.";
+  hintLine.textContent = message;
+}
+
 function maybeCpuMove(lastMove = "") {
   if (state.gameOver || !isCpuTurn()) {
     if (lastMove) updateStatus(lastMove);
@@ -936,6 +963,7 @@ function resetGame(keepScores = true) {
   state.gameOver = false;
   state.winner = "";
   state.lastMove = null;
+  state.drawOfferBy = "";
   state.turnId += 1;
   if (!keepScores) state.scores = { w: 0, b: 0, d: 0 };
   resultBanner.className = "result-banner hidden";
@@ -957,6 +985,46 @@ function updateResignButtons() {
     button.classList.toggle("hidden", state.mode === "cpu" && !isHumanResign);
     button.textContent = state.mode === "cpu" && isHumanResign ? "Resign" : button.dataset.defaultLabel;
   });
+}
+
+function cpuAcceptsDraw() {
+  const config = DIFFICULTIES[state.difficulty] || DIFFICULTIES.strong;
+  const cpu = opponent(state.human);
+  const scoreForCpu = evaluate(currentPosition(), cpu);
+  const moveCount = legalMoves().length;
+  const clearlyWorse = scoreForCpu <= config.drawBehind;
+  const equalLateEnough = state.fullmove >= config.drawEqualMove && Math.abs(scoreForCpu) <= config.drawEqualWindow;
+  const quietEndgame = state.fullmove >= config.drawEndgameMove && moveCount <= 10 && Math.abs(scoreForCpu) <= config.drawEqualWindow * 1.5;
+  return clearlyWorse || equalLateEnough || quietEndgame;
+}
+
+function offerDraw() {
+  if (state.gameOver || isCpuTurn()) return;
+  hidePromotionPicker();
+  state.selected = null;
+  state.legalForSelected = [];
+
+  if (state.mode === "cpu") {
+    if (cpuAcceptsDraw()) {
+      finishAgreedDraw("CPU accepted the draw offer.");
+    } else {
+      state.drawOfferBy = "";
+      render();
+      statusLine.textContent = "Draw offer declined.";
+      hintLine.textContent = "CPU thinks it should keep playing.";
+    }
+    return;
+  }
+
+  if (state.drawOfferBy) {
+    finishAgreedDraw("Both players agreed to a draw.");
+    return;
+  }
+
+  state.drawOfferBy = state.current;
+  render();
+  statusLine.textContent = `${NAMES[state.current]} offered a draw.`;
+  hintLine.textContent = `${NAMES[opponent(state.current)]} can accept with Offer Draw, or make a move to decline.`;
 }
 
 boardEl.addEventListener("click", (event) => {
@@ -1013,6 +1081,7 @@ resignButtons.forEach((button) => {
 });
 
 newGameButton.addEventListener("click", () => resetGame());
+offerDrawButton.addEventListener("click", offerDraw);
 clearScoreButton.addEventListener("click", () => resetGame(false));
 bannerNewGameButton.addEventListener("click", () => resetGame());
 zoomOutButton.addEventListener("click", () => setZoom(state.zoom - 0.1));
