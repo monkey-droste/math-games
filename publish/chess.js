@@ -31,11 +31,76 @@ const ROOK_DIRS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 const QUEEN_DIRS = [...BISHOP_DIRS, ...ROOK_DIRS];
 
 const DIFFICULTIES = {
-  easy: { depth: 2, noise: 24, blunder: 0, time: 550, engineTime: 650, skill: 6 },
-  casual: { depth: 3, noise: 8, blunder: 0, time: 1000, engineTime: 1100, skill: 10 },
-  strong: { depth: 4, noise: 2, blunder: 0, time: 1800, engineTime: 1900, skill: 15 },
-  expert: { depth: 5, noise: 0, blunder: 0, time: 3200, engineTime: 3400, skill: 20 },
-  impossible: { depth: 6, noise: 0, blunder: 0, time: 5200, engineTime: 6200, skill: 20 },
+  easy: {
+    depth: 2,
+    noise: 80,
+    blunder: 0.08,
+    time: 450,
+    engineTime: 320,
+    skill: 0,
+    limitStrength: true,
+    elo: 1320,
+    mistakeRate: 0.26,
+    mistakeWindow: 240,
+    mistakePool: 6,
+    humanizeDepth: 1,
+  },
+  casual: {
+    depth: 3,
+    noise: 28,
+    blunder: 0.035,
+    time: 850,
+    engineTime: 850,
+    skill: 5,
+    limitStrength: true,
+    elo: 1550,
+    mistakeRate: 0.13,
+    mistakeWindow: 140,
+    mistakePool: 4,
+    humanizeDepth: 1,
+  },
+  strong: {
+    depth: 4,
+    noise: 6,
+    blunder: 0,
+    time: 1500,
+    engineTime: 1700,
+    skill: 11,
+    limitStrength: true,
+    elo: 1900,
+    mistakeRate: 0.04,
+    mistakeWindow: 70,
+    mistakePool: 3,
+    humanizeDepth: 2,
+  },
+  expert: {
+    depth: 5,
+    noise: 0,
+    blunder: 0,
+    time: 3200,
+    engineTime: 3600,
+    skill: 17,
+    limitStrength: true,
+    elo: 2350,
+    mistakeRate: 0,
+    mistakeWindow: 0,
+    mistakePool: 1,
+    humanizeDepth: 2,
+  },
+  impossible: {
+    depth: 6,
+    noise: 0,
+    blunder: 0,
+    time: 5600,
+    engineTime: 7600,
+    skill: 20,
+    limitStrength: false,
+    elo: 3190,
+    mistakeRate: 0,
+    mistakeWindow: 0,
+    mistakePool: 1,
+    humanizeDepth: 3,
+  },
 };
 
 const STOCKFISH_URL = "assets/vendor/stockfish.js";
@@ -553,6 +618,27 @@ function chooseFallbackCpuMove(position = currentPosition(), config = DIFFICULTI
   return scored[0].move;
 }
 
+function maybeHumanizeMove(position, engineMove, config) {
+  if (!engineMove || !config.mistakeRate || Math.random() >= config.mistakeRate) return engineMove;
+  const moves = orderedMoves(position);
+  if (moves.length < 3) return engineMove;
+  const rootColor = position.current;
+  const depth = Math.max(1, config.humanizeDepth || 1);
+  const deadline = Date.now() + 220;
+  const scored = moves.map((move) => ({
+    move,
+    score: search(makeMove(position, move), depth - 1, -Infinity, Infinity, rootColor, deadline, 1),
+  })).sort((a, b) => b.score - a.score);
+  const bestScore = scored[0]?.score ?? evaluate(position, rootColor);
+  const engineKey = uciForMove(engineMove);
+  const candidates = scored
+    .filter((item) => uciForMove(item.move) !== engineKey)
+    .filter((item) => bestScore - item.score <= config.mistakeWindow)
+    .slice(0, config.mistakePool || 3);
+  if (!candidates.length) return engineMove;
+  return candidates[Math.floor(Math.random() * candidates.length)].move;
+}
+
 function createStockfishWorker(source) {
   const blob = new Blob([source], { type: "application/javascript" });
   const url = URL.createObjectURL(blob);
@@ -635,6 +721,8 @@ async function stockfishMove(position, config) {
       },
     };
     worker.postMessage(`setoption name Skill Level value ${config.skill}`);
+    worker.postMessage(`setoption name UCI_LimitStrength value ${config.limitStrength ? "true" : "false"}`);
+    if (config.limitStrength) worker.postMessage(`setoption name UCI_Elo value ${config.elo}`);
     worker.postMessage(`position fen ${positionFen(position)}`);
     worker.postMessage(`go movetime ${config.engineTime}`);
   });
@@ -645,7 +733,7 @@ async function chooseCpuMove() {
   const position = currentPosition();
   const config = DIFFICULTIES[state.difficulty] || DIFFICULTIES.strong;
   const engineMove = await stockfishMove(position, config);
-  return engineMove || chooseFallbackCpuMove(position, config);
+  return engineMove ? maybeHumanizeMove(position, engineMove, config) : chooseFallbackCpuMove(position, config);
 }
 
 function applyMoveToState(move) {
