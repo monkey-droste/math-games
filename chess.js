@@ -116,6 +116,7 @@ const DIFFICULTIES = {
 const STOCKFISH_URL = "assets/vendor/stockfish.js";
 const PROMOTION_TYPES = ["q", "r", "b", "n"];
 const PROMOTION_NAMES = { q: "Queen", r: "Rook", b: "Bishop", n: "Knight" };
+const DRAW_OFFER_TIMEOUT_MS = 60000;
 
 const state = {
   board: [...START],
@@ -133,6 +134,7 @@ const state = {
   winner: "",
   lastMove: null,
   drawOfferBy: "",
+  drawOfferThinking: false,
   pendingPromotionMoves: [],
   scores: { w: 0, b: 0, d: 0 },
   turnId: 0,
@@ -145,6 +147,8 @@ const engineState = {
   waiting: null,
   failed: false,
 };
+
+let drawOfferTimer = null;
 
 const boardEl = document.querySelector("#board");
 const statusLine = document.querySelector("#statusLine");
@@ -161,6 +165,7 @@ const difficultyField = document.querySelector("#difficultyField");
 const difficultySelect = document.querySelector("#difficulty");
 const newGameButton = document.querySelector("#newGame");
 const offerDrawButton = document.querySelector("#offerDraw");
+const declineDrawButton = document.querySelector("#declineDraw");
 const clearScoreButton = document.querySelector("#clearScore");
 const resultBanner = document.querySelector("#resultBanner");
 const resultKicker = document.querySelector("#resultKicker");
@@ -746,8 +751,31 @@ async function chooseCpuMove() {
   return engineMove ? maybeHumanizeMove(position, engineMove, config) : chooseFallbackCpuMove(position, config);
 }
 
+function clearDrawOfferTimer() {
+  if (!drawOfferTimer) return;
+  window.clearTimeout(drawOfferTimer);
+  drawOfferTimer = null;
+}
+
+function startDrawOfferTimer(offerBy) {
+  clearDrawOfferTimer();
+  const turn = state.turnId;
+  drawOfferTimer = window.setTimeout(() => {
+    drawOfferTimer = null;
+    if (state.gameOver || state.mode !== "human" || state.drawOfferBy !== offerBy || state.turnId !== turn) return;
+    state.drawOfferBy = "";
+    state.selected = null;
+    state.legalForSelected = [];
+    hidePromotionPicker();
+    render();
+    statusLine.textContent = "Draw offer expired.";
+    hintLine.textContent = `${NAMES[state.current]}'s turn. Choose a piece.`;
+  }, DRAW_OFFER_TIMEOUT_MS);
+}
+
 function applyMoveToState(move) {
   hidePromotionPicker();
+  clearDrawOfferTimer();
   state.drawOfferBy = "";
   const label = moveLabel(move);
   const next = makeMove(currentPosition(), move);
@@ -790,8 +818,10 @@ function render() {
   drawScore.textContent = state.scores.d;
   sideChoice.classList.toggle("hidden", state.mode !== "cpu");
   difficultyField.classList.toggle("hidden", state.mode !== "cpu");
-  offerDrawButton.disabled = state.gameOver || isCpuTurn();
+  offerDrawButton.disabled = state.gameOver || isCpuTurn() || state.drawOfferThinking;
   offerDrawButton.textContent = state.mode === "human" && state.drawOfferBy ? "Accept Draw" : "Offer Draw";
+  declineDrawButton.classList.toggle("hidden", state.mode !== "human" || !state.drawOfferBy || state.gameOver);
+  declineDrawButton.disabled = state.drawOfferThinking;
   updateResignButtons();
   boardEl.classList.toggle("facing-away", boardFacingColor() === "b");
 
@@ -892,7 +922,7 @@ function updateStatus(lastCpuMove = "") {
   if (inCheck(currentPosition(), state.current)) {
     hintLine.textContent = `${NAMES[state.current]} is in check. Find a legal escape.`;
   } else if (state.drawOfferBy && state.mode === "human") {
-    hintLine.textContent = `${NAMES[state.drawOfferBy]} offered a draw. ${NAMES[opponent(state.drawOfferBy)]} can accept with Offer Draw, or play on.`;
+    hintLine.textContent = `${NAMES[state.drawOfferBy]} offered a draw. ${NAMES[opponent(state.drawOfferBy)]} can accept or decline within 60 seconds.`;
   } else if (state.selected !== null) {
     hintLine.textContent = "Choose a highlighted square, or choose another piece.";
   } else {
@@ -901,6 +931,7 @@ function updateStatus(lastCpuMove = "") {
 }
 
 function finishGame(winner) {
+  clearDrawOfferTimer();
   state.gameOver = true;
   state.winner = winner;
   state.scores[winner] += 1;
@@ -913,6 +944,7 @@ function finishGame(winner) {
 }
 
 function finishDraw() {
+  clearDrawOfferTimer();
   state.gameOver = true;
   state.scores.d += 1;
   render();
@@ -924,8 +956,10 @@ function finishDraw() {
 }
 
 function finishAgreedDraw(message = "Draw agreed.") {
+  clearDrawOfferTimer();
   state.gameOver = true;
   state.drawOfferBy = "";
+  state.drawOfferThinking = false;
   state.scores.d += 1;
   render();
   resultBanner.className = "result-banner draw";
@@ -951,6 +985,7 @@ function maybeCpuMove(lastMove = "") {
 }
 
 function resetGame(keepScores = true) {
+  clearDrawOfferTimer();
   state.board = [...START];
   state.current = "w";
   state.castling = { K: true, Q: true, k: true, q: true };
@@ -964,6 +999,7 @@ function resetGame(keepScores = true) {
   state.winner = "";
   state.lastMove = null;
   state.drawOfferBy = "";
+  state.drawOfferThinking = false;
   state.turnId += 1;
   if (!keepScores) state.scores = { w: 0, b: 0, d: 0 };
   resultBanner.className = "result-banner hidden";
@@ -999,20 +1035,30 @@ function cpuAcceptsDraw() {
 }
 
 function offerDraw() {
-  if (state.gameOver || isCpuTurn()) return;
+  if (state.gameOver || isCpuTurn() || state.drawOfferThinking) return;
   hidePromotionPicker();
   state.selected = null;
   state.legalForSelected = [];
 
   if (state.mode === "cpu") {
-    if (cpuAcceptsDraw()) {
-      finishAgreedDraw("CPU accepted the draw offer.");
-    } else {
-      state.drawOfferBy = "";
-      render();
-      statusLine.textContent = "Draw offer declined.";
-      hintLine.textContent = "CPU thinks it should keep playing.";
-    }
+    const turn = state.turnId;
+    state.drawOfferThinking = true;
+    render();
+    statusLine.textContent = "CPU is thinking.";
+    hintLine.textContent = "CPU is considering your draw offer.";
+    window.setTimeout(() => {
+      if (state.gameOver || state.turnId !== turn || state.mode !== "cpu") return;
+      const accepted = cpuAcceptsDraw();
+      state.drawOfferThinking = false;
+      if (accepted) {
+        finishAgreedDraw("CPU says Yes.");
+      } else {
+        state.drawOfferBy = "";
+        render();
+        statusLine.textContent = "CPU says No.";
+        hintLine.textContent = `${NAMES[state.current]}'s turn. Choose a piece.`;
+      }
+    }, 650);
     return;
   }
 
@@ -1022,9 +1068,23 @@ function offerDraw() {
   }
 
   state.drawOfferBy = state.current;
+  startDrawOfferTimer(state.current);
   render();
   statusLine.textContent = `${NAMES[state.current]} offered a draw.`;
-  hintLine.textContent = `${NAMES[opponent(state.current)]} can accept with Offer Draw, or make a move to decline.`;
+  hintLine.textContent = `${NAMES[opponent(state.current)]} can accept or decline.`;
+}
+
+function declineDraw() {
+  if (state.gameOver || state.mode !== "human" || !state.drawOfferBy) return;
+  const declinedBy = opponent(state.drawOfferBy);
+  clearDrawOfferTimer();
+  state.drawOfferBy = "";
+  state.selected = null;
+  state.legalForSelected = [];
+  hidePromotionPicker();
+  render();
+  statusLine.textContent = `${NAMES[declinedBy]} declined the draw.`;
+  hintLine.textContent = `${NAMES[state.current]}'s turn. Choose a piece.`;
 }
 
 boardEl.addEventListener("click", (event) => {
@@ -1082,6 +1142,7 @@ resignButtons.forEach((button) => {
 
 newGameButton.addEventListener("click", () => resetGame());
 offerDrawButton.addEventListener("click", offerDraw);
+declineDrawButton.addEventListener("click", declineDraw);
 clearScoreButton.addEventListener("click", () => resetGame(false));
 bannerNewGameButton.addEventListener("click", () => resetGame());
 zoomOutButton.addEventListener("click", () => setZoom(state.zoom - 0.1));

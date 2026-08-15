@@ -16,7 +16,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://monkey-droste.github.io/math-games/chess.html">
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="game-page.css?v=chess-draw-levels-1">
+    <link rel="stylesheet" href="game-page.css?v=chess-draw-timeout-1">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -69,6 +69,7 @@
           <div class="control-row">
             <button type="button" id="newGame" class="text-button">New Game</button>
             <button type="button" id="offerDraw" class="text-button">Offer Draw</button>
+            <button type="button" id="declineDraw" class="text-button hidden">Decline Draw</button>
             <button type="button" class="text-button" data-resign="w">White Resigns</button>
             <button type="button" class="text-button" data-resign="b">Black Resigns</button>
             <button type="button" id="clearScore" class="text-button">Clear Score</button>
@@ -111,6 +112,6 @@
       </aside>
     </main>
 
-    <script src="chess.js?v=chess-draw-levels-1"></script>
+    <script src="chess.js?v=chess-draw-timeout-1"></script>
   </body>
 </html>
